@@ -1,4 +1,4 @@
-defmodule BattleCity.PowerUp.Star do
+defmodule BattleCity.PowerUp.Timer do
   @moduledoc false
 
   use BattleCity.PowerUp

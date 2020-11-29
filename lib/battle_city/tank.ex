@@ -35,17 +35,36 @@ defmodule BattleCity.Tank do
     end
   end
 
+  @type reason :: atom()
+  @type id :: binary()
+
   @type t :: %__MODULE__{
           tank: Base.t(),
+          id: id,
+          killer: id,
+          lifes: integer(),
+          reason: reason(),
           enemy?: boolean(),
           hiden?: boolean(),
-          temp: map()
+          shield?: boolean(),
+          freezed?: boolean(),
+          dead: boolean()
         }
 
   defstruct [
     :tank,
-    temp: %{},
+    :reason,
+    :id,
+    :killer,
+    :lifes,
+    dead: false,
+    shield?: false,
     enemy?: true,
-    hiden?: false
+    hiden?: false,
+    freezed?: false
   ]
+
+  def kill(%__MODULE__{} = o, %__MODULE__{id: killer_id}, reason \\ :normal) do
+    %{o | dead: true, reason: reason, killer: killer_id}
+  end
 end

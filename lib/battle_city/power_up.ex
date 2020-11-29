@@ -2,19 +2,29 @@ defmodule BattleCity.PowerUp do
   @moduledoc """
   """
 
-  alias BattleCity.Game
+  alias BattleCity.Context
+  alias BattleCity.Tank
 
-  @type t :: %__MODULE__{__module__: module()}
+  @duration 10
+
+  @type duration :: integer() | :instant
+
+  @type t :: %__MODULE__{__module__: module(), duration: duration()}
 
   @enforce_keys [:__module__]
-  defstruct [:__module__]
+  defstruct [:__module__, duration: @duration]
 
-  @callback effect(Game.t()) :: Game.t()
+  @type result :: {Context.t(), Tank.t()} | {:context, Context.t()} | {:tank, Tank.t()}
+
+  @callback on(Context.t(), Tank.t()) :: result
+  @callback off(Context.t(), Tank.t()) :: result
+  @optional_callbacks off: 2
 
   defmacro __using__(opt \\ []) do
     quote location: :keep do
       @behaviour unquote(__MODULE__)
-      alias BattleCity.Game
+      alias BattleCity.Context
+      alias BattleCity.Tank
 
       @obj struct!(unquote(__MODULE__), Keyword.put(unquote(opt), :__module__, __MODULE__))
       def new, do: @obj
