@@ -1,5 +1,7 @@
 # BattleCity
 
+https://strategywiki.org/wiki/Battle_City/How_to_play
+
 To start your Phoenix server:
 
   * Install dependencies with `mix deps.get`
