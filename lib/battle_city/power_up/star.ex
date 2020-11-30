@@ -5,6 +5,6 @@ defmodule BattleCity.PowerUp.Star do
 
   @impl true
   def handle_on(%Context{}, %Tank{} = tank) do
-    Tank.levelup(tank, 1)
+    Tank.levelup(tank)
   end
 end
