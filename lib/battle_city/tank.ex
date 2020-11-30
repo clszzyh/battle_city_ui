@@ -1,6 +1,8 @@
 defmodule BattleCity.Tank do
   @moduledoc false
 
+  alias BattleCity.Config
+
   defmodule Base do
     @type health :: 1..10
     @type move_speed :: 1..10
@@ -45,6 +47,7 @@ defmodule BattleCity.Tank do
           id: BattleCity.tank_id(),
           killer: BattleCity.tank_id(),
           lifes: integer(),
+          score: integer(),
           reason: reason(),
           enemy?: boolean(),
           hiden?: boolean(),
@@ -55,18 +58,19 @@ defmodule BattleCity.Tank do
 
   defstruct [
     :tank,
-    :reason,
     :id,
+    :reason,
     :killer,
-    :lifes,
+    score: 0,
     dead?: false,
     shield?: false,
     enemy?: true,
     hiden?: false,
-    freezed?: false
+    freezed?: false,
+    lifes: Config.life_count()
   ]
 
-  def kill(%__MODULE__{} = o, %__MODULE__{id: killer_id}, reason \\ :normal) do
-    %{o | dead?: true, reason: reason, killer: killer_id}
+  def levelup(%__MODULE__{} = tank, _level \\ 1) do
+    tank
   end
 end

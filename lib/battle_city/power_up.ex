@@ -2,17 +2,19 @@ defmodule BattleCity.PowerUp do
   @moduledoc """
   """
 
+  alias BattleCity.Config
   alias BattleCity.Context
   alias BattleCity.Tank
-
-  @duration 10
 
   @type duration :: integer() | :instant
 
   @type t :: %__MODULE__{__module__: module(), duration: duration()}
 
   @enforce_keys [:__module__]
-  defstruct [:__module__, duration: @duration]
+  defstruct [
+    :__module__,
+    duration: Config.power_up_duration()
+  ]
 
   @type result :: {Context.t(), Tank.t()} | Context.t() | Tank.t()
 
