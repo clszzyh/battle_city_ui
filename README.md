@@ -2,6 +2,12 @@
 
 https://strategywiki.org/wiki/Battle_City/How_to_play
 
+<!-- MDOC -->
+
+Battle City in LiveView.
+
+<!-- MDOC -->
+
 To start your Phoenix server:
 
   * Install dependencies with `mix deps.get`
