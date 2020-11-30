@@ -27,6 +27,7 @@ defmodule BattleCity.PowerUp do
       alias BattleCity.Tank
 
       @obj struct!(unquote(__MODULE__), Keyword.put(unquote(opt), :__module__, __MODULE__))
+      @spec new :: unquote(__MODULE__).t
       def new, do: @obj
     end
   end

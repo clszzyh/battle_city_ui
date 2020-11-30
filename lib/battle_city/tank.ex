@@ -35,6 +35,7 @@ defmodule BattleCity.Tank do
         alias BattleCity.Tank
 
         @obj struct!(unquote(__MODULE__), Keyword.put(unquote(opt), :__module__, __MODULE__))
+        @spec new :: unquote(__MODULE__).t
         def new, do: @obj
       end
     end
@@ -70,7 +71,8 @@ defmodule BattleCity.Tank do
     lifes: Config.life_count()
   ]
 
-  def levelup(%__MODULE__{} = tank, _level \\ 1) do
-    tank
+  @spec levelup(__MODULE__.t()) :: __MODULE__.t()
+  def levelup(%__MODULE__{tank: %{} = tank} = target, level \\ 1) do
+    %{target | tank: %{tank | level: level + 1}}
   end
 end
