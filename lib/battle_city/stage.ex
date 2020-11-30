@@ -1,23 +1,11 @@
 defmodule BattleCity.Stage do
   @moduledoc false
 
-  @path "priv/stages/*.json"
-
-  paths = Path.wildcard(@path)
-  paths_hash = :erlang.md5(paths)
-
-  for path <- paths do
-    @external_resource path
-  end
-
-  def __mix_recompile__?() do
-    Path.wildcard(@path) |> :erlang.md5() != unquote(paths_hash)
-  end
-
   @type map_data :: [term()]
   @type bot :: term()
 
   @type t :: %__MODULE__{
+          __module__: module,
           name: binary(),
           difficulty: integer(),
           map: map_data,
@@ -25,13 +13,31 @@ defmodule BattleCity.Stage do
         }
 
   defstruct [
+    :__module__,
     :name,
     :difficulty,
     :map,
     :bots
   ]
 
-  def load(path) do
-    path |> File.read!() |> Jason.decode!()
+  defmacro __using__(opt) do
+    quote location: :keep do
+      @obj struct!(unquote(__MODULE__), Keyword.put(unquote(opt), :__module__, __MODULE__))
+           |> unquote(__MODULE__).validate_data!
+      @spec new :: unquote(__MODULE__).t
+      def new, do: @obj
+    end
+  end
+
+  def validate_data!(%__MODULE__{map: map, bots: bots} = o) do
+    %{o | map: Enum.map(map, &parse_map/1), bots: Enum.map(bots, &parse_bot/1)}
+  end
+
+  def parse_map(o) do
+    o
+  end
+
+  def parse_bot(o) do
+    o
   end
 end
