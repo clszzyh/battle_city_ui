@@ -5,6 +5,6 @@ defmodule BattleCity.PowerUp.Life do
 
   @impl true
   def on(%Context{}, %Tank{lifes: lifes} = tank) do
-    {:tank, %{tank | lifes: lifes + 1}}
+    %{tank | lifes: lifes + 1}
   end
 end

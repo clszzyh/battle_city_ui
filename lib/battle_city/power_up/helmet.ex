@@ -5,11 +5,11 @@ defmodule BattleCity.PowerUp.Helmet do
 
   @impl true
   def on(%Context{}, %Tank{} = tank) do
-    {:tank, %{tank | shield?: true}}
+    %{tank | shield?: true}
   end
 
   @impl true
   def off(%Context{}, %Tank{} = tank) do
-    {:tank, %{tank | shield?: false}}
+    %{tank | shield?: false}
   end
 end

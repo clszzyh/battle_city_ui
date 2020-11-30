@@ -5,6 +5,11 @@ defmodule BattleCity.PowerUp.Timer do
 
   @impl true
   def on(%Context{} = ctx, %Tank{} = tank) do
-    {ctx, tank}
+    Context.handle_all_enemies(ctx, tank, {:stop, :timer})
+  end
+
+  @impl true
+  def off(%Context{} = ctx, %Tank{} = tank) do
+    Context.handle_all_enemies(ctx, tank, {:resume, :timer})
   end
 end

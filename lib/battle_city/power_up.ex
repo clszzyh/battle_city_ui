@@ -14,7 +14,7 @@ defmodule BattleCity.PowerUp do
   @enforce_keys [:__module__]
   defstruct [:__module__, duration: @duration]
 
-  @type result :: {Context.t(), Tank.t()} | {:context, Context.t()} | {:tank, Tank.t()}
+  @type result :: {Context.t(), Tank.t()} | Context.t() | Tank.t()
 
   @callback on(Context.t(), Tank.t()) :: result
   @callback off(Context.t(), Tank.t()) :: result

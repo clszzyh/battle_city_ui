@@ -6,9 +6,11 @@ defmodule BattleCity.Tank do
     @type move_speed :: 1..10
     @type bullet_speed :: move_speed
     @type points :: integer
+    @type level :: 1..4
 
     @type t :: %__MODULE__{
             __module__: module,
+            level: level(),
             points: points(),
             health: health(),
             move_speed: move_speed(),
@@ -21,7 +23,8 @@ defmodule BattleCity.Tank do
       :points,
       :health,
       :move_speed,
-      :bullet_speed
+      :bullet_speed,
+      level: 1
     ]
 
     defmacro __using__(opt \\ []) do
@@ -36,19 +39,18 @@ defmodule BattleCity.Tank do
   end
 
   @type reason :: atom()
-  @type id :: binary()
 
   @type t :: %__MODULE__{
           tank: Base.t(),
-          id: id,
-          killer: id,
+          id: BattleCity.tank_id(),
+          killer: BattleCity.tank_id(),
           lifes: integer(),
           reason: reason(),
           enemy?: boolean(),
           hiden?: boolean(),
           shield?: boolean(),
           freezed?: boolean(),
-          dead: boolean()
+          dead?: boolean()
         }
 
   defstruct [
@@ -57,7 +59,7 @@ defmodule BattleCity.Tank do
     :id,
     :killer,
     :lifes,
-    dead: false,
+    dead?: false,
     shield?: false,
     enemy?: true,
     hiden?: false,
@@ -65,6 +67,6 @@ defmodule BattleCity.Tank do
   ]
 
   def kill(%__MODULE__{} = o, %__MODULE__{id: killer_id}, reason \\ :normal) do
-    %{o | dead: true, reason: reason, killer: killer_id}
+    %{o | dead?: true, reason: reason, killer: killer_id}
   end
 end

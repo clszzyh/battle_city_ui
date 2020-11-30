@@ -5,11 +5,11 @@ defmodule BattleCity.PowerUp.Shovel do
 
   @impl true
   def on(%Context{} = ctx, %Tank{}) do
-    {:context, %{ctx | shovel?: true}}
+    %{ctx | shovel?: true}
   end
 
   @impl true
   def off(%Context{} = ctx, %Tank{}) do
-    {:context, %{ctx | shovel?: false}}
+    %{ctx | shovel?: false}
   end
 end
