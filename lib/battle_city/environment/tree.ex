@@ -2,9 +2,8 @@ defmodule BattleCity.Environment.Tree do
   @moduledoc false
 
   use BattleCity.Environment,
-    allow_pass_bullet: true,
-    allow_pass_tank: true,
-    allow_destroy: false
+    health: 0,
+    allow_pass_tank: true
 
   @impl true
   def handle_enter(_, %Tank{} = t) do

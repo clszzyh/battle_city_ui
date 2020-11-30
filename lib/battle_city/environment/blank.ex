@@ -3,6 +3,5 @@ defmodule BattleCity.Environment.Blank do
 
   use BattleCity.Environment,
     allow_pass_tank: true,
-    allow_pass_bullet: true,
-    allow_destroy: false
+    health: 0
 end

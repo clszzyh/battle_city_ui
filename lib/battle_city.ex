@@ -13,10 +13,12 @@ defmodule BattleCity do
 
   @type tank_id :: binary()
 
-  @type inner_callback_tank_result :: {Context.t(), Tank.t()} | Context.t() | Tank.t()
+  @type inner_callback_tank_result ::
+          {Context.t(), Tank.t()} | Context.t() | Tank.t() | {:error, atom()}
   @type callback_tank_result :: {Context.t(), Tank.t()}
 
-  @type inner_callback_bullet_result :: {Context.t(), Bullet.t()} | Context.t() | Bullet.t()
+  @type inner_callback_bullet_result ::
+          {Context.t(), Bullet.t()} | Context.t() | Bullet.t() | {:error, atom()}
   @type callback_bullet_result :: {Context.t(), Bullet.t()}
 
   @spec parse_result(inner_callback_tank_result, Context.t(), Tank.t()) :: callback_tank_result
