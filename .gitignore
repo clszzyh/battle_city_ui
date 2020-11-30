@@ -36,3 +36,5 @@ npm-debug.log
 
 *.plt
 *.plt.hash
+
+NOTE.md

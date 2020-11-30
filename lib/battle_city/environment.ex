@@ -1,6 +1,7 @@
 defmodule BattleCity.Environment do
   @moduledoc false
 
+  alias BattleCity.Context
   alias BattleCity.Tank
 
   @type t :: %__MODULE__{
@@ -18,9 +19,9 @@ defmodule BattleCity.Environment do
     allow_destroy: false
   ]
 
-  @callback on(Tank.t()) :: Tank.t()
-  @callback off(Tank.t()) :: Tank.t()
-  @optional_callbacks on: 1, off: 1
+  @callback handle_on(Context.t(), Tank.t()) :: BattleCity.inner_callback_result()
+  @callback handle_off(Context.t(), Tank.t()) :: BattleCity.inner_callback_result()
+  @optional_callbacks handle_on: 2, handle_off: 2
 
   defmacro __using__(opt \\ []) do
     quote location: :keep do
@@ -29,6 +30,24 @@ defmodule BattleCity.Environment do
 
       @obj struct!(unquote(__MODULE__), Keyword.put(unquote(opt), :__module__, __MODULE__))
       def new, do: @obj
+    end
+  end
+
+  @spec on(Context.t(), Tank.t(), __MODULE__.t()) :: BattleCity.callback_result()
+  def on(%Context{} = ctx, %Tank{} = tank, %__MODULE__{} = environment) do
+    if function_exported?(environment.__module__, :handle_on, 2) do
+      environment.__module__.handle_on(ctx, tank) |> BattleCity.parse_result(ctx, tank)
+    else
+      {ctx, tank}
+    end
+  end
+
+  @spec off(Context.t(), Tank.t(), __MODULE__.t()) :: BattleCity.callback_result()
+  def off(%Context{} = ctx, %Tank{} = tank, %__MODULE__{} = environment) do
+    if function_exported?(environment.__module__, :handle_off, 2) do
+      environment.__module__.handle_off(ctx, tank) |> BattleCity.parse_result(ctx, tank)
+    else
+      {ctx, tank}
     end
   end
 end

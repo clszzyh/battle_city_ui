@@ -4,12 +4,12 @@ defmodule BattleCity.PowerUp.Shovel do
   use BattleCity.PowerUp, duration: :instant
 
   @impl true
-  def on(%Context{} = ctx, %Tank{}) do
+  def handle_on(%Context{} = ctx, %Tank{}) do
     %{ctx | shovel?: true}
   end
 
   @impl true
-  def off(%Context{} = ctx, %Tank{}) do
+  def handle_off(%Context{} = ctx, %Tank{}) do
     %{ctx | shovel?: false}
   end
 end

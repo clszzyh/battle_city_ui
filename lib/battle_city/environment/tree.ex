@@ -7,12 +7,12 @@ defmodule BattleCity.Environment.Tree do
     allow_destroy: false
 
   @impl true
-  def on(%Tank{} = t) do
+  def handle_on(_, %Tank{} = t) do
     %{t | hiden?: true}
   end
 
   @impl true
-  def off(%Tank{} = t) do
+  def handle_off(_, %Tank{} = t) do
     %{t | hiden?: false}
   end
 end
