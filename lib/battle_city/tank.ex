@@ -3,9 +3,9 @@ defmodule BattleCity.Tank do
 
   alias BattleCity.Bullet
   alias BattleCity.Config
+  alias __MODULE__
 
   defmodule Base do
-    alias BattleCity.Tank
     @type health :: 1..10
     @type move_speed :: 1..10
     @type bullet_speed :: move_speed

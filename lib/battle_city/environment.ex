@@ -1,6 +1,7 @@
 defmodule BattleCity.Environment do
   @moduledoc false
 
+  alias BattleCity.Bullet
   alias BattleCity.Context
   alias BattleCity.Tank
 
@@ -19,9 +20,11 @@ defmodule BattleCity.Environment do
     allow_destroy: false
   ]
 
-  @callback handle_on(Context.t(), Tank.t()) :: BattleCity.inner_callback_result()
-  @callback handle_off(Context.t(), Tank.t()) :: BattleCity.inner_callback_result()
-  @optional_callbacks handle_on: 2, handle_off: 2
+  @callback handle_enter(Context.t(), Tank.t()) :: BattleCity.inner_callback_tank_result()
+  @callback handle_leave(Context.t(), Tank.t()) :: BattleCity.inner_callback_tank_result()
+
+  @callback handle_hit(Context.t(), Bullet.t()) :: BattleCity.inner_callback_bullet_result()
+  @optional_callbacks handle_enter: 2, handle_leave: 2, handle_hit: 2
 
   defmacro __using__(opt \\ []) do
     quote location: :keep do
@@ -34,7 +37,7 @@ defmodule BattleCity.Environment do
     end
   end
 
-  @spec on(Context.t(), Tank.t(), __MODULE__.t()) :: BattleCity.callback_result()
+  @spec on(Context.t(), Tank.t(), __MODULE__.t()) :: BattleCity.callback_tank_result()
   def on(%Context{} = ctx, %Tank{} = tank, %__MODULE__{} = environment) do
     if function_exported?(environment.__module__, :handle_on, 2) do
       environment.__module__.handle_on(ctx, tank) |> BattleCity.parse_result(ctx, tank)
@@ -43,7 +46,7 @@ defmodule BattleCity.Environment do
     end
   end
 
-  @spec off(Context.t(), Tank.t(), __MODULE__.t()) :: BattleCity.callback_result()
+  @spec off(Context.t(), Tank.t(), __MODULE__.t()) :: BattleCity.callback_tank_result()
   def off(%Context{} = ctx, %Tank{} = tank, %__MODULE__{} = environment) do
     if function_exported?(environment.__module__, :handle_off, 2) do
       environment.__module__.handle_off(ctx, tank) |> BattleCity.parse_result(ctx, tank)

@@ -16,8 +16,8 @@ defmodule BattleCity.PowerUp do
     duration: Config.power_up_duration()
   ]
 
-  @callback handle_on(Context.t(), Tank.t()) :: BattleCity.inner_callback_result()
-  @callback handle_off(Context.t(), Tank.t()) :: BattleCity.inner_callback_result()
+  @callback handle_on(Context.t(), Tank.t()) :: BattleCity.inner_callback_tank_result()
+  @callback handle_off(Context.t(), Tank.t()) :: BattleCity.inner_callback_tank_result()
   @optional_callbacks handle_off: 2
 
   defmacro __using__(opt \\ []) do
@@ -32,12 +32,12 @@ defmodule BattleCity.PowerUp do
     end
   end
 
-  @spec on(Context.t(), Tank.t(), __MODULE__.t()) :: BattleCity.callback_result()
+  @spec on(Context.t(), Tank.t(), __MODULE__.t()) :: BattleCity.callback_tank_result()
   def on(%Context{} = ctx, %Tank{} = tank, %__MODULE__{} = powerup) do
     powerup.__module__.handle_on(ctx, tank) |> BattleCity.parse_result(ctx, tank)
   end
 
-  @spec off(Context.t(), Tank.t(), __MODULE__.t()) :: BattleCity.callback_result()
+  @spec off(Context.t(), Tank.t(), __MODULE__.t()) :: BattleCity.callback_tank_result()
   def off(%Context{} = ctx, %Tank{} = tank, %__MODULE__{} = powerup) do
     if function_exported?(powerup.__module__, :handle_off, 2) do
       powerup.__module__.handle_off(ctx, tank) |> BattleCity.parse_result(ctx, tank)

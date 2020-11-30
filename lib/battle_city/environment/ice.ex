@@ -7,12 +7,12 @@ defmodule BattleCity.Environment.Ice do
     allow_destroy: false
 
   @impl true
-  def handle_on(_, %Tank{tank: %{move_speed: move_speed} = tank} = t) do
+  def handle_enter(_, %Tank{tank: %{move_speed: move_speed} = tank} = t) do
     %{t | tank: %{tank | move_speed: move_speed + 10}}
   end
 
   @impl true
-  def handle_off(_, %Tank{tank: %{move_speed: move_speed} = tank} = t) do
+  def handle_leave(_, %Tank{tank: %{move_speed: move_speed} = tank} = t) do
     %{t | tank: %{tank | move_speed: move_speed - 10}}
   end
 end
