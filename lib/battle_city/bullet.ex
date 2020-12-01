@@ -7,14 +7,16 @@ defmodule BattleCity.Bullet do
           speed: integer,
           position: Position.t(),
           id: BattleCity.id(),
-          tank_id: BattleCity.id()
+          tank_id: BattleCity.id(),
+          event_id: BattleCity.id()
         }
 
-  @enforce_keys [:direction, :speed, :position]
+  @enforce_keys [:id, :speed, :position, :tank_id, :event_id]
   defstruct [
     :speed,
     :position,
     :id,
-    :tank_id
+    :tank_id,
+    :event_id
   ]
 end

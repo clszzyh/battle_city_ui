@@ -8,4 +8,21 @@ defmodule BattleCity.Utils do
       _ -> false
     end
   end
+
+  def random(length \\ 20) do
+    length
+    |> :crypto.strong_rand_bytes()
+    |> Base.url_encode64()
+    |> binary_part(0, length)
+  end
+
+  @chars "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890abcdefghijklmnopqrstuvwxyz" |> String.split("")
+
+  def random_hex(length \\ 20) do
+    1..length
+    |> Enum.reduce([], fn _i, acc ->
+      [Enum.random(@chars) | acc]
+    end)
+    |> Enum.join("")
+  end
 end

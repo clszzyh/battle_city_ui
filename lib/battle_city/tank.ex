@@ -6,6 +6,7 @@ defmodule BattleCity.Tank do
   alias BattleCity.Context
   alias BattleCity.Event
   alias BattleCity.Position
+  alias BattleCity.Utils
   alias __MODULE__
 
   defmodule Base do
@@ -38,8 +39,7 @@ defmodule BattleCity.Tank do
     use BattleCity.StructCollect
 
     @callback handle_level_up(Tank.t()) :: module()
-    @callback handle_bullet(Bullet.t()) :: Bullet.t()
-    @optional_callbacks handle_bullet: 1
+    @callback handle_bullet(Tank.t(), Event.t()) :: Bullet.t()
 
     defmacro __using__(opt \\ []) do
       obj = struct!(__MODULE__, opt)
@@ -49,6 +49,9 @@ defmodule BattleCity.Tank do
 
         @impl true
         def handle_level_up(_), do: nil
+
+        @impl true
+        def handle_bullet(tank, event), do: Tank.default_handle_bullet(tank, event)
 
         init_ast(unquote(__MODULE__), __MODULE__, unquote(Macro.escape(obj)))
       end
@@ -74,7 +77,7 @@ defmodule BattleCity.Tank do
           dead?: boolean()
         }
 
-  @enforce_keys [:meta]
+  @enforce_keys [:meta, :__module__, :id, :position]
   defstruct [
     :__module__,
     :meta,
@@ -91,6 +94,20 @@ defmodule BattleCity.Tank do
     freezed?: false,
     lifes: Config.life_count()
   ]
+
+  @spec default_handle_bullet(__MODULE__.t(), Event.t()) :: Bullet.t()
+  def default_handle_bullet(
+        %__MODULE__{id: tank_id, meta: %{bullet_speed: speed}},
+        %Event{id: event_id, position: position}
+      ) do
+    %Bullet{
+      id: Utils.random(),
+      position: position,
+      tank_id: tank_id,
+      event_id: event_id,
+      speed: speed
+    }
+  end
 
   @spec levelup(Context.t(), __MODULE__.t()) :: __MODULE__.t()
   def levelup(_, %__MODULE__{__module__: module} = target) do
