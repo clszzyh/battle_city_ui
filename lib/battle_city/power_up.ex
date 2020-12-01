@@ -25,6 +25,7 @@ defmodule BattleCity.PowerUp do
     obj = struct!(__MODULE__, opt)
 
     quote location: :keep do
+      alias BattleCity.Business
       alias BattleCity.Context
       alias BattleCity.Tank
 
