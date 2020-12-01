@@ -48,12 +48,12 @@ defmodule BattleCity.Compile do
   defp parse_map(o) do
     result = o |> String.split(" ", trim: true)
     unless Enum.count(result) == 13, do: raise("#{o}'s length should be 13.")
-    result |> Enum.map(&parse_map_1/1) |> List.to_tuple()
+    result |> Enum.map(&parse_map_1/1)
   end
 
   defp parse_map_1(o) do
     {prefix, suffix} = parse_map_2(o)
-    {Map.fetch!(@environment_map, prefix), suffix}
+    Map.fetch!(@environment_map, prefix).new(suffix)
   end
 
   defp parse_map_2(<<prefix::binary-size(1), suffix::binary-size(1)>>), do: {prefix, suffix}

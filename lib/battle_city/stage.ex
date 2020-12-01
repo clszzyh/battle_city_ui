@@ -2,9 +2,9 @@ defmodule BattleCity.Stage do
   @moduledoc false
 
   alias BattleCity.Compile
-  # alias BattleCity.Environment
+  alias BattleCity.Environment
 
-  @typep map_data :: [term()]
+  @typep map_data :: [[Environment.t()]]
   @typep bot :: {atom(), integer()}
 
   @type t :: %__MODULE__{

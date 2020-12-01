@@ -4,19 +4,23 @@ defmodule BattleCity.Environment do
   alias BattleCity.Bullet
   alias BattleCity.Context
   alias BattleCity.Tank
+  alias __MODULE__
 
   @type health :: integer() | :infinite
+  @type shape :: nil | binary()
 
   @type t :: %__MODULE__{
           __module__: module(),
           enter?: boolean(),
-          health: health
+          health: health,
+          shape: shape
         }
 
   defstruct [
     :__module__,
     enter?: false,
-    health: 0
+    health: 0,
+    shape: nil
   ]
 
   @callback handle_enter(Context.t(), Tank.t()) :: BattleCity.inner_callback_tank_result()
@@ -37,8 +41,10 @@ defmodule BattleCity.Environment do
 
       unquote(ast)
 
-      @spec new :: unquote(__MODULE__).t
-      def new, do: @obj
+      @spec new(Environment.shape()) :: unquote(__MODULE__).t
+      def new(shape \\ nil)
+      def new(nil), do: @obj
+      def new(shape), do: Map.put(@obj, :shape, shape)
 
       defoverridable unquote(__MODULE__)
     end
