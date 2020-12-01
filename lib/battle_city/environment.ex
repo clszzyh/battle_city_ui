@@ -10,6 +10,7 @@ defmodule BattleCity.Environment do
 
   @type t :: %__MODULE__{
           __module__: module(),
+          id: BattleCity.id(),
           enter?: boolean(),
           health: health,
           shape: shape
@@ -18,6 +19,7 @@ defmodule BattleCity.Environment do
   @enforce_keys [:enter?, :health]
   defstruct [
     :__module__,
+    :id,
     enter?: false,
     health: 0,
     shape: nil
