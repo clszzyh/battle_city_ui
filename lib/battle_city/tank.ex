@@ -3,6 +3,9 @@ defmodule BattleCity.Tank do
 
   alias BattleCity.Bullet
   alias BattleCity.Config
+  alias BattleCity.Context
+  alias BattleCity.Event
+  alias BattleCity.Position
   alias __MODULE__
 
   defmodule Base do
@@ -21,13 +24,15 @@ defmodule BattleCity.Tank do
             bullet_speed: bullet_speed()
           }
 
+    @enforce_keys [:level, :points, :health, :move_speed, :bullet_speed]
+
     defstruct [
       :__module__,
+      :level,
       :points,
       :health,
       :move_speed,
-      :bullet_speed,
-      level: 1
+      :bullet_speed
     ]
 
     use BattleCity.StructCollect
@@ -53,9 +58,11 @@ defmodule BattleCity.Tank do
   @type reason :: atom()
 
   @type t :: %__MODULE__{
+          __module__: module(),
           meta: Base.t(),
           id: BattleCity.id(),
           killer: BattleCity.id(),
+          position: Position.t(),
           lifes: integer(),
           score: integer(),
           reason: reason(),
@@ -63,29 +70,47 @@ defmodule BattleCity.Tank do
           hiden?: boolean(),
           shield?: boolean(),
           freezed?: boolean(),
+          shootable?: boolean(),
           dead?: boolean()
         }
 
   @enforce_keys [:meta]
   defstruct [
+    :__module__,
     :meta,
     :id,
     :reason,
     :killer,
+    :position,
     score: 0,
     dead?: false,
     shield?: false,
     enemy?: true,
+    shootable?: true,
     hiden?: false,
     freezed?: false,
     lifes: Config.life_count()
   ]
 
-  @spec levelup(__MODULE__.t()) :: __MODULE__.t()
-  def levelup(%__MODULE__{meta: %{__module__: module}} = target) do
+  @spec levelup(Context.t(), __MODULE__.t()) :: __MODULE__.t()
+  def levelup(_, %__MODULE__{__module__: module} = target) do
     case module.handle_level_up(target) do
       nil -> target
-      level_up_module -> %{target | meta: level_up_module.init([])}
+      level_up_module -> %{target | __module__: level_up_module, meta: level_up_module.init([])}
     end
+  end
+
+  @spec operate(Context.t(), __MODULE__.t(), Event.t()) :: BattleCity.invoke_result()
+  def operate(_, %__MODULE__{shootable?: false}, %Event{name: :shoot}) do
+    {:error, :disabled}
+  end
+
+  def operate(
+        %Context{} = ctx,
+        %__MODULE__{__module__: module} = tank,
+        %Event{name: :shoot} = event
+      ) do
+    %Bullet{} = _bullet = module.handle_bullet(tank, event)
+    ctx
   end
 end

@@ -1,6 +1,5 @@
 defmodule BattleCity.PowerUp do
-  @moduledoc """
-  """
+  @moduledoc false
 
   alias BattleCity.Config
   alias BattleCity.Context

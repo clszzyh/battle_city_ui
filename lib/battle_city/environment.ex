@@ -15,6 +15,7 @@ defmodule BattleCity.Environment do
           shape: shape
         }
 
+  @enforce_keys [:enter?, :health]
   defstruct [
     :__module__,
     enter?: false,

@@ -4,7 +4,7 @@ defmodule BattleCity.PowerUp.Star do
   use BattleCity.PowerUp
 
   @impl true
-  def handle_on(%Context{}, %Tank{} = tank) do
-    Tank.levelup(tank)
+  def handle_on(%Context{} = ctx, %Tank{} = tank) do
+    Tank.levelup(ctx, tank)
   end
 end

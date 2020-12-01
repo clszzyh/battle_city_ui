@@ -1,18 +1,19 @@
 defmodule BattleCity.Bullet do
   @moduledoc false
 
-  @type direction :: :up | :down | :left | :right
+  alias BattleCity.Position
 
   @type t :: %__MODULE__{
           speed: integer,
-          direction: direction,
+          position: Position.t(),
           id: BattleCity.id(),
           tank_id: BattleCity.id()
         }
 
+  @enforce_keys [:direction, :speed, :position]
   defstruct [
     :speed,
-    :direction,
+    :position,
     :id,
     :tank_id
   ]

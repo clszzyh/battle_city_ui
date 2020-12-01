@@ -21,6 +21,8 @@ defmodule BattleCity do
           {Context.t(), Bullet.t()} | Context.t() | Bullet.t() | {:error, atom()} | :ignored
   @type callback_bullet_result :: {Context.t(), Bullet.t()}
 
+  @type invoke_result :: {:error, atom()} | Context.t()
+
   @spec parse_result(inner_callback_tank_result, Context.t(), Tank.t()) :: callback_tank_result
   def parse_result(%Context{} = ctx, _, %Tank{} = tank), do: {ctx, tank}
   def parse_result(%Tank{} = tank, %Context{} = ctx, _), do: {ctx, tank}

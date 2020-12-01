@@ -16,6 +16,7 @@ defmodule BattleCity.Stage do
         }
 
   @derive {Inspect, except: [:map]}
+  @enforce_keys [:name, :difficulty, :map, :bots]
   defstruct [
     :__module__,
     :name,
