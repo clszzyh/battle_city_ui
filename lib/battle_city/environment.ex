@@ -9,15 +9,14 @@ defmodule BattleCity.Environment do
 
   @type t :: %__MODULE__{
           __module__: module(),
-          allow_pass_tank: boolean(),
+          enter?: boolean(),
           health: health
         }
 
-  @enforce_keys [:__module__]
   defstruct [
     :__module__,
-    allow_pass_tank: false,
-    health: :infinite
+    enter?: false,
+    health: 0
   ]
 
   @callback handle_enter(Context.t(), Tank.t()) :: BattleCity.inner_callback_tank_result()
@@ -27,19 +26,16 @@ defmodule BattleCity.Environment do
   @optional_callbacks handle_enter: 2, handle_leave: 2, handle_hit: 2
 
   defmacro __using__(opt \\ []) do
+    obj = struct!(__MODULE__, opt)
+    ast = generate_ast(obj)
+
     quote location: :keep do
       @behaviour unquote(__MODULE__)
       alias BattleCity.Tank
 
-      @obj struct!(unquote(__MODULE__), Keyword.put(unquote(opt), :__module__, __MODULE__))
+      @obj Map.put(unquote(Macro.escape(obj)), :__module__, __MODULE__)
 
-      unless @obj.allow_pass_tank do
-        def handle_enter(_, _), do: {:error, :forbidden}
-      end
-
-      if @obj.health == :infinite do
-        def handle_hit(_, _), do: {:error, :ignored}
-      end
+      unquote(ast)
 
       @spec new :: unquote(__MODULE__).t
       def new, do: @obj
@@ -63,6 +59,42 @@ defmodule BattleCity.Environment do
       environment.__module__.handle_off(ctx, tank) |> BattleCity.parse_result(ctx, tank)
     else
       {ctx, tank}
+    end
+  end
+
+  defp generate_ast(%__MODULE__{health: :infinite, enter?: false}) do
+    quote do
+      @impl true
+      def handle_hit(_, _), do: :ignored
+      @impl true
+      def handle_enter(_, _), do: {:error, :forbidden}
+    end
+  end
+
+  defp generate_ast(%__MODULE__{health: 0, enter?: false}) do
+    quote do
+      @impl true
+      def handle_hit(_, _), do: :ignored
+      @impl true
+      def handle_enter(_, _), do: {:error, :forbidden}
+    end
+  end
+
+  defp generate_ast(%__MODULE__{health: 0, enter?: true}) do
+    quote do
+      @impl true
+      def handle_hit(_, _), do: :ignored
+      @impl true
+      def handle_enter(_, _), do: :ignored
+    end
+  end
+
+  defp generate_ast(%__MODULE__{health: health, enter?: false}) when health > 0 do
+    quote do
+      @impl true
+      def handle_hit(_, _), do: :ignored
+      @impl true
+      def handle_enter(_, _), do: :ignored
     end
   end
 end

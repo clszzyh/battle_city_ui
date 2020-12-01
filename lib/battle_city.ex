@@ -14,15 +14,17 @@ defmodule BattleCity do
   @type tank_id :: binary()
 
   @type inner_callback_tank_result ::
-          {Context.t(), Tank.t()} | Context.t() | Tank.t() | {:error, atom()}
+          {Context.t(), Tank.t()} | Context.t() | Tank.t() | {:error, atom()} | :ignored
   @type callback_tank_result :: {Context.t(), Tank.t()}
 
   @type inner_callback_bullet_result ::
-          {Context.t(), Bullet.t()} | Context.t() | Bullet.t() | {:error, atom()}
+          {Context.t(), Bullet.t()} | Context.t() | Bullet.t() | {:error, atom()} | :ignored
   @type callback_bullet_result :: {Context.t(), Bullet.t()}
 
   @spec parse_result(inner_callback_tank_result, Context.t(), Tank.t()) :: callback_tank_result
   def parse_result(%Context{} = ctx, _, %Tank{} = tank), do: {ctx, tank}
   def parse_result(%Tank{} = tank, %Context{} = ctx, _), do: {ctx, tank}
   def parse_result({%Context{} = ctx, %Tank{} = tank}, _, _), do: {ctx, tank}
+  def parse_result(:ignored, ctx, tank), do: {ctx, tank}
+  def parse_result({:error, _reason}, ctx, tank), do: {ctx, tank}
 end

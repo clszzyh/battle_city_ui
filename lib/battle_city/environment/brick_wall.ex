@@ -2,6 +2,6 @@ defmodule BattleCity.Environment.BrickWall do
   @moduledoc false
 
   use BattleCity.Environment,
-    allow_pass_tank: false,
+    enter?: false,
     health: :infinite
 end

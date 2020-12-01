@@ -3,5 +3,5 @@ defmodule BattleCity.Environment.Water do
 
   use BattleCity.Environment,
     health: 0,
-    allow_pass_tank: true
+    enter?: false
 end
