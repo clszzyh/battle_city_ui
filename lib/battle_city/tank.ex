@@ -54,7 +54,7 @@ defmodule BattleCity.Tank do
   @type reason :: atom()
 
   @type t :: %__MODULE__{
-          tank: Base.t(),
+          meta: Base.t(),
           id: BattleCity.id(),
           killer: BattleCity.id(),
           lifes: integer(),
@@ -68,7 +68,7 @@ defmodule BattleCity.Tank do
         }
 
   defstruct [
-    :tank,
+    :meta,
     :id,
     :reason,
     :killer,
@@ -82,10 +82,10 @@ defmodule BattleCity.Tank do
   ]
 
   @spec levelup(__MODULE__.t()) :: __MODULE__.t()
-  def levelup(%__MODULE__{tank: %{__module__: module}} = target) do
+  def levelup(%__MODULE__{meta: %{__module__: module}} = target) do
     case module.handle_level_up(target) do
       nil -> target
-      level_up_module -> %{target | tank: level_up_module.new}
+      level_up_module -> %{target | meta: level_up_module.new}
     end
   end
 end

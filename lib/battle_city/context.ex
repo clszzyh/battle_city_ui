@@ -61,7 +61,7 @@ defmodule BattleCity.Context do
 
   defp reduce_op(
          :kill,
-         %Tank{tank: %{points: points}} = target,
+         %Tank{meta: %{points: points}} = target,
          %__MODULE__{} = ctx,
          %Tank{id: id} = tank,
          reason

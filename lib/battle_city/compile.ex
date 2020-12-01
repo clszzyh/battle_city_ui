@@ -41,7 +41,7 @@ defmodule BattleCity.Compile do
 
     ast =
       quote location: :keep do
-        use BattleCity.Stage,
+        use BattleCity.Stage.Base,
           name: unquote(name),
           difficulty: unquote(difficulty),
           map: unquote(map),
