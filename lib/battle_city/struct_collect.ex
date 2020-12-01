@@ -1,6 +1,8 @@
 defmodule BattleCity.StructCollect do
   @moduledoc false
 
+  alias BattleCity.Utils
+
   defmacro __using__(_env) do
     quote do
       import unquote(__MODULE__)
@@ -16,7 +18,9 @@ defmodule BattleCity.StructCollect do
     end
   end
 
-  defmacro init_ast(behaviour_module, current_module, keyword) do
+  defmacro init_ast(behaviour_module, current_module, keyword) when is_atom(behaviour_module) do
+    has_id? = Map.has_key?(behaviour_module.__struct__(), :id)
+
     quote do
       @obj Map.put(unquote(keyword), :__module__, unquote(current_module))
 
@@ -24,7 +28,12 @@ defmodule BattleCity.StructCollect do
 
       @spec init(map()) :: unquote(behaviour_module).t
       def init(map \\ %{}) do
-        map
+        unquote(has_id?)
+        |> if do
+          Map.put(map, :id, Utils.random())
+        else
+          map
+        end
         |> handle_init
         |> case do
           %{} = map -> Enum.into(map, @obj)
