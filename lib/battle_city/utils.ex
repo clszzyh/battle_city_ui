@@ -12,11 +12,11 @@ defmodule BattleCity.Utils do
   def random(length \\ 20) do
     length
     |> :crypto.strong_rand_bytes()
-    |> Base.url_encode64()
+    |> Base.url_encode64(padding: false)
     |> binary_part(0, length)
   end
 
-  @chars "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890abcdefghijklmnopqrstuvwxyz" |> String.split("")
+  @chars for(x <- ?A..?Z, do: <<x>>) ++ for(x <- ?a..?z, do: <<x>>) ++ for(x <- ?0..?9, do: <<x>>)
 
   def random_hex(length \\ 20) do
     1..length
