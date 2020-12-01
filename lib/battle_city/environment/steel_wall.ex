@@ -20,5 +20,5 @@ defmodule BattleCity.Environment.SteelWall do
     %{stage: stage, health: @health_map[stage]}
   end
 
-  def handle_init(map), do: raise(CompileError, description: "Error #{inspect(map)}")
+  def handle_init(_), do: {:error, :not_found}
 end

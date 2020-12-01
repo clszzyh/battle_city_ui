@@ -1,7 +1,7 @@
 defmodule BattleCity.PowerUp.Shovel do
   @moduledoc false
 
-  use BattleCity.PowerUp, duration: :instant
+  use BattleCity.PowerUp
 
   @impl true
   def handle_on(%Context{} = ctx, %Tank{}) do

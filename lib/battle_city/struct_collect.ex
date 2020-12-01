@@ -5,7 +5,7 @@ defmodule BattleCity.StructCollect do
     quote do
       import unquote(__MODULE__)
 
-      @callback handle_init(map()) :: map()
+      @callback handle_init(map()) :: map() | {:error, :atom}
 
       defimpl Collectable do
         def into(o), do: {o, &into_callback/2}
@@ -24,7 +24,12 @@ defmodule BattleCity.StructCollect do
 
       @spec init(map()) :: unquote(behaviour_module).t
       def init(map \\ %{}) do
-        map |> handle_init |> Enum.into(@obj)
+        map
+        |> handle_init
+        |> case do
+          %{} = map -> Enum.into(map, @obj)
+          {:error, reason} -> raise CompileError, description: "#{inspect(map)} #{reason}"
+        end
       end
 
       @impl true
