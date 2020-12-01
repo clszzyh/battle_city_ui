@@ -24,19 +24,11 @@ defmodule BattleCity.PowerUp do
 
   defmacro __using__(opt \\ []) do
     quote location: :keep do
-      @behaviour unquote(__MODULE__)
       alias BattleCity.Context
       alias BattleCity.Tank
 
       @obj struct!(unquote(__MODULE__), Keyword.put(unquote(opt), :__module__, __MODULE__))
-
-      @impl true
-      def init, do: @obj
-
-      @impl true
-      def init(keyword), do: Enum.into(keyword, @obj)
-
-      defoverridable unquote(__MODULE__)
+      init_ast(unquote(__MODULE__), @obj)
     end
   end
 

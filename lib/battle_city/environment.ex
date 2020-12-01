@@ -39,15 +39,7 @@ defmodule BattleCity.Environment do
       @obj Map.put(unquote(Macro.escape(obj)), :__module__, __MODULE__)
       unquote(ast)
 
-      @behaviour unquote(__MODULE__)
-
-      @impl true
-      def init, do: @obj
-
-      @impl true
-      def init(keyword), do: Enum.into(keyword, @obj)
-
-      defoverridable unquote(__MODULE__)
+      init_ast(unquote(__MODULE__), @obj)
     end
   end
 

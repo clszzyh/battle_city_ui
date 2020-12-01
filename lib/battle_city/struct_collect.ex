@@ -17,7 +17,7 @@ defmodule BattleCity.StructCollect do
     end
   end
 
-  defmacro init_ast(module, o) when is_atom(module) and is_map(o) do
+  defmacro init_ast(module, o) do
     quote do
       @behaviour unquote(module)
 
