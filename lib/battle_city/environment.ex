@@ -36,10 +36,9 @@ defmodule BattleCity.Environment do
 
     quote location: :keep do
       alias BattleCity.Tank
-      @obj Map.put(unquote(Macro.escape(obj)), :__module__, __MODULE__)
       unquote(ast)
 
-      init_ast(unquote(__MODULE__), @obj)
+      init_ast(unquote(__MODULE__), __MODULE__, unquote(Macro.escape(obj)))
     end
   end
 

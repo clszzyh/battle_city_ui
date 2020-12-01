@@ -30,9 +30,7 @@ defmodule BattleCity.Stage do
     obj = struct!(__MODULE__, Compile.validate_stage!(Map.new(opt)))
 
     quote location: :keep do
-      @obj Map.put(unquote(Macro.escape(obj)), :__module__, __MODULE__)
-
-      init_ast(unquote(__MODULE__), @obj)
+      init_ast(unquote(__MODULE__), __MODULE__, unquote(Macro.escape(obj)))
     end
   end
 end

@@ -17,17 +17,19 @@ defmodule BattleCity.StructCollect do
     end
   end
 
-  defmacro init_ast(module, o) do
+  defmacro init_ast(behaviour_module, current_module, keyword) do
     quote do
-      @behaviour unquote(module)
+      @obj Map.put(unquote(keyword), :__module__, unquote(current_module))
+
+      @behaviour unquote(behaviour_module)
 
       @impl true
-      def init, do: unquote(o)
+      def init, do: @obj
 
       @impl true
-      def init(keyword), do: Enum.into(keyword, unquote(o))
+      def init(keyword), do: Enum.into(keyword, @obj)
 
-      defoverridable unquote(module)
+      defoverridable unquote(behaviour_module)
     end
   end
 end

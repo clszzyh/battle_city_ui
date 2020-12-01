@@ -37,14 +37,15 @@ defmodule BattleCity.Tank do
     @optional_callbacks handle_bullet: 1
 
     defmacro __using__(opt \\ []) do
+      obj = struct!(__MODULE__, opt)
+
       quote location: :keep do
         alias BattleCity.Tank
 
-        @obj struct!(unquote(__MODULE__), Keyword.put(unquote(opt), :__module__, __MODULE__))
-
         @impl true
         def handle_level_up(_), do: nil
-        init_ast(unquote(__MODULE__), @obj)
+
+        init_ast(unquote(__MODULE__), __MODULE__, unquote(Macro.escape(obj)))
       end
     end
   end

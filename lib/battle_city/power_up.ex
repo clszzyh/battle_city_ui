@@ -10,7 +10,7 @@ defmodule BattleCity.PowerUp do
 
   @type t :: %__MODULE__{__module__: module(), duration: duration()}
 
-  @enforce_keys [:__module__]
+  @enforce_keys []
   defstruct [
     :__module__,
     duration: Config.power_up_duration()
@@ -23,12 +23,13 @@ defmodule BattleCity.PowerUp do
   @optional_callbacks handle_off: 2
 
   defmacro __using__(opt \\ []) do
+    obj = struct!(__MODULE__, opt)
+
     quote location: :keep do
       alias BattleCity.Context
       alias BattleCity.Tank
 
-      @obj struct!(unquote(__MODULE__), Keyword.put(unquote(opt), :__module__, __MODULE__))
-      init_ast(unquote(__MODULE__), @obj)
+      init_ast(unquote(__MODULE__), __MODULE__, unquote(Macro.escape(obj)))
     end
   end
 
