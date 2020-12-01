@@ -10,15 +10,13 @@ defmodule BattleCity.Context do
           rest_enemies: integer,
           shovel?: boolean,
           stage: Stage.t(),
-          players: %{BattleCity.id() => Tank.t()},
-          enemies: %{BattleCity.id() => Tank.t()},
+          tanks: %{BattleCity.id() => Tank.t()},
           bullets: %{BattleCity.id() => Bullet.t()}
         }
 
   defstruct [
     :stage,
-    :players,
-    :enemies,
+    :tanks,
     :bullets,
     rest_enemies: Config.rest_enemies(),
     shovel?: false
@@ -30,27 +28,31 @@ defmodule BattleCity.Context do
 
   @spec handle_all_enemies(__MODULE__.t(), Tank.t(), {op, reason}) :: __MODULE__.t()
   def handle_all_enemies(
-        %__MODULE__{players: players, enemies: enemies} = ctx,
-        %Tank{enemy?: enemy?, id: id} = tank,
+        %__MODULE__{tanks: tanks} = ctx,
+        %Tank{id: id} = tank,
         {op, reason}
       ) do
-    tanks = if enemy?, do: players, else: enemies
-
     {tanks, {ctx, tank}} =
       Enum.map_reduce(tanks, {ctx, tank}, fn {_id, target}, {ctx, tank} ->
         reduce_op(op, target, ctx, tank, reason)
       end)
 
-    tanks = Enum.into(tanks, %{}, &{&1.id, &1})
+    tanks = Enum.into(tanks, %{}, &{&1.id, &1}) |> Map.put(id, tank)
 
-    if enemy? do
-      %{ctx | players: tanks, enemies: Map.put(enemies, id, tank)}
-    else
-      %{ctx | players: Map.put(players, id, tank), enemies: tanks}
-    end
+    %{ctx | tanks: tanks}
   end
 
   @spec reduce_op(op, Tank.t(), __MODULE__.t(), Tank.t(), reason) :: reduce_map_result
+  defp reduce_op(
+         _,
+         %Tank{enemy?: enemy?} = target,
+         %__MODULE__{} = ctx,
+         %Tank{enemy?: enemy?} = tank,
+         _
+       ) do
+    {target, {ctx, tank}}
+  end
+
   defp reduce_op(:stop, %Tank{} = target, %__MODULE__{} = ctx, tank, _) do
     {%{target | freezed?: true}, {ctx, tank}}
   end

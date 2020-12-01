@@ -106,11 +106,16 @@ defmodule BattleCity.Tank do
   end
 
   def operate(
-        %Context{} = ctx,
-        %__MODULE__{__module__: module} = tank,
+        %Context{bullets: bullets, tanks: tanks} = ctx,
+        %__MODULE__{__module__: module, id: tank_id} = tank,
         %Event{name: :shoot} = event
       ) do
-    %Bullet{} = _bullet = module.handle_bullet(tank, event)
-    ctx
+    %Bullet{id: bullet_id} = bullet = module.handle_bullet(tank, event)
+
+    %{
+      ctx
+      | bullets: Map.put(bullets, bullet_id, bullet),
+        tanks: Map.put(tanks, tank_id, %{tank | shootable?: false})
+    }
   end
 end
