@@ -25,6 +25,21 @@ defmodule BattleCity.Compile do
     "E" => Environment.Home
   }
 
+  @suffix_map %{
+    nil => nil,
+    "3" => "3",
+    "4" => "4",
+    "5" => "5",
+    "8" => "8",
+    "a" => "a",
+    "c" => "c",
+    "f" => "f",
+    "A" => "a",
+    "C" => "c",
+    "E" => "e",
+    "F" => "f"
+  }
+
   paths = Path.wildcard(@stage_path)
   paths_hash = :erlang.md5(paths)
 
@@ -53,7 +68,7 @@ defmodule BattleCity.Compile do
 
   defp parse_map_1(o) when is_binary(o) do
     {prefix, suffix} = parse_map_2(o)
-    Map.fetch!(@environment_map, prefix).init(stage: suffix)
+    Map.fetch!(@environment_map, prefix).init(stage: Map.fetch!(@suffix_map, suffix))
   end
 
   defp parse_map_2(<<prefix::binary-size(1), suffix::binary-size(1)>>), do: {prefix, suffix}
