@@ -3,7 +3,6 @@ defmodule BattleCity.Tank do
 
   alias BattleCity.Bullet
   alias BattleCity.Config
-  alias BattleCity.Context
   alias BattleCity.Event
   alias BattleCity.Position
   alias BattleCity.Utils
@@ -109,31 +108,5 @@ defmodule BattleCity.Tank do
       event_id: event_id,
       speed: speed
     }
-  end
-
-  @spec operate(Context.t(), __MODULE__.t(), Event.t()) :: BattleCity.invoke_result()
-  def operate(_, %__MODULE__{dead?: true}, _) do
-    {:error, :dead}
-  end
-
-  def operate(_, %__MODULE__{freezed?: true}, %Event{name: :move}) do
-    {:error, :freezed}
-  end
-
-  def operate(%Context{} = ctx, %__MODULE__{} = tank, %Event{name: :move}) do
-    ctx |> Context.put_tank(%{tank | moving?: true})
-  end
-
-  def operate(_, %__MODULE__{shootable?: false}, %Event{name: :shoot}) do
-    {:error, :disabled}
-  end
-
-  def operate(
-        %Context{} = ctx,
-        %__MODULE__{__module__: module} = tank,
-        %Event{name: :shoot} = event
-      ) do
-    bullet = module.handle_bullet(tank, event)
-    ctx |> Context.put_tank(%{tank | shootable?: false}) |> Context.put_bullet(bullet)
   end
 end

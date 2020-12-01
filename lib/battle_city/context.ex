@@ -22,9 +22,6 @@ defmodule BattleCity.Context do
     shovel?: false
   ]
 
-  @type op :: :kill | :stop | :resume
-  @type reason :: atom
-
   @spec put_tank({__MODULE__.t(), Tank.t()}) :: __MODULE__.t()
   def put_tank({%__MODULE__{} = ctx, %Tank{} = tank}) do
     put_tank(ctx, tank)
