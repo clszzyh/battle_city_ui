@@ -5,8 +5,7 @@ defmodule BattleCity.StructCollect do
     quote do
       import unquote(__MODULE__)
 
-      @callback init :: t()
-      @callback init(keyword) :: t()
+      @callback handle_init(map()) :: map()
 
       defimpl Collectable do
         def into(o), do: {o, &into_callback/2}
@@ -23,11 +22,13 @@ defmodule BattleCity.StructCollect do
 
       @behaviour unquote(behaviour_module)
 
-      @impl true
-      def init, do: @obj
+      @spec init(map()) :: unquote(behaviour_module).t
+      def init(map \\ %{}) do
+        map |> handle_init |> Enum.into(@obj)
+      end
 
       @impl true
-      def init(keyword), do: Enum.into(keyword, @obj)
+      def handle_init(map), do: map
 
       defoverridable unquote(behaviour_module)
     end

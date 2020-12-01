@@ -28,7 +28,7 @@ defmodule BattleCity.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
-      preferred_cli_env: [ci: :test],
+      preferred_cli_env: [ci: :test, dialyzer: :test],
       dialyzer: [
         plt_core_path: "priv/plts",
         plt_add_deps: :transitive,
