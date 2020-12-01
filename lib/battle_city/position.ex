@@ -17,7 +17,17 @@ defmodule BattleCity.Position do
             x: 0,
             y: 0
 
-  def init(map \\ %{}) do
+  def init(map \\ %{})
+
+  def init(%{direction: :random} = map) do
+    init(%{map | direction: random_diretion()})
+  end
+
+  def init(map) do
     struct!(__MODULE__, Map.take(map, @keys))
+  end
+
+  defp random_diretion do
+    Enum.random([:up, :down, :left, :right])
   end
 end

@@ -19,7 +19,7 @@ defmodule BattleCity.Business.Bot do
 
   @spec add_bot(Context.t(), time(), map()) :: Context.t()
   def add_bot(%Context{stage: %{bots: bots} = stage} = ctx, time, opts) when time in @times do
-    opts = Map.merge(opts, %{enemy?: true, lifes: 1, direction: :down})
+    opts = Map.merge(opts, %{enemy?: true, lifes: 1, direction: :random})
     {tanks, bots} = generate(bots, @times_map[time], opts)
     %{ctx | stage: %{stage | bots: bots}} |> Context.put_tank(tanks)
   end
