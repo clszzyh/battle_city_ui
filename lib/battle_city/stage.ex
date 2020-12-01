@@ -5,14 +5,14 @@ defmodule BattleCity.Stage do
   alias BattleCity.Environment
 
   @typep map_data :: [[Environment.t()]]
-  @typep bot :: {atom(), integer()}
+  @type bots :: [{atom(), integer()}]
 
   @type t :: %__MODULE__{
           __module__: module,
           name: binary(),
           difficulty: integer(),
           map: map_data,
-          bots: [bot]
+          bots: bots
         }
 
   @derive {Inspect, except: [:map]}
