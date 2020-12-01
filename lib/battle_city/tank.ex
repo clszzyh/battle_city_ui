@@ -40,11 +40,12 @@ defmodule BattleCity.Tank do
     @callback handle_level_up(Tank.t()) :: module()
     @callback handle_bullet(Tank.t(), Event.t()) :: Bullet.t()
 
-    # @callback new() :: Tank.t()
-    # @callback new(map) :: Tank.t()
+    @callback new() :: Tank.t()
+    @callback new(map) :: Tank.t()
 
     defmacro __using__(opt \\ []) do
       obj = struct!(__MODULE__, opt)
+      keys = Map.keys(Tank.__struct__())
 
       quote location: :keep do
         alias BattleCity.Tank
@@ -55,10 +56,17 @@ defmodule BattleCity.Tank do
         @impl true
         def handle_bullet(tank, event), do: Tank.default_handle_bullet(tank, event)
 
-        # @impl true
-        # def new(map \\ %{}) do
-        #   %Tank{__module__: __MODULE__, meta: init(map), position: %Position{}}
-        # end
+        @impl true
+        def new(map \\ %{}) do
+          data = %{
+            __module__: __MODULE__,
+            meta: init(map),
+            id: Utils.random(),
+            position: %Position{}
+          }
+
+          struct!(Tank, map |> Map.take(unquote(keys)) |> Map.merge(data))
+        end
 
         init_ast(unquote(__MODULE__), __MODULE__, unquote(Macro.escape(obj)))
       end

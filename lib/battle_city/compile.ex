@@ -68,7 +68,7 @@ defmodule BattleCity.Compile do
 
   defp parse_map_1(o) when is_binary(o) do
     {prefix, suffix} = parse_map_2(o)
-    Map.fetch!(@environment_map, prefix).init(%{stage: Map.fetch!(@suffix_map, suffix)})
+    Map.fetch!(@environment_map, prefix).init(%{shape: Map.fetch!(@suffix_map, suffix)})
   end
 
   defp parse_map_2(<<prefix::binary-size(1), suffix::binary-size(1)>>), do: {prefix, suffix}

@@ -5,7 +5,7 @@ defmodule BattleCity.Environment.SteelWall do
     health: 4,
     enter?: false
 
-  @health_map %{
+  @shape_map %{
     "f" => 1,
     "3" => 2,
     "c" => 3,
@@ -13,11 +13,11 @@ defmodule BattleCity.Environment.SteelWall do
     "a" => 5
   }
 
-  @stages Map.keys(@health_map)
+  @shapes Map.keys(@shape_map)
 
   @impl true
-  def handle_init(%{stage: stage}) when stage in @stages do
-    %{stage: stage, health: @health_map[stage]}
+  def handle_init(%{shape: shape}) when shape in @shapes do
+    %{shape: shape, health: @shape_map[shape]}
   end
 
   def handle_init(_), do: {:error, :not_found}
