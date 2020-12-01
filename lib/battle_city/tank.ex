@@ -21,7 +21,6 @@ defmodule BattleCity.Tank do
             bullet_speed: bullet_speed()
           }
 
-    @enforce_keys []
     defstruct [
       :__module__,
       :points,
@@ -67,6 +66,7 @@ defmodule BattleCity.Tank do
           dead?: boolean()
         }
 
+  @enforce_keys [:meta]
   defstruct [
     :meta,
     :id,

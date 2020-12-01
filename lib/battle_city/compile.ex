@@ -1,10 +1,29 @@
 defmodule BattleCity.Compile do
   @moduledoc false
 
+  alias BattleCity.Environment
+  alias BattleCity.Tank
   alias BattleCity.Utils
   require Logger
 
   @stage_path "priv/stages/*.json"
+
+  @bot_map %{
+    "fast" => Tank.Fast,
+    "power" => Tank.Power,
+    "armor" => Tank.Armor,
+    "basic" => Tank.Basic
+  }
+
+  @environment_map %{
+    "X" => Environment.Blank,
+    "B" => Environment.BrickWall,
+    "T" => Environment.SteelWall,
+    "F" => Environment.Tree,
+    "R" => Environment.Water,
+    "S" => Environment.Ice,
+    "E" => Environment.Home
+  }
 
   paths = Path.wildcard(@stage_path)
   paths_hash = :erlang.md5(paths)
@@ -20,6 +39,31 @@ defmodule BattleCity.Compile do
   @after_compile __MODULE__
   def __after_compile__(_env, _bytecode) do
     compile_stage!(@stage_path)
+  end
+
+  def validate_stage!(%{map: map, bots: bots} = o) do
+    %{o | map: Enum.map(map, &parse_map/1), bots: Enum.map(bots, &parse_bot/1)}
+  end
+
+  defp parse_map(o) do
+    result = o |> String.split(" ", trim: true)
+    unless Enum.count(result) == 13, do: raise("#{o}'s length should be 13.")
+    result |> Enum.map(&parse_map_1/1) |> List.to_tuple()
+  end
+
+  defp parse_map_1(o) do
+    {prefix, suffix} = parse_map_2(o)
+    {Map.fetch!(@environment_map, prefix), suffix}
+  end
+
+  defp parse_map_2(<<prefix::binary-size(1), suffix::binary-size(1)>>), do: {prefix, suffix}
+  defp parse_map_2(<<prefix::binary-size(1)>>), do: {prefix, nil}
+
+  defp parse_bot(o) do
+    [num, kind] = o |> String.split("*")
+    num = String.to_integer(num)
+    if num <= 0, do: raise("#{o} should > 0.")
+    {Map.fetch!(@bot_map, kind), num}
   end
 
   def compile_stage!(path) do
@@ -41,7 +85,7 @@ defmodule BattleCity.Compile do
 
     ast =
       quote location: :keep do
-        use BattleCity.Stage.Base,
+        use BattleCity.Stage,
           name: unquote(name),
           difficulty: unquote(difficulty),
           map: unquote(map),
