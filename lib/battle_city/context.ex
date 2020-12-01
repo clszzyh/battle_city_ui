@@ -28,7 +28,7 @@ defmodule BattleCity.Context do
   def init(module, tank \\ Tank.Level1, opts \\ %{}) when is_atom(module) do
     stage = module.init(opts)
     player = tank.new(Map.put(opts, :enemy?, false))
-    %__MODULE__{stage: stage} |> put_tank(player) |> Bot.add_bot(1, opts)
+    %__MODULE__{stage: stage} |> put_tank(player) |> Bot.add_bot(opts)
   end
 
   @spec put_tank({__MODULE__.t(), Tank.t()}) :: __MODULE__.t()
