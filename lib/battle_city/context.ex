@@ -24,10 +24,11 @@ defmodule BattleCity.Context do
     shovel?: false
   ]
 
-  def init(module, tank \\ Tank.Level1) when is_atom(module) do
-    stage = module.init()
-    player = tank.new(%{enemy?: false})
-    %__MODULE__{stage: stage} |> put_tank(player) |> Bot.add_bot(1)
+  @spec init(module(), module(), map()) :: __MODULE__.t()
+  def init(module, tank \\ Tank.Level1, opts \\ %{}) when is_atom(module) do
+    stage = module.init(opts)
+    player = tank.new(Map.put(opts, :enemy?, false))
+    %__MODULE__{stage: stage} |> put_tank(player) |> Bot.add_bot(1, opts)
   end
 
   @spec put_tank({__MODULE__.t(), Tank.t()}) :: __MODULE__.t()

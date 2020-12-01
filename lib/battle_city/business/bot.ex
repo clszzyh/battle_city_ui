@@ -17,20 +17,23 @@ defmodule BattleCity.Business.Bot do
 
   @times Map.keys(@times_map)
 
-  @spec add_bot(Context.t(), time()) :: Context.t()
-  def add_bot(%Context{stage: %{bots: bots} = stage} = ctx, time) when time in @times do
-    {tanks, bots} = generate(bots, @times_map[time])
+  @spec add_bot(Context.t(), time(), map()) :: Context.t()
+  def add_bot(%Context{stage: %{bots: bots} = stage} = ctx, time, opts) when time in @times do
+    opts = Map.merge(opts, %{enemy?: true, lifes: 1, direction: :down})
+    {tanks, bots} = generate(bots, @times_map[time], opts)
     %{ctx | stage: %{stage | bots: bots}} |> Context.put_tank(tanks)
   end
 
-  @spec generate(Stage.bots(), integer()) :: {[Tank.t()], Stage.bots()}
-  defp generate(bots, size) do
-    Enum.map_reduce(1..size, bots, &map_reduce_bot/2)
+  @spec generate(Stage.bots(), integer(), map()) :: {[Tank.t()], Stage.bots()}
+  defp generate(bots, size, opts) do
+    Enum.map_reduce(1..size, bots, fn _index, bots ->
+      map_reduce_bot(bots, opts)
+    end)
   end
 
-  @spec generate(integer(), Stage.bots()) :: {Tank.t(), Stage.bots()}
-  defp map_reduce_bot(_, bots) do
+  @spec map_reduce_bot(Stage.bots(), map()) :: {Tank.t(), Stage.bots()}
+  defp map_reduce_bot(bots, opts) do
     {module, size} = bots |> Enum.reject(&match?({_, 0}, &1)) |> Enum.random()
-    {module.new, Keyword.put(bots, module, size - 1)}
+    {module.new(opts), Keyword.put(bots, module, size - 1)}
   end
 end

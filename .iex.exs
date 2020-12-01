@@ -1,3 +1,5 @@
+alias BattleCity.Position
+alias BattleCity.Event
 alias BattleCity.Stage
 alias BattleCity.Tank
 alias BattleCity.Environment

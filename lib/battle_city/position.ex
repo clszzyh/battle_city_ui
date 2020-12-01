@@ -11,7 +11,13 @@ defmodule BattleCity.Position do
           y: y()
         }
 
+  @keys [:direction, :x, :y]
+
   defstruct direction: :up,
             x: 0,
             y: 0
+
+  def init(map \\ %{}) do
+    struct!(__MODULE__, Map.take(map, @keys))
+  end
 end

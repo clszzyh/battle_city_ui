@@ -62,7 +62,7 @@ defmodule BattleCity.Tank do
             __module__: __MODULE__,
             meta: init(map),
             id: Utils.random(),
-            position: %Position{}
+            position: Position.init(map)
           }
 
           struct!(Tank, map |> Map.take(unquote(keys)) |> Map.merge(data))
