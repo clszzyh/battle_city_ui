@@ -26,6 +26,16 @@ defmodule BattleCity.Context do
   @type reason :: atom
   @typep reduce_map_result :: {Tank.t(), {__MODULE__.t(), Tank.t()}}
 
+  @spec put_tank(__MODULE__.t(), Tank.t()) :: __MODULE__.t()
+  def put_tank(%__MODULE__{tanks: tanks} = ctx, %Tank{id: id} = tank) do
+    %{ctx | tanks: Map.put(tanks, id, tank)}
+  end
+
+  @spec put_bullet(__MODULE__.t(), Bullet.t()) :: __MODULE__.t()
+  def put_bullet(%__MODULE__{bullets: bullets} = ctx, %Bullet{id: id} = bullet) do
+    %{ctx | bullets: Map.put(bullets, id, bullet)}
+  end
+
   @spec handle_all_enemies(__MODULE__.t(), Tank.t(), {op, reason}) :: __MODULE__.t()
   def handle_all_enemies(
         %__MODULE__{tanks: tanks} = ctx,

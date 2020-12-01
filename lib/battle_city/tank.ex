@@ -72,6 +72,7 @@ defmodule BattleCity.Tank do
           enemy?: boolean(),
           hiden?: boolean(),
           shield?: boolean(),
+          moving?: boolean(),
           freezed?: boolean(),
           shootable?: boolean(),
           dead?: boolean()
@@ -91,6 +92,7 @@ defmodule BattleCity.Tank do
     enemy?: true,
     shootable?: true,
     hiden?: false,
+    moving?: false,
     freezed?: false,
     lifes: Config.life_count()
   ]
@@ -118,21 +120,20 @@ defmodule BattleCity.Tank do
     {:error, :freezed}
   end
 
+  def operate(%Context{} = ctx, %__MODULE__{} = tank, %Event{name: :move}) do
+    ctx |> Context.put_tank(%{tank | moving?: true})
+  end
+
   def operate(_, %__MODULE__{shootable?: false}, %Event{name: :shoot}) do
     {:error, :disabled}
   end
 
   def operate(
-        %Context{bullets: bullets, tanks: tanks} = ctx,
-        %__MODULE__{__module__: module, id: tank_id} = tank,
+        %Context{} = ctx,
+        %__MODULE__{__module__: module} = tank,
         %Event{name: :shoot} = event
       ) do
-    %Bullet{id: bullet_id} = bullet = module.handle_bullet(tank, event)
-
-    %{
-      ctx
-      | bullets: Map.put(bullets, bullet_id, bullet),
-        tanks: Map.put(tanks, tank_id, %{tank | shootable?: false})
-    }
+    bullet = module.handle_bullet(tank, event)
+    ctx |> Context.put_tank(%{tank | shootable?: false}) |> Context.put_bullet(bullet)
   end
 end
