@@ -6,7 +6,8 @@ defmodule BattleCity.Compile do
   alias BattleCity.Utils
   require Logger
 
-  @stage_path "priv/stages/*.json"
+  ## TODO @stage_path "priv/stages/*.json"
+  @stage_path "priv/stages/35.json"
 
   @bot_map %{
     "fast" => Tank.Fast,

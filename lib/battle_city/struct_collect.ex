@@ -22,19 +22,29 @@ defmodule BattleCity.StructCollect do
     has_id? = Map.has_key?(behaviour_module.__struct__(), :id)
     keys = Map.keys(behaviour_module.__struct__())
 
+    ast =
+      if has_id? do
+        quote do
+          defp maybe_add_id(map), do: Map.put(map, :id, Utils.random())
+        end
+      else
+        quote do
+          defp maybe_add_id(map), do: map
+        end
+      end
+
     quote do
       @obj Map.put(unquote(keyword), :__module__, unquote(current_module))
 
       @behaviour unquote(behaviour_module)
 
+      @spec maybe_add_id(map()) :: map()
+      unquote(ast)
+
       @spec init(map()) :: unquote(behaviour_module).t
       def init(map \\ %{}) do
-        unquote(has_id?)
-        |> if do
-          Map.put(map, :id, Utils.random())
-        else
-          map
-        end
+        map
+        |> maybe_add_id()
         |> handle_init
         |> case do
           %{} = map ->

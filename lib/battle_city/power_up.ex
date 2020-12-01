@@ -9,14 +9,14 @@ defmodule BattleCity.PowerUp do
 
   @type t :: %__MODULE__{
           __module__: module(),
-          # id: BattleCity.id(),
+          id: BattleCity.id(),
           duration: duration()
         }
 
   @enforce_keys []
   defstruct [
     :__module__,
-    # :id,
+    :id,
     duration: Config.power_up_duration()
   ]
 
