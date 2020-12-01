@@ -109,15 +109,15 @@ defmodule BattleCity.Tank do
     }
   end
 
-  @spec levelup(Context.t(), __MODULE__.t()) :: __MODULE__.t()
-  def levelup(_, %__MODULE__{__module__: module} = target) do
-    case module.handle_level_up(target) do
-      nil -> target
-      level_up_module -> %{target | __module__: level_up_module, meta: level_up_module.init([])}
-    end
+  @spec operate(Context.t(), __MODULE__.t(), Event.t()) :: BattleCity.invoke_result()
+  def operate(_, %__MODULE__{dead?: true}, _) do
+    {:error, :dead}
   end
 
-  @spec operate(Context.t(), __MODULE__.t(), Event.t()) :: BattleCity.invoke_result()
+  def operate(_, %__MODULE__{freezed?: true}, %Event{name: :move}) do
+    {:error, :freezed}
+  end
+
   def operate(_, %__MODULE__{shootable?: false}, %Event{name: :shoot}) do
     {:error, :disabled}
   end

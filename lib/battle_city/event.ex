@@ -3,7 +3,7 @@ defmodule BattleCity.Event do
 
   alias BattleCity.Position
 
-  @type name :: :shoot | :move | :pause | :resume
+  @type name :: :shoot | :move
 
   @type t :: %__MODULE__{
           id: BattleCity.id(),
