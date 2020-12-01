@@ -45,21 +45,21 @@ defmodule BattleCity.Compile do
     %{o | map: Enum.map(map, &parse_map/1), bots: Enum.map(bots, &parse_bot/1)}
   end
 
-  defp parse_map(o) do
+  defp parse_map(o) when is_binary(o) do
     result = o |> String.split(" ", trim: true)
     unless Enum.count(result) == 13, do: raise("#{o}'s length should be 13.")
     result |> Enum.map(&parse_map_1/1)
   end
 
-  defp parse_map_1(o) do
+  defp parse_map_1(o) when is_binary(o) do
     {prefix, suffix} = parse_map_2(o)
-    Map.fetch!(@environment_map, prefix).new(suffix)
+    Map.fetch!(@environment_map, prefix).init(stage: suffix)
   end
 
   defp parse_map_2(<<prefix::binary-size(1), suffix::binary-size(1)>>), do: {prefix, suffix}
   defp parse_map_2(<<prefix::binary-size(1)>>), do: {prefix, nil}
 
-  defp parse_bot(o) do
+  defp parse_bot(o) when is_binary(o) do
     [num, kind] = o |> String.split("*")
     num = String.to_integer(num)
     if num <= 0, do: raise("#{o} should > 0.")

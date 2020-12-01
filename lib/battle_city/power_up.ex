@@ -16,6 +16,8 @@ defmodule BattleCity.PowerUp do
     duration: Config.power_up_duration()
   ]
 
+  use BattleCity.StructCollect
+
   @callback handle_on(Context.t(), Tank.t()) :: BattleCity.inner_callback_tank_result()
   @callback handle_off(Context.t(), Tank.t()) :: BattleCity.inner_callback_tank_result()
   @optional_callbacks handle_off: 2
@@ -27,8 +29,14 @@ defmodule BattleCity.PowerUp do
       alias BattleCity.Tank
 
       @obj struct!(unquote(__MODULE__), Keyword.put(unquote(opt), :__module__, __MODULE__))
-      @spec new :: unquote(__MODULE__).t
-      def new, do: @obj
+
+      @impl true
+      def init, do: @obj
+
+      @impl true
+      def init(keyword), do: Enum.into(keyword, @obj)
+
+      defoverridable unquote(__MODULE__)
     end
   end
 

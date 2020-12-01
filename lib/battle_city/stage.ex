@@ -24,13 +24,23 @@ defmodule BattleCity.Stage do
     :bots
   ]
 
+  use BattleCity.StructCollect
+
   defmacro __using__(opt) do
-    obj = struct!(__MODULE__, opt) |> Compile.validate_stage!()
+    obj = struct!(__MODULE__, Compile.validate_stage!(Map.new(opt)))
 
     quote location: :keep do
       @obj Map.put(unquote(Macro.escape(obj)), :__module__, __MODULE__)
-      @spec new :: unquote(__MODULE__).t
-      def new, do: @obj
+
+      @behaviour unquote(__MODULE__)
+
+      @impl true
+      def init, do: @obj
+
+      @impl true
+      def init(keyword), do: Enum.into(keyword, @obj)
+
+      defoverridable unquote(__MODULE__)
     end
   end
 end

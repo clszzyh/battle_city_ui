@@ -4,7 +4,6 @@ defmodule BattleCity.Environment do
   alias BattleCity.Bullet
   alias BattleCity.Context
   alias BattleCity.Tank
-  alias __MODULE__
 
   @type health :: integer() | :infinite
   @type shape :: nil | binary()
@@ -23,6 +22,8 @@ defmodule BattleCity.Environment do
     shape: nil
   ]
 
+  use BattleCity.StructCollect
+
   @callback handle_enter(Context.t(), Tank.t()) :: BattleCity.inner_callback_tank_result()
   @callback handle_leave(Context.t(), Tank.t()) :: BattleCity.inner_callback_tank_result()
 
@@ -34,17 +35,17 @@ defmodule BattleCity.Environment do
     ast = generate_ast(obj)
 
     quote location: :keep do
-      @behaviour unquote(__MODULE__)
       alias BattleCity.Tank
-
       @obj Map.put(unquote(Macro.escape(obj)), :__module__, __MODULE__)
-
       unquote(ast)
 
-      @spec new(Environment.shape()) :: unquote(__MODULE__).t
-      def new(shape \\ nil)
-      def new(nil), do: @obj
-      def new(shape), do: Map.put(@obj, :shape, shape)
+      @behaviour unquote(__MODULE__)
+
+      @impl true
+      def init, do: @obj
+
+      @impl true
+      def init(keyword), do: Enum.into(keyword, @obj)
 
       defoverridable unquote(__MODULE__)
     end

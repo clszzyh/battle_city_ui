@@ -30,6 +30,8 @@ defmodule BattleCity.Tank do
       level: 1
     ]
 
+    use BattleCity.StructCollect
+
     @callback handle_level_up(Tank.t()) :: module()
     @callback handle_bullet(Bullet.t()) :: Bullet.t()
     @optional_callbacks handle_bullet: 1
@@ -40,9 +42,14 @@ defmodule BattleCity.Tank do
         alias BattleCity.Tank
 
         @obj struct!(unquote(__MODULE__), Keyword.put(unquote(opt), :__module__, __MODULE__))
-        @spec new :: unquote(__MODULE__).t
-        def new, do: @obj
 
+        @impl true
+        def init, do: @obj
+
+        @impl true
+        def init(keyword), do: Enum.into(keyword, @obj)
+
+        @impl true
         def handle_level_up(_), do: nil
 
         defoverridable unquote(__MODULE__)
@@ -85,7 +92,7 @@ defmodule BattleCity.Tank do
   def levelup(%__MODULE__{meta: %{__module__: module}} = target) do
     case module.handle_level_up(target) do
       nil -> target
-      level_up_module -> %{target | meta: level_up_module.new}
+      level_up_module -> %{target | meta: level_up_module.init([])}
     end
   end
 end
