@@ -55,8 +55,8 @@ defmodule BattleCity.Tank do
 
   @type t :: %__MODULE__{
           tank: Base.t(),
-          id: BattleCity.tank_id(),
-          killer: BattleCity.tank_id(),
+          id: BattleCity.id(),
+          killer: BattleCity.id(),
           lifes: integer(),
           score: integer(),
           reason: reason(),

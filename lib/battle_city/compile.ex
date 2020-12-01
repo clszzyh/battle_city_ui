@@ -5,9 +5,8 @@ defmodule BattleCity.Compile do
   require Logger
 
   @stage_path "priv/stages/*.json"
-  @stage_source_file "lib/battle_city/stage.ex"
 
-  paths = Path.wildcard(@stage_path) ++ Path.wildcard(@stage_source_file)
+  paths = Path.wildcard(@stage_path)
   paths_hash = :erlang.md5(paths)
 
   for path <- paths do

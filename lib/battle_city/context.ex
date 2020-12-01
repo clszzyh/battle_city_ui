@@ -1,6 +1,7 @@
 defmodule BattleCity.Context do
   @moduledoc false
 
+  alias BattleCity.Bullet
   alias BattleCity.Config
   alias BattleCity.Stage
   alias BattleCity.Tank
@@ -9,14 +10,16 @@ defmodule BattleCity.Context do
           rest_enemies: integer,
           shovel?: boolean,
           stage: Stage.t(),
-          players: %{BattleCity.tank_id() => Tank.t()},
-          enemies: %{BattleCity.tank_id() => Tank.t()}
+          players: %{BattleCity.id() => Tank.t()},
+          enemies: %{BattleCity.id() => Tank.t()},
+          bullets: %{BattleCity.id() => Bullet.t()}
         }
 
   defstruct [
     :stage,
     :players,
     :enemies,
+    :bullets,
     rest_enemies: Config.rest_enemies(),
     shovel?: false
   ]

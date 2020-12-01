@@ -11,7 +11,7 @@ defmodule BattleCity do
   alias BattleCity.Context
   alias BattleCity.Tank
 
-  @type tank_id :: binary()
+  @type id :: binary()
 
   @type inner_callback_tank_result ::
           {Context.t(), Tank.t()} | Context.t() | Tank.t() | {:error, atom()} | :ignored
