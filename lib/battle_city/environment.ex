@@ -25,8 +25,8 @@ defmodule BattleCity.Environment do
 
   use BattleCity.StructCollect
 
-  @callback handle_enter(Context.t(), Tank.t()) :: BattleCity.inner_callback_tank_result()
-  @callback handle_leave(Context.t(), Tank.t()) :: BattleCity.inner_callback_tank_result()
+  @callback handle_enter(Context.t(), Tank.t()) :: BattleCity.invoke_tank_result()
+  @callback handle_leave(Context.t(), Tank.t()) :: BattleCity.invoke_tank_result()
 
   @callback handle_hit(Context.t(), Bullet.t()) :: BattleCity.inner_callback_bullet_result()
   @optional_callbacks handle_enter: 2, handle_leave: 2, handle_hit: 2
@@ -43,21 +43,25 @@ defmodule BattleCity.Environment do
     end
   end
 
-  @spec on(Context.t(), Tank.t(), __MODULE__.t()) :: BattleCity.callback_tank_result()
+  @spec on(Context.t(), Tank.t(), __MODULE__.t()) :: BattleCity.invoke_result()
   def on(%Context{} = ctx, %Tank{} = tank, %__MODULE__{} = environment) do
     if function_exported?(environment.__module__, :handle_on, 2) do
-      environment.__module__.handle_on(ctx, tank) |> BattleCity.parse_result(ctx, tank)
+      environment.__module__.handle_on(ctx, tank)
+      |> BattleCity.parse_tank_result(ctx, tank)
+      |> Context.put_tank()
     else
-      {ctx, tank}
+      Context.put_tank(ctx, tank)
     end
   end
 
-  @spec off(Context.t(), Tank.t(), __MODULE__.t()) :: BattleCity.callback_tank_result()
+  @spec off(Context.t(), Tank.t(), __MODULE__.t()) :: BattleCity.invoke_result()
   def off(%Context{} = ctx, %Tank{} = tank, %__MODULE__{} = environment) do
     if function_exported?(environment.__module__, :handle_off, 2) do
-      environment.__module__.handle_off(ctx, tank) |> BattleCity.parse_result(ctx, tank)
+      environment.__module__.handle_off(ctx, tank)
+      |> BattleCity.parse_tank_result(ctx, tank)
+      |> Context.put_tank()
     else
-      {ctx, tank}
+      Context.put_tank(ctx, tank)
     end
   end
 

@@ -13,9 +13,8 @@ defmodule BattleCity do
 
   @type id :: binary()
 
-  @type inner_callback_tank_result ::
+  @type invoke_tank_result ::
           {Context.t(), Tank.t()} | Context.t() | Tank.t() | {:error, atom()} | :ignored
-  @type callback_tank_result :: {Context.t(), Tank.t()}
 
   @type inner_callback_bullet_result ::
           {Context.t(), Bullet.t()} | Context.t() | Bullet.t() | {:error, atom()} | :ignored
@@ -23,10 +22,10 @@ defmodule BattleCity do
 
   @type invoke_result :: {:error, atom()} | Context.t()
 
-  @spec parse_result(inner_callback_tank_result, Context.t(), Tank.t()) :: callback_tank_result
-  def parse_result(%Context{} = ctx, _, %Tank{} = tank), do: {ctx, tank}
-  def parse_result(%Tank{} = tank, %Context{} = ctx, _), do: {ctx, tank}
-  def parse_result({%Context{} = ctx, %Tank{} = tank}, _, _), do: {ctx, tank}
-  def parse_result(:ignored, ctx, tank), do: {ctx, tank}
-  def parse_result({:error, _reason}, ctx, tank), do: {ctx, tank}
+  @spec parse_tank_result(invoke_tank_result, Context.t(), Tank.t()) :: {Context.t(), Tank.t()}
+  def parse_tank_result(%Context{} = ctx, _, %Tank{} = tank), do: {ctx, tank}
+  def parse_tank_result(%Tank{} = tank, %Context{} = ctx, _), do: {ctx, tank}
+  def parse_tank_result({%Context{} = ctx, %Tank{} = tank}, _, _), do: {ctx, tank}
+  def parse_tank_result(:ignored, ctx, tank), do: {ctx, tank}
+  def parse_tank_result({:error, _reason}, ctx, tank), do: {ctx, tank}
 end
