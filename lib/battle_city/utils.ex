@@ -9,6 +9,7 @@ defmodule BattleCity.Utils do
     end
   end
 
+  @spec random(integer) :: binary()
   def random(length \\ 20) do
     length
     |> :crypto.strong_rand_bytes()

@@ -11,10 +11,7 @@ defmodule BattleCity.Position do
           y: y()
         }
 
-  @enforce_keys [:x, :y, :direction]
-  defstruct [
-    :direction,
-    :x,
-    :y
-  ]
+  defstruct direction: :up,
+            x: 0,
+            y: 0
 end

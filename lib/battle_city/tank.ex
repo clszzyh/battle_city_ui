@@ -40,6 +40,9 @@ defmodule BattleCity.Tank do
     @callback handle_level_up(Tank.t()) :: module()
     @callback handle_bullet(Tank.t(), Event.t()) :: Bullet.t()
 
+    # @callback new() :: Tank.t()
+    # @callback new(map) :: Tank.t()
+
     defmacro __using__(opt \\ []) do
       obj = struct!(__MODULE__, opt)
 
@@ -52,12 +55,15 @@ defmodule BattleCity.Tank do
         @impl true
         def handle_bullet(tank, event), do: Tank.default_handle_bullet(tank, event)
 
+        # @impl true
+        # def new(map \\ %{}) do
+        #   %Tank{__module__: __MODULE__, meta: init(map), position: %Position{}}
+        # end
+
         init_ast(unquote(__MODULE__), __MODULE__, unquote(Macro.escape(obj)))
       end
     end
   end
-
-  @type reason :: atom()
 
   @type t :: %__MODULE__{
           __module__: module(),
@@ -67,7 +73,7 @@ defmodule BattleCity.Tank do
           position: Position.t(),
           lifes: integer(),
           score: integer(),
-          reason: reason(),
+          reason: BattleCity.reason(),
           enemy?: boolean(),
           hiden?: boolean(),
           shield?: boolean(),
@@ -77,7 +83,7 @@ defmodule BattleCity.Tank do
           dead?: boolean()
         }
 
-  @enforce_keys [:meta, :__module__, :id, :position]
+  @enforce_keys [:meta, :__module__, :position]
   defstruct [
     :__module__,
     :meta,

@@ -20,6 +20,7 @@ defmodule BattleCity.StructCollect do
 
   defmacro init_ast(behaviour_module, current_module, keyword) when is_atom(behaviour_module) do
     has_id? = Map.has_key?(behaviour_module.__struct__(), :id)
+    keys = Map.keys(behaviour_module.__struct__())
 
     quote do
       @obj Map.put(unquote(keyword), :__module__, unquote(current_module))
@@ -36,8 +37,13 @@ defmodule BattleCity.StructCollect do
         end
         |> handle_init
         |> case do
-          %{} = map -> Enum.into(map, @obj)
-          {:error, reason} -> raise CompileError, description: "#{inspect(map)} #{reason}"
+          %{} = map ->
+            map
+            |> Map.take(unquote(keys))
+            |> Enum.into(@obj)
+
+          {:error, reason} ->
+            raise CompileError, description: "#{inspect(map)} #{reason}"
         end
       end
 

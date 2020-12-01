@@ -14,13 +14,20 @@ defmodule BattleCity.Context do
           bullets: %{BattleCity.id() => Bullet.t()}
         }
 
+  @enforce_keys [:stage]
   defstruct [
     :stage,
     :tanks,
-    :bullets,
+    bullets: [],
     rest_enemies: Config.rest_enemies(),
     shovel?: false
   ]
+
+  # def init(module, tank \\ Tank.Level1) when is_atom(module) do
+  #   %Stage{bots: _bots} = stage = module.init()
+  #   player = tank.new()
+  #   %__MODULE__{stage: stage} |> put_tank(player)
+  # end
 
   @spec put_tank({__MODULE__.t(), Tank.t()}) :: __MODULE__.t()
   def put_tank({%__MODULE__{} = ctx, %Tank{} = tank}) do

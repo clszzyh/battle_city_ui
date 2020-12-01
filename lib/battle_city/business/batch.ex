@@ -6,9 +6,8 @@ defmodule BattleCity.Business.Batch do
   alias BattleCity.Tank
 
   @type op :: :kill | :stop | :resume
-  @type reason :: atom()
 
-  @spec handle_all_enemies(Context.t(), Tank.t(), {op(), reason()}) :: Context.t()
+  @spec handle_all_enemies(Context.t(), Tank.t(), {op(), BattleCity.reason()}) :: Context.t()
   def handle_all_enemies(
         %Context{tanks: tanks} = ctx,
         %Tank{id: id} = tank,
@@ -24,7 +23,7 @@ defmodule BattleCity.Business.Batch do
     %{ctx | tanks: tanks}
   end
 
-  @spec reduce_op(op(), Tank.t(), Context.t(), Tank.t(), reason()) ::
+  @spec reduce_op(op(), Tank.t(), Context.t(), Tank.t(), BattleCity.reason()) ::
           {Tank.t(), {Context.t(), Tank.t()}}
   defp reduce_op(
          _,

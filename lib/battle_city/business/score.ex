@@ -3,9 +3,7 @@ defmodule BattleCity.Business.Score do
 
   alias BattleCity.Tank
 
-  @type reason :: atom()
-
-  @spec add_score(Tank.t(), integer(), reason()) :: Tank.t()
+  @spec add_score(Tank.t(), integer(), BattleCity.reason()) :: Tank.t()
   def add_score(tank, _, :grenade), do: tank
 
   def add_score(%Tank{score: score} = tank, points, _) when is_integer(points),

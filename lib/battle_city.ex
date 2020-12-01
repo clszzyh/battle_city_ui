@@ -12,6 +12,7 @@ defmodule BattleCity do
   alias BattleCity.Tank
 
   @type id :: binary()
+  @type reason :: atom()
 
   @type invoke_tank_result ::
           {Context.t(), Tank.t()} | Context.t() | Tank.t() | {:error, atom()} | :ignored
