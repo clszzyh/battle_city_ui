@@ -19,7 +19,7 @@ defmodule BattleCity.Business.Generate do
 
   @spec add_power_up(Context.t(), map()) :: BattleCity.invoke_result()
   def add_power_up(%Context{} = ctx, opts \\ %{}) do
-    opts = Map.merge(opts, %{x: :x_random, y: :y_random})
+    opts = Map.merge(opts, %{x: :x_random, y: :y_random, direction: :down})
     powerup = generate_power_up(opts)
     ctx |> Context.put_powerup(powerup)
   end
