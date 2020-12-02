@@ -26,11 +26,22 @@ defmodule BattleCity.Stage do
 
   use BattleCity.StructCollect
 
+  @callback name :: binary()
+
   defmacro __using__(opt) do
     obj = struct!(__MODULE__, Compile.validate_stage!(Map.new(opt)))
 
     quote location: :keep do
       init_ast(unquote(__MODULE__), __MODULE__, unquote(Macro.escape(obj)))
+
+      @impl true
+      def name, do: unquote(opt[:name])
+
+      @after_compile unquote(__MODULE__)
     end
+  end
+
+  def __after_compile__(env, _bytecode) do
+    BattleCity.StageCache.put_stage(env.module)
   end
 end

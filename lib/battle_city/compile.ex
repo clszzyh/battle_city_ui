@@ -54,7 +54,7 @@ defmodule BattleCity.Compile do
 
   @after_compile __MODULE__
   def __after_compile__(_env, _bytecode) do
-    compile_stage!(@stage_path)
+    # compile_stage!()
   end
 
   def validate_stage!(%{map: map, bots: bots} = o) do
@@ -91,8 +91,9 @@ defmodule BattleCity.Compile do
     {Map.fetch!(@bot_map, kind), num}
   end
 
-  def compile_stage!(path) do
+  def compile_stage!(path \\ nil) do
     path
+    |> Kernel.||(@stage_path)
     |> Path.wildcard()
     |> Enum.each(fn f ->
       f |> File.read!() |> Jason.decode!() |> compile_stage_1()

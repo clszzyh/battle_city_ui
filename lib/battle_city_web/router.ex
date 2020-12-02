@@ -17,7 +17,9 @@ defmodule BattleCityWeb.Router do
   scope "/", BattleCityWeb do
     pipe_through :browser
 
-    live "/", PageLive, :index
+    live "/page", PageLive, :index
+    live "/", GameLive, :index
+    live "/stages/:level", GameLive, :index
   end
 
   # Other scopes may use custom stacks.
