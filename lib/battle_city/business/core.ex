@@ -2,32 +2,25 @@ defmodule BattleCity.Business.Core do
   @moduledoc false
 
   alias BattleCity.Context
-  alias BattleCity.Event
   alias BattleCity.Tank
 
-  @spec operate(Context.t(), Tank.t(), Event.t()) :: BattleCity.invoke_result()
-  def operate(_, %Tank{dead?: true}, _) do
-    {:error, :dead}
+  @spec next(Context.t()) :: Context.t()
+  def next(%Context{} = ctx) do
+    ctx |> next_tanks()
   end
 
-  def operate(_, %Tank{freezed?: true}, %Event{name: :move}) do
-    {:error, :freezed}
+  @spec next_tanks(Context.t()) :: Context.t()
+  defp next_tanks(%Context{tanks: tanks} = ctx) do
+    {tanks, ctx} = Enum.map_reduce(tanks, ctx, &next_tank_1/2)
+    ctx |> Context.put_tank(tanks)
   end
 
-  def operate(%Context{} = ctx, %Tank{} = tank, %Event{name: :move}) do
-    ctx |> Context.put_tank(%{tank | moving?: true})
+  @spec next_tank_1(Tank.t(), Context.t()) :: {Tank.t() | nil, Context.t()}
+  defp next_tank_1(%Tank{dead?: true}, %Context{} = ctx) do
+    {nil, ctx}
   end
 
-  def operate(_, %Tank{shootable?: false}, %Event{name: :shoot}) do
-    {:error, :disabled}
-  end
-
-  def operate(
-        %Context{} = ctx,
-        %Tank{__module__: module} = tank,
-        %Event{name: :shoot} = event
-      ) do
-    bullet = module.handle_bullet(tank, event)
-    ctx |> Context.put_tank(%{tank | shootable?: false}) |> Context.put_bullet(bullet)
+  defp next_tank_1(%Tank{} = tank, %Context{} = ctx) do
+    {tank, ctx}
   end
 end

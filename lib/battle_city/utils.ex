@@ -13,7 +13,7 @@ defmodule BattleCity.Utils do
   def random(length \\ 20) do
     length
     |> :crypto.strong_rand_bytes()
-    |> Base.url_encode64(padding: false)
+    |> Base.encode32(padding: false)
     |> binary_part(0, length)
   end
 

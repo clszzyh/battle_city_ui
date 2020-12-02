@@ -7,9 +7,12 @@ defmodule BattleCity.Context do
   alias BattleCity.Stage
   alias BattleCity.Tank
 
+  @type state :: :started | :paused | :game_over | :complete
+
   @type t :: %__MODULE__{
           rest_enemies: integer,
           shovel?: boolean,
+          state: state(),
           stage: Stage.t(),
           tanks: %{BattleCity.id() => Tank.t()},
           bullets: %{BattleCity.id() => Bullet.t()}
@@ -21,6 +24,7 @@ defmodule BattleCity.Context do
     tanks: %{},
     bullets: %{},
     rest_enemies: Config.rest_enemies(),
+    state: :started,
     shovel?: false
   ]
 
@@ -36,11 +40,12 @@ defmodule BattleCity.Context do
     put_tank(ctx, tank)
   end
 
-  @spec put_tank(__MODULE__.t(), Tank.t() | [Tank.t()]) :: __MODULE__.t()
+  @spec put_tank(__MODULE__.t(), Tank.t() | [nil | Tank.t()]) :: __MODULE__.t()
   def put_tank(%__MODULE__{tanks: tanks} = ctx, %Tank{id: id} = tank) do
     %{ctx | tanks: Map.put(tanks, id, tank)}
   end
 
+  def put_tank(ctx, [nil | rest]), do: ctx |> put_tank(rest)
   def put_tank(ctx, [tank | rest]), do: ctx |> put_tank(tank) |> put_tank(rest)
   def put_tank(ctx, []), do: ctx
 

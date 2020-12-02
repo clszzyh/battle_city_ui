@@ -5,7 +5,7 @@ defmodule BattleCity.Business.Bot do
   alias BattleCity.Stage
   alias BattleCity.Tank
 
-  @time 4
+  @count 4
 
   @spec add_bot(Context.t(), map()) :: BattleCity.invoke_result()
   def add_bot(%Context{stage: %{bots: bots} = stage} = ctx, opts \\ %{}) do
@@ -22,9 +22,9 @@ defmodule BattleCity.Business.Bot do
 
   @spec generate(Stage.bots(), map()) :: {[Tank.t()], Stage.bots()}
   defp generate(bots, opts) do
-    time = opts[:time] || @time
+    count = opts[:bot_count] || @count
 
-    Enum.map_reduce(1..time, bots, fn _index, bots ->
+    Enum.map_reduce(1..count, bots, fn _index, bots ->
       map_reduce_bot(bots, opts)
     end)
   end

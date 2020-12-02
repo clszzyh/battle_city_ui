@@ -38,7 +38,7 @@ defmodule BattleCity.Tank do
     use BattleCity.StructCollect
 
     @callback handle_level_up(Tank.t()) :: module()
-    @callback handle_bullet(Tank.t(), Event.t()) :: Bullet.t()
+    @callback create_bullet(Tank.t(), Event.t()) :: Bullet.t()
 
     @callback new() :: Tank.t()
     @callback new(map) :: Tank.t()
@@ -54,7 +54,7 @@ defmodule BattleCity.Tank do
         def handle_level_up(_), do: nil
 
         @impl true
-        def handle_bullet(tank, event), do: Tank.default_handle_bullet(tank, event)
+        def create_bullet(tank, event), do: Tank.default_create_bullet(tank, event)
 
         @impl true
         def new(map \\ %{}) do
@@ -110,8 +110,8 @@ defmodule BattleCity.Tank do
     lifes: Config.life_count()
   ]
 
-  @spec default_handle_bullet(__MODULE__.t(), Event.t()) :: Bullet.t()
-  def default_handle_bullet(
+  @spec default_create_bullet(__MODULE__.t(), Event.t()) :: Bullet.t()
+  def default_create_bullet(
         %__MODULE__{id: tank_id, meta: %{bullet_speed: speed}},
         %Event{id: event_id, position: position}
       ) do
