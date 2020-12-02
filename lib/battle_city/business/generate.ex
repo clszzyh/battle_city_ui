@@ -1,16 +1,46 @@
-defmodule BattleCity.Business.Bot do
+defmodule BattleCity.Business.Generate do
   @moduledoc false
 
   alias BattleCity.Context
+  alias BattleCity.PowerUp
   alias BattleCity.Stage
   alias BattleCity.Tank
 
   @count 4
 
+  @power_up_modules [
+    PowerUp.Grenade,
+    PowerUp.Helmet,
+    PowerUp.Life,
+    PowerUp.Shovel,
+    PowerUp.Star,
+    PowerUp.Timer
+  ]
+
+  @spec add_power_up(Context.t(), map()) :: BattleCity.invoke_result()
+  def add_power_up(%Context{} = ctx, opts \\ %{}) do
+    opts = Map.merge(opts, %{x: :x_random, y: :y_random})
+    powerup = generate_power_up(opts)
+    ctx |> Context.put_powerup(powerup)
+  end
+
+  def generate_power_up(opts) do
+    module = @power_up_modules |> Enum.random()
+    module.init(opts)
+  end
+
   @spec add_bot(Context.t(), map()) :: BattleCity.invoke_result()
   def add_bot(%Context{stage: %{bots: bots} = stage} = ctx, opts \\ %{}) do
-    opts = Map.merge(opts, %{enemy?: true, lifes: 1, direction: :random})
-    {tanks, bots} = generate(bots, opts)
+    opts =
+      Map.merge(opts, %{
+        enemy?: true,
+        lifes: 1,
+        x: :x_random_enemy,
+        y: :y_random_enemy,
+        direction: :random
+      })
+
+    {tanks, bots} = generate_bots(bots, opts)
 
     tanks
     |> Enum.reject(&match?(nil, &1))
@@ -20,8 +50,8 @@ defmodule BattleCity.Business.Bot do
     end
   end
 
-  @spec generate(Stage.bots(), map()) :: {[Tank.t()], Stage.bots()}
-  defp generate(bots, opts) do
+  @spec generate_bots(Stage.bots(), map()) :: {[Tank.t()], Stage.bots()}
+  defp generate_bots(bots, opts) do
     count = opts[:bot_count] || @count
 
     Enum.map_reduce(1..count, bots, fn _index, bots ->

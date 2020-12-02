@@ -3,6 +3,7 @@ defmodule BattleCity.Environment do
 
   alias BattleCity.Bullet
   alias BattleCity.Context
+  alias BattleCity.Position
   alias BattleCity.Tank
 
   @type health :: integer() | :infinite
@@ -13,16 +14,21 @@ defmodule BattleCity.Environment do
           id: BattleCity.id(),
           enter?: boolean(),
           health: health,
-          shape: shape
+          shape: shape,
+          x: Position.x(),
+          y: Position.y()
         }
 
   @enforce_keys [:enter?, :health]
   defstruct [
     :__module__,
     :id,
+    :x,
+    :y,
+    :shape,
     enter?: false,
     health: 0,
-    shape: nil
+    objects: []
   ]
 
   use BattleCity.StructCollect
