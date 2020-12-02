@@ -3,6 +3,7 @@ defmodule BattleCity.PowerUp do
 
   alias BattleCity.Config
   alias BattleCity.Context
+  alias BattleCity.Position
   alias BattleCity.Tank
 
   @type duration :: integer() | :instant
@@ -10,13 +11,15 @@ defmodule BattleCity.PowerUp do
   @type t :: %__MODULE__{
           __module__: module(),
           id: BattleCity.id(),
-          duration: duration()
+          duration: duration(),
+          position: Position.t()
         }
 
   @enforce_keys []
   defstruct [
     :__module__,
     :id,
+    :position,
     duration: Config.power_up_duration()
   ]
 
@@ -35,6 +38,11 @@ defmodule BattleCity.PowerUp do
       alias BattleCity.Tank
 
       init_ast(unquote(__MODULE__), __MODULE__, unquote(Macro.escape(obj)))
+
+      @impl true
+      def handle_init(%{} = map) do
+        Map.put(map, :position, Position.init(map))
+      end
     end
   end
 

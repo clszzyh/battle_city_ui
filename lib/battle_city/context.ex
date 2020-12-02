@@ -4,6 +4,7 @@ defmodule BattleCity.Context do
   alias BattleCity.Bullet
   alias BattleCity.Business.Bot
   alias BattleCity.Config
+  alias BattleCity.PowerUp
   alias BattleCity.Stage
   alias BattleCity.Tank
 
@@ -14,6 +15,7 @@ defmodule BattleCity.Context do
           shovel?: boolean,
           state: state(),
           stage: Stage.t(),
+          power_ups: %{BattleCity.id() => PowerUp.t()},
           tanks: %{BattleCity.id() => Tank.t()},
           bullets: %{BattleCity.id() => Bullet.t()}
         }
@@ -23,6 +25,7 @@ defmodule BattleCity.Context do
     :stage,
     tanks: %{},
     bullets: %{},
+    power_ups: %{},
     rest_enemies: Config.rest_enemies(),
     state: :started,
     shovel?: false

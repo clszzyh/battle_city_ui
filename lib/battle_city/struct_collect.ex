@@ -8,6 +8,7 @@ defmodule BattleCity.StructCollect do
       import unquote(__MODULE__)
 
       @callback handle_init(map()) :: map() | {:error, :atom}
+      @optional_callbacks handle_init: 1
 
       defimpl Collectable do
         def into(o), do: {o, &into_callback/2}
@@ -41,11 +42,20 @@ defmodule BattleCity.StructCollect do
       @spec maybe_add_id(map()) :: map()
       unquote(ast)
 
+      @spec maybe_handle_init(map()) :: map() | {:error, atom()}
+      defp maybe_handle_init(map) do
+        if function_exported?(unquote(current_module), :handle_init, 1) do
+          apply(unquote(current_module), :handle_init, [map])
+        else
+          map
+        end
+      end
+
       @spec init(map()) :: unquote(behaviour_module).t
       def init(map \\ %{}) do
         map
         |> maybe_add_id()
-        |> handle_init
+        |> maybe_handle_init()
         |> case do
           %{} = map ->
             map
@@ -57,8 +67,8 @@ defmodule BattleCity.StructCollect do
         end
       end
 
-      @impl true
-      def handle_init(map), do: map
+      # @impl true
+      # def handle_init(map), do: map
 
       defoverridable unquote(behaviour_module)
     end
