@@ -76,8 +76,8 @@ defmodule BattleCity.Compile do
     {prefix, suffix} = parse_map_2(o)
 
     Map.fetch!(@environment_map, prefix).init(%{
-      x: x * Position.atom_width(),
-      y: y * Position.atom_width(),
+      x: x * Position.atom(),
+      y: y * Position.atom(),
       shape: Map.fetch!(@suffix_map, suffix)
     })
   end

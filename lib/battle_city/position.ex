@@ -3,20 +3,21 @@ defmodule BattleCity.Position do
 
   @type direction :: :up | :down | :left | :right
 
+  import Integer, only: [is_even: 1]
+
   @size 12
 
   @border 4
   @width_real @border * 2
 
-  @atom 1
-  @atom_width 2 * @atom
+  @atom 2
 
   @xmin 0
-  @xmax @size * @atom_width
+  @xmax @size * @atom
   @ymin 0
-  @ymax @size * @atom_width
+  @ymax @size * @atom
   @xmid round((@xmin + @xmax) * 0.5)
-  @x_player_1 @xmid - @atom_width - @atom
+  @x_player_1 round(@xmid - @atom - 0.5 * @atom)
 
   @xmin_real @xmin * @width_real
   @xmax_real @xmax * @width_real
@@ -30,6 +31,7 @@ defmodule BattleCity.Position do
   @type x :: unquote(@xmin)..unquote(@xmax)
   @type y :: unquote(@ymin)..unquote(@ymax)
   @type xy :: {x, y}
+  @type x_or_y :: x | y
 
   @type t :: %__MODULE__{
           direction: direction(),
@@ -41,11 +43,16 @@ defmodule BattleCity.Position do
   @enforce_keys [:direction, :x, :y, :rx, :ry]
   defstruct [:x, :y, :direction, :rx, :ry]
 
-  @objects for x <- @x_range, y <- @y_range, do: {{x, y}, MapSet.new()}, into: %{}
+  @objects for x <- @x_range,
+               y <- @y_range,
+               rem(x, 2) == 0,
+               rem(y, 2) == 0,
+               do: {{x, y}, MapSet.new()},
+               into: %{}
 
   def objects, do: @objects
   def size, do: @size
-  def atom_width, do: @atom_width
+  def atom, do: @atom
 
   defguard is_on_border(p)
            when is_struct(p, __MODULE__) and
@@ -54,22 +61,34 @@ defmodule BattleCity.Position do
                      (p.ry == @ymin_real and p.direction == :up) or
                      (p.ry == @ymax_real and p.direction == :down))
 
+  @spec round(__MODULE__.t()) :: xy()
+  def round(%__MODULE__{x: x, y: y, direction: direction}) do
+    {round_number(:x, x, direction), round_number(:y, y, direction)}
+  end
+
+  @spec round_number(:x | :y, x_or_y(), direction()) :: x_or_y()
+  defp round_number(_, n, _) when is_even(n), do: n
+  defp round_number(:x, n, :right), do: n + 1
+  defp round_number(:y, n, :up), do: n + 1
+  defp round_number(_, n, _), do: n - 1
+
   def init(map \\ %{})
 
   def init(%{direction: direction} = map) when direction not in @diretions do
     init(%{map | direction: fetch_diretion(direction)})
   end
 
-  def init(%{x: x} = map) when x not in @x_range do
+  def init(%{x: x} = map) when is_atom(x) do
     init(%{map | x: fetch_x(x)})
   end
 
-  def init(%{y: y} = map) when y not in @y_range do
+  def init(%{y: y} = map) when is_atom(y) do
     init(%{map | y: fetch_y(y)})
   end
 
   def init(%{x: x, y: y} = map) do
-    struct!(__MODULE__, Map.take(%{map | rx: x * @width_real, ry: y * @width_real}, @keys))
+    map = map |> Map.merge(%{rx: x * @width_real, ry: y * @width_real}) |> Map.take(@keys)
+    struct!(__MODULE__, map)
   end
 
   defp fetch_diretion(:random), do: Enum.random(@diretions)

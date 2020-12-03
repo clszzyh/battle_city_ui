@@ -4,7 +4,7 @@ defmodule BattleCity.Business.Core do
   alias BattleCity.Bullet
   alias BattleCity.Context
   alias BattleCity.Tank
-  import BattleCity.Position
+  import BattleCity.Position, only: [is_on_border: 1]
 
   @type move_object :: Tank.t() | Bullet.t()
 

@@ -53,9 +53,10 @@ defmodule BattleCity.Context do
   @spec put_object(__MODULE__.t(), object_struct) :: __MODULE__.t()
   def put_object(
         %__MODULE__{objects: objects} = ctx,
-        %{position: %{x: x, y: y}, id: id, __struct__: struct}
+        %{position: %{} = position, id: id, __struct__: struct}
       ) do
-    o = objects[{x, y}] |> MapSet.put({id, struct})
+    {x, y} = Position.round(position)
+    o = objects |> Map.fetch!({x, y}) |> MapSet.put({id, struct})
     %{ctx | objects: Map.put(objects, {x, y}, o)}
   end
 
