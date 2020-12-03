@@ -3,6 +3,7 @@ defmodule BattleCity.Stage do
 
   alias BattleCity.Compile
   alias BattleCity.Environment
+  alias BattleCity.Process.StageCache
 
   @type bots :: [{atom(), integer()}]
 
@@ -42,6 +43,6 @@ defmodule BattleCity.Stage do
   end
 
   def __after_compile__(env, _bytecode) do
-    BattleCity.StageCache.put_stage(env.module)
+    StageCache.put_stage(env.module)
   end
 end

@@ -1,7 +1,7 @@
 defmodule BattleCityWeb.GameLive do
   use BattleCityWeb, :live_view
   alias BattleCity.Context
-  alias BattleCity.StageCache
+  alias BattleCity.Process.StageCache
   require Logger
 
   @default_level "35"
