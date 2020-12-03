@@ -56,9 +56,9 @@ defmodule BattleCity.Environment do
     if function_exported?(environment.__module__, :handle_on, 2) do
       environment.__module__.handle_on(ctx, tank)
       |> BattleCity.parse_tank_result(ctx, tank)
-      |> Context.put_tank()
+      |> Context.put_object()
     else
-      Context.put_tank(ctx, tank)
+      Context.put_object(ctx, tank)
     end
   end
 
@@ -67,9 +67,9 @@ defmodule BattleCity.Environment do
     if function_exported?(environment.__module__, :handle_off, 2) do
       environment.__module__.handle_off(ctx, tank)
       |> BattleCity.parse_tank_result(ctx, tank)
-      |> Context.put_tank()
+      |> Context.put_object()
     else
-      Context.put_tank(ctx, tank)
+      Context.put_object(ctx, tank)
     end
   end
 

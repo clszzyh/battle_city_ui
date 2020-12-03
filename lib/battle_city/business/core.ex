@@ -16,7 +16,7 @@ defmodule BattleCity.Business.Core do
   @spec next_tanks(Context.t()) :: Context.t()
   defp next_tanks(%Context{tanks: tanks} = ctx) do
     {tanks, ctx} = Enum.map_reduce(tanks, ctx, &next_tank_1/2)
-    ctx |> Context.put_tank(tanks)
+    ctx |> Context.put_object(tanks)
   end
 
   @spec next_tank_1(Tank.t(), Context.t()) :: {Tank.t() | nil, Context.t()}

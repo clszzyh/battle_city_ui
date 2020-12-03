@@ -21,7 +21,7 @@ defmodule BattleCity.Business.Generate do
   def add_power_up(%Context{} = ctx, opts \\ %{}) do
     opts = Map.merge(opts, %{x: :x_random, y: :y_random, direction: :down})
     powerup = generate_power_up(opts)
-    ctx |> Context.put_powerup(powerup)
+    ctx |> Context.put_object(powerup)
   end
 
   def generate_power_up(opts) do
@@ -46,7 +46,7 @@ defmodule BattleCity.Business.Generate do
     |> Enum.reject(&match?(nil, &1))
     |> case do
       [] -> {:error, :empty}
-      tanks -> %{ctx | stage: %{stage | bots: bots}} |> Context.put_tank(tanks)
+      tanks -> %{ctx | stage: %{stage | bots: bots}} |> Context.put_object(tanks)
     end
   end
 

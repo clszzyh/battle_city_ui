@@ -15,7 +15,7 @@ defmodule BattleCity.Business.Input do
   end
 
   def operate(%Context{} = ctx, %Tank{} = tank, %Event{name: :move}) do
-    ctx |> Context.put_tank(%{tank | moving?: true})
+    ctx |> Context.put_object(%{tank | moving?: true})
   end
 
   def operate(_, %Tank{shootable?: false}, %Event{name: :shoot}) do
@@ -28,6 +28,6 @@ defmodule BattleCity.Business.Input do
         %Event{name: :shoot} = event
       ) do
     bullet = module.create_bullet(tank, event)
-    ctx |> Context.put_tank(%{tank | shootable?: false}) |> Context.put_bullet(bullet)
+    ctx |> Context.put_object(%{tank | shootable?: false}) |> Context.put_object(bullet)
   end
 end

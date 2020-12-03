@@ -50,7 +50,7 @@ defmodule BattleCity.PowerUp do
   def on(%Context{} = ctx, %Tank{} = tank, %__MODULE__{} = powerup) do
     powerup.__module__.handle_on(ctx, tank)
     |> BattleCity.parse_tank_result(ctx, tank)
-    |> Context.put_tank()
+    |> Context.put_object()
   end
 
   @spec off(Context.t(), Tank.t(), __MODULE__.t()) :: BattleCity.invoke_result()
@@ -58,9 +58,9 @@ defmodule BattleCity.PowerUp do
     if function_exported?(powerup.__module__, :handle_off, 2) do
       powerup.__module__.handle_off(ctx, tank)
       |> BattleCity.parse_tank_result(ctx, tank)
-      |> Context.put_tank()
+      |> Context.put_object()
     else
-      Context.put_tank(ctx, tank)
+      Context.put_object(ctx, tank)
     end
   end
 end
