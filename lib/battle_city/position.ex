@@ -30,9 +30,14 @@ defmodule BattleCity.Position do
 
   @type x :: unquote(@xmin)..unquote(@xmax)
   @type y :: unquote(@ymin)..unquote(@ymax)
+  @typep x_real :: unquote(@xmin_real)..unquote(@xmax_real)
+  @typep y_real :: unquote(@ymin_real)..unquote(@ymax_real)
   @type xy :: {x, y}
+  @typep x_or_y_real :: x_real | y_real
   @type speed :: 1..10
   @typep x_or_y :: x | y
+  @typep atom_x_or_y :: :x | :y
+  @type path :: {atom_x_or_y, x_or_y}
 
   @type t :: %__MODULE__{
           direction: direction(),
@@ -58,21 +63,7 @@ defmodule BattleCity.Position do
                      (p.ry == @ymin_real and p.direction == :up) or
                      (p.ry == @ymax_real and p.direction == :down))
 
-  def objects, do: @objects
-  def size, do: @size
-  def atom, do: @atom
-
-  @spec round(__MODULE__.t()) :: xy()
-  def round(%__MODULE__{x: x, y: y, direction: direction}) do
-    {round_number(:x, x, direction), round_number(:y, y, direction)}
-  end
-
-  @spec round_number(:x | :y, x_or_y(), direction()) :: x_or_y()
-  defp round_number(_, n, _) when is_even(n), do: n
-  defp round_number(:x, n, :right), do: n + 1
-  defp round_number(:y, n, :up), do: n + 1
-  defp round_number(_, n, _), do: n - 1
-
+  @spec init(map) :: __MODULE__.t()
   def init(map \\ %{})
 
   def init(%{direction: direction} = map) when direction not in @diretions do
@@ -99,4 +90,37 @@ defmodule BattleCity.Position do
   defp fetch_y(:y_player_1), do: @ymax
   defp fetch_y(:y_random_enemy), do: @ymin
   defp fetch_y(:y_random), do: Enum.random(@y_range)
+
+  def objects, do: @objects
+  def size, do: @size
+  def atom, do: @atom
+
+  @spec round(__MODULE__.t()) :: xy()
+  def round(%__MODULE__{x: x, y: y, direction: direction}) do
+    {normalize_number(:x, x, direction), normalize_number(:y, y, direction)}
+  end
+
+  @spec normalize_number(:x | :y, x_or_y(), direction()) :: x_or_y()
+  defp normalize_number(_, n, _) when is_even(n), do: n
+  defp normalize_number(:x, n, :right), do: n + 1
+  defp normalize_number(:y, n, :up), do: n + 1
+  defp normalize_number(_, n, _), do: n - 1
+
+  @spec vector_with_normalize(__MODULE__.t(), speed) :: {atom_x_or_y, x_or_y_real, x_or_y}
+  def vector_with_normalize(%{direction: direction} = p, speed) do
+    {x_or_y, target} = vector(p, speed)
+    {x_or_y, target, normalize_number(x_or_y, div(target, @width_real), direction)}
+  end
+
+  @spec vector(__MODULE__.t(), speed) :: {atom_x_or_y, speed}
+  def vector(%{direction: :right, rx: rx}, speed) when rx + speed <= @xmax_real,
+    do: {:x, rx + speed}
+
+  def vector(%{direction: :right}, _), do: {:x, @xmax_real}
+  def vector(%{direction: :left, rx: rx}, speed) when rx - speed >= 0, do: {:x, rx - speed}
+  def vector(%{direction: :left}, _), do: {:x, 0}
+  def vector(%{direction: :up, ry: ry}, speed) when ry + speed <= @ymax_real, do: {:y, ry + speed}
+  def vector(%{direction: :up}, _), do: {:y, @ymax_real}
+  def vector(%{direction: :down, ry: ry}, speed) when ry - speed >= 0, do: {:y, ry - speed}
+  def vector(%{direction: :down}, _), do: {:y, 0}
 end

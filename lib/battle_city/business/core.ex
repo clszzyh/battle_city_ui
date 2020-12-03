@@ -7,12 +7,7 @@ defmodule BattleCity.Business.Core do
   alias BattleCity.Tank
   import BattleCity.Position, only: [is_on_border: 1]
 
-  @type move_struct :: Tank.t() | Bullet.t()
-
-  @spec next(Context.t()) :: Context.t()
-  def next(%Context{} = ctx) do
-    ctx |> move_objects()
-  end
+  @typep move_struct :: Tank.t() | Bullet.t()
 
   @spec move_objects(Context.t()) :: Context.t()
   def move_objects(%Context{} = ctx) do
@@ -28,7 +23,9 @@ defmodule BattleCity.Business.Core do
   def move(%Tank{moving?: false} = tank, _), do: tank
   def move(%Tank{freezed?: true} = tank, _), do: tank
 
-  def move(%{position: _position} = o, _map) do
-    o
-  end
+  # def move(%{position: %{x: x, y: y} = position} = o, map) do
+  #   {xory, xy_real, xy} = Position.vector_with_normalize(position, speed)
+  #   case xory do
+  #   end
+  # end
 end
