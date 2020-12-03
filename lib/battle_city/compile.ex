@@ -2,6 +2,7 @@ defmodule BattleCity.Compile do
   @moduledoc false
 
   alias BattleCity.Environment
+  alias BattleCity.Position
   alias BattleCity.Tank
   alias BattleCity.Utils
   require Logger
@@ -67,7 +68,7 @@ defmodule BattleCity.Compile do
 
   defp parse_map({o, y}) when is_binary(o) do
     result = o |> String.split(" ", trim: true)
-    unless Enum.count(result) == 13, do: raise("#{o}'s length should be 13.")
+    unless Enum.count(result) == Position.size() + 1, do: raise("#{o}'s length should be 13.")
     result |> Enum.with_index() |> Enum.map(fn {o, x} -> parse_map_1(o, {x, y}) end)
   end
 
@@ -75,8 +76,8 @@ defmodule BattleCity.Compile do
     {prefix, suffix} = parse_map_2(o)
 
     Map.fetch!(@environment_map, prefix).init(%{
-      x: x,
-      y: y,
+      x: x * Position.atom_width(),
+      y: y * Position.atom_width(),
       shape: Map.fetch!(@suffix_map, suffix)
     })
   end
