@@ -30,10 +30,10 @@ defmodule BattleCity.Position do
 
   @type x :: unquote(@xmin)..unquote(@xmax)
   @type y :: unquote(@ymin)..unquote(@ymax)
-  @typep x_real :: unquote(@xmin_real)..unquote(@xmax_real)
-  @typep y_real :: unquote(@ymin_real)..unquote(@ymax_real)
+  # @typep x_real :: unquote(@xmin_real)..unquote(@xmax_real)
+  # @typep y_real :: unquote(@ymin_real)..unquote(@ymax_real)
   @type xy :: {x, y}
-  @typep x_or_y_real :: x_real | y_real
+  # @typep x_or_y_real :: x_real | y_real
   @type speed :: 1..10
   @typep x_or_y :: x | y
   @typep atom_x_or_y :: :x | :y
@@ -106,10 +106,10 @@ defmodule BattleCity.Position do
   defp normalize_number(:y, n, :up), do: n + 1
   defp normalize_number(_, n, _), do: n - 1
 
-  @spec vector_with_normalize(__MODULE__.t(), speed) :: {atom_x_or_y, x_or_y_real, x_or_y}
+  @spec vector_with_normalize(__MODULE__.t(), speed) :: {atom_x_or_y, x_or_y}
   def vector_with_normalize(%{direction: direction} = p, speed) do
     {x_or_y, target} = vector(p, speed)
-    {x_or_y, target, normalize_number(x_or_y, div(target, @width_real), direction)}
+    {x_or_y, normalize_number(x_or_y, div(target, @width_real), direction)}
   end
 
   @spec vector(__MODULE__.t(), speed) :: {atom_x_or_y, speed}
