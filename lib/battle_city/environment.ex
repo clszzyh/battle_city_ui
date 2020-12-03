@@ -6,8 +6,8 @@ defmodule BattleCity.Environment do
   alias BattleCity.Position
   alias BattleCity.Tank
 
-  @type health :: integer() | :infinite
-  @type shape :: nil | binary()
+  @typep health :: integer() | :infinite
+  @typep shape :: nil | binary()
 
   @type t :: %__MODULE__{
           __module__: module(),

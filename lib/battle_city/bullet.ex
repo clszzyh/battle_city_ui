@@ -4,7 +4,7 @@ defmodule BattleCity.Bullet do
   alias BattleCity.Position
 
   @type t :: %__MODULE__{
-          speed: integer,
+          speed: Position.speed(),
           position: Position.t(),
           id: BattleCity.id(),
           tank_id: BattleCity.id(),

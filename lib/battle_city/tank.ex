@@ -9,19 +9,17 @@ defmodule BattleCity.Tank do
   alias __MODULE__
 
   defmodule Base do
-    @type health :: 1..10
-    @type move_speed :: 1..10
-    @type bullet_speed :: move_speed
-    @type points :: integer
-    @type level :: 1..4
+    @typep health :: 1..10
+    @typep points :: integer
+    @typep level :: 1..4
 
     @type t :: %__MODULE__{
             __module__: module,
             level: level(),
             points: points(),
             health: health(),
-            move_speed: move_speed(),
-            bullet_speed: bullet_speed()
+            move_speed: Position.speed(),
+            bullet_speed: Position.speed()
           }
 
     @enforce_keys [:level, :points, :health, :move_speed, :bullet_speed]
@@ -79,6 +77,7 @@ defmodule BattleCity.Tank do
           id: BattleCity.id(),
           killer: BattleCity.id(),
           position: Position.t(),
+          speed: Position.speed(),
           lifes: integer(),
           score: integer(),
           reason: BattleCity.reason(),
@@ -99,6 +98,7 @@ defmodule BattleCity.Tank do
     :reason,
     :killer,
     :position,
+    :speed,
     score: 0,
     dead?: false,
     shield?: false,

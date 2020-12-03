@@ -9,11 +9,11 @@ defmodule BattleCity.Context do
   alias BattleCity.Stage
   alias BattleCity.Tank
 
-  @type state :: :started | :paused | :game_over | :complete
+  @typep state :: :started | :paused | :game_over | :complete
 
   @type object_struct :: PowerUp.t() | Tank.t() | Bullet.t() | nil
-  @type object_type :: PowerUp | Tank | Bullet
-  @type object :: {object_type, BattleCity.id()}
+  @typep object_type :: PowerUp | Tank | Bullet
+  @typep object :: {object_type, BattleCity.id()}
 
   @object_struct_map %{
     PowerUp => :power_ups,
@@ -49,7 +49,9 @@ defmodule BattleCity.Context do
     stage = module.init(opts)
 
     player =
-      tank.new(Map.merge(opts, %{enemy?: false, x: :x_player_1, y: :y_player_1, direction: :up}))
+      opts
+      |> Map.merge(%{enemy?: false, x: :x_player_1, y: :y_player_1, direction: :up})
+      |> tank.new()
 
     %__MODULE__{stage: stage, objects: Position.objects()}
     |> put_object(player)

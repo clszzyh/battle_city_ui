@@ -6,12 +6,13 @@ defmodule BattleCity.Stage do
   alias BattleCity.Process.StageCache
 
   @type bots :: [{atom(), integer()}]
+  @type map_data :: [[Environment.t()]]
 
   @type t :: %__MODULE__{
           __module__: module,
           name: binary(),
           difficulty: integer(),
-          map: [[Environment.t()]],
+          map: map_data,
           bots: bots
         }
 

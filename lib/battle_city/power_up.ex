@@ -6,7 +6,7 @@ defmodule BattleCity.PowerUp do
   alias BattleCity.Position
   alias BattleCity.Tank
 
-  @type duration :: integer() | :instant
+  @typep duration :: integer() | :instant
 
   @type t :: %__MODULE__{
           __module__: module(),

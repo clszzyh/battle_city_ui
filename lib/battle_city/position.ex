@@ -31,7 +31,8 @@ defmodule BattleCity.Position do
   @type x :: unquote(@xmin)..unquote(@xmax)
   @type y :: unquote(@ymin)..unquote(@ymax)
   @type xy :: {x, y}
-  @type x_or_y :: x | y
+  @type speed :: 1..10
+  @typep x_or_y :: x | y
 
   @type t :: %__MODULE__{
           direction: direction(),
@@ -50,16 +51,16 @@ defmodule BattleCity.Position do
                do: {{x, y}, MapSet.new()},
                into: %{}
 
-  def objects, do: @objects
-  def size, do: @size
-  def atom, do: @atom
-
   defguard is_on_border(p)
            when is_struct(p, __MODULE__) and
                   ((p.rx == @xmin_real and p.direction == :left) or
                      (p.rx == @xmax_real and p.direction == :right) or
                      (p.ry == @ymin_real and p.direction == :up) or
                      (p.ry == @ymax_real and p.direction == :down))
+
+  def objects, do: @objects
+  def size, do: @size
+  def atom, do: @atom
 
   @spec round(__MODULE__.t()) :: xy()
   def round(%__MODULE__{x: x, y: y, direction: direction}) do

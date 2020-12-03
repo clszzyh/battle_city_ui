@@ -1,7 +1,7 @@
 defmodule BattleCity.Event do
   @moduledoc false
 
-  @type name :: :shoot | :move
+  @typep name :: :shoot | :move
 
   @type t :: %__MODULE__{
           id: BattleCity.id(),
