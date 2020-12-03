@@ -59,20 +59,23 @@ defmodule BattleCity.Compile do
   end
 
   def validate_stage!(%{map: map, bots: bots} = o) do
-    %{
-      o
-      | map: map |> Enum.with_index() |> Enum.map(&parse_map/1),
-        bots: Enum.map(bots, &parse_bot/1)
-    }
+    map =
+      map
+      |> Enum.with_index()
+      |> Enum.flat_map(&parse_map/1)
+      |> Enum.into(%{}, fn o -> {{o.x, o.y}, o} end)
+
+    %{o | map: map, bots: Enum.map(bots, &parse_bot/1)}
   end
 
   defp parse_map({o, y}) when is_binary(o) do
     result = o |> String.split(" ", trim: true)
     unless Enum.count(result) == Position.size() + 1, do: raise("#{o}'s length should be 13.")
+
     result |> Enum.with_index() |> Enum.map(fn {o, x} -> parse_map_1(o, {x, y}) end)
   end
 
-  defp parse_map_1(o, {x, y}) when is_binary(o) do
+  def parse_map_1(o, {x, y}) when is_binary(o) do
     {prefix, suffix} = parse_map_2(o)
 
     Map.fetch!(@environment_map, prefix).init(%{

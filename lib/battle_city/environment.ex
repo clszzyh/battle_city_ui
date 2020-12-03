@@ -27,8 +27,7 @@ defmodule BattleCity.Environment do
     :y,
     :shape,
     enter?: false,
-    health: 0,
-    objects: []
+    health: 0
   ]
 
   use BattleCity.StructCollect
