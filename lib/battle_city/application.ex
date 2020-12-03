@@ -15,9 +15,10 @@ defmodule BattleCity.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: BattleCity.PubSub},
       # Start the Endpoint (http/https)
-      BattleCityWeb.Endpoint
+      BattleCityWeb.Endpoint,
       # Start a worker by calling: BattleCity.Worker.start_link(arg)
       # {BattleCity.Worker, arg}
+      {BattleCity.Process.TelemetryStorage, BattleCityWeb.Telemetry.metrics()}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

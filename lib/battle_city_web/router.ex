@@ -39,7 +39,11 @@ defmodule BattleCityWeb.Router do
 
     scope "/" do
       pipe_through :browser
-      live_dashboard "/dashboard", metrics: BattleCityWeb.Telemetry, ecto_repos: [BattleCity.Repo]
+
+      live_dashboard "/dashboard",
+        metrics: BattleCityWeb.Telemetry,
+        ecto_repos: [BattleCity.Repo],
+        metrics_history: {BattleCity.Process.TelemetryStorage, :metrics_history, []}
     end
   end
 end
