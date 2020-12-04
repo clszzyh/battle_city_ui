@@ -20,7 +20,7 @@ defmodule BattleCity.Context do
           rest_enemies: integer,
           shovel?: boolean,
           state: state(),
-          objects: %{Position.coordinate() => MapSet.t(BattleCity.object())},
+          objects: %{Position.coordinate() => MapSet.t(BattleCity.fingerprint())},
           stage: Stage.t(),
           power_ups: %{BattleCity.id() => PowerUp.t()},
           tanks: %{BattleCity.id() => Tank.t()},
@@ -98,7 +98,7 @@ defmodule BattleCity.Context do
     map = ctx |> Map.fetch!(key) |> Map.put(id, o)
 
     %{x: x, y: y} = Position.normalize(position)
-    o = objects |> Map.fetch!({x, y}) |> MapSet.put({key, id})
+    o = objects |> Map.fetch!({x, y}) |> MapSet.put(Object.fingerprint(o))
     Map.merge(ctx, %{key => map, :objects => Map.put(objects, {x, y}, o)})
   end
 
@@ -131,7 +131,7 @@ defmodule BattleCity.Context do
 
       o ->
         xy = {o.position.x, o.position.y}
-        o = objects |> Map.fetch!(xy) |> MapSet.delete({key, id})
+        o = objects |> Map.fetch!(xy) |> MapSet.delete(Object.fingerprint(o))
         ctx |> Map.merge(%{key => Map.delete(data, id), :objects => Map.put(objects, xy, o)})
     end
   end

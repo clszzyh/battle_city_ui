@@ -12,11 +12,12 @@ defmodule BattleCity.Bullet do
           tank_id: BattleCity.id(),
           event_id: BattleCity.id(),
           reason: BattleCity.reason(),
+          enemy?: boolean(),
           hidden?: boolean(),
           dead?: boolean()
         }
 
-  @enforce_keys [:id, :speed, :position, :tank_id, :event_id]
+  @enforce_keys [:id, :speed, :position, :tank_id, :event_id, :enemy?]
   defstruct [
     :speed,
     :position,
@@ -24,6 +25,7 @@ defmodule BattleCity.Bullet do
     :reason,
     :tank_id,
     :event_id,
+    :enemy?,
     __actions__: [],
     hidden?: false,
     dead?: false

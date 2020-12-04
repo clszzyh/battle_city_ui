@@ -118,11 +118,17 @@ defmodule BattleCity.Tank do
 
   @spec default_create_bullet(__MODULE__.t(), Event.t()) :: Bullet.t()
   def default_create_bullet(
-        %__MODULE__{id: tank_id, meta: %{bullet_speed: speed}, position: position},
+        %__MODULE__{
+          id: tank_id,
+          enemy?: enemy?,
+          meta: %{bullet_speed: speed},
+          position: position
+        },
         %Event{id: event_id}
       ) do
     %Bullet{
       id: Utils.random(),
+      enemy?: enemy?,
       position: position,
       tank_id: tank_id,
       event_id: event_id,

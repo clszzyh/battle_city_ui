@@ -14,7 +14,8 @@ defmodule BattleCity do
   @type id :: binary()
   @type reason :: atom()
   @type object_keys :: :power_ups | :tanks | :bullets
-  @type object :: {object_keys, id()}
+  @typep fingerprint_keys :: :p | :t | :b
+  @type fingerprint :: {fingerprint_keys, id(), boolean()}
 
   @type invoke_tank_result ::
           {Context.t(), Tank.t()} | Context.t() | Tank.t() | {:error, atom()} | :ignored
