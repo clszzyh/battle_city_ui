@@ -7,5 +7,6 @@ alias BattleCity.Bullet
 alias BattleCity.Context
 alias BattleCity.Utils
 alias BattleCity.Business
+alias BattleCity.Business.Move
 
 require Logger

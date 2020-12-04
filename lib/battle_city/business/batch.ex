@@ -47,10 +47,10 @@ defmodule BattleCity.Business.Batch do
          :kill,
          %Tank{meta: %{points: points}} = target,
          %Context{} = ctx,
-         %Tank{id: id} = tank,
+         %Tank{} = tank,
          reason
        ) do
-    target = %{target | dead?: true, reason: reason, killer: id}
+    target = %{target | dead?: true, reason: reason}
     tank = Business.Score.add_score(tank, points, reason)
 
     {target, {ctx, tank}}

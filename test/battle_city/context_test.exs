@@ -22,6 +22,8 @@ defmodule BattleCity.ContextTest do
     assert player.position.ry == 24 * 8
     assert player.position.direction == :up
     assert player.speed == 2
+    assert player.changed? == false
+    assert map_size(ctx.tanks) > 1
   end
 
   test "Put tank", %{ctx: ctx} do
@@ -41,6 +43,7 @@ defmodule BattleCity.ContextTest do
     assert new_player.position.rt == position.ry - 4
     assert new_player.position.t == position.y
     assert new_player.position.path == []
+    assert new_player.changed? == true
 
     assert new_player.position.x == position.x
     assert new_player.position.y == position.y
@@ -53,6 +56,7 @@ defmodule BattleCity.ContextTest do
     assert new_player.position.rt == position.ry - 14
     assert new_player.position.t == position.y - 2
     assert new_player.position.path == []
+    assert new_player.changed? == true
 
     assert new_player.position.x == position.x
     assert new_player.position.y == position.y - 2

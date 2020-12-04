@@ -51,7 +51,7 @@ defmodule BattleCity.Position do
 
   @keys [:direction, :x, :y, :rx, :ry]
   @enforce_keys [:direction, :x, :y, :rx, :ry]
-  defstruct [:x, :y, :direction, :rx, :ry, :rt, :t, :path]
+  defstruct [:x, :y, :direction, :rx, :ry, :rt, :t, path: []]
 
   @objects for x <- @x_range,
                rem(x, 2) == 0,
@@ -99,14 +99,11 @@ defmodule BattleCity.Position do
     rt = target(p, speed)
     t = normalize_number(direction, div_even(rt + direction_border(direction)))
 
-    path =
-      if direction in [:up, :down] do
-        for i <- y..t, rem(i, 2) == 0, do: {x, i}
-      else
-        for i <- x..t, rem(i, 2) == 0, do: {i, y}
-      end
-
-    %{p | rt: rt, t: t, path: path}
+    if direction in [:up, :down] do
+      %{p | ry: rt, rt: rt, t: t, path: for(i <- y..t, rem(i, 2) == 0, do: {x, i})}
+    else
+      %{p | rx: rt, rt: rt, t: t, path: for(i <- x..t, rem(i, 2) == 0, do: {i, y})}
+    end
   end
 
   @doc """

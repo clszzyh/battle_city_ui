@@ -80,7 +80,6 @@ defmodule BattleCity.Tank do
           meta: Base.t(),
           id: BattleCity.id(),
           __actions__: [Action.t()],
-          killer: BattleCity.id(),
           position: Position.t(),
           speed: Position.speed(),
           lifes: integer(),
@@ -92,6 +91,7 @@ defmodule BattleCity.Tank do
           moving?: boolean(),
           freezed?: boolean(),
           shootable?: boolean(),
+          changed?: boolean(),
           dead?: boolean()
         }
 
@@ -101,7 +101,6 @@ defmodule BattleCity.Tank do
     :meta,
     :id,
     :reason,
-    :killer,
     :position,
     :speed,
     score: 0,
@@ -111,6 +110,7 @@ defmodule BattleCity.Tank do
     shootable?: true,
     hiden?: false,
     moving?: false,
+    changed?: true,
     freezed?: false,
     __actions__: [],
     lifes: Config.life_count()

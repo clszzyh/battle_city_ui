@@ -27,11 +27,16 @@ defmodule BattleCity.Business.Move do
   def move(%Tank{moving?: false} = tank, _), do: tank
   def move(%Tank{freezed?: true} = tank, _), do: tank
 
-  def move(%{position: position, speed: speed} = o, map) do
+  def move(%{position: position, speed: speed} = original, map) do
     %Position{path: [_one | rest] = path} = position = Position.destination(position, speed)
-    o = %{o | position: %{position | path: rest}}
+    o = %{original | position: %{position | path: rest}}
     path_map = for p <- path, do: Map.fetch!(map, p)
-    path_map |> tl |> Enum.zip(path_map) |> Enum.reduce_while(o, &do_move/2)
+
+    path_map
+    |> tl
+    |> Enum.zip(path_map)
+    |> Enum.reduce_while(o, &do_move/2)
+    |> maybe_changed(original)
   end
 
   @spec do_move({Environment.t(), Environment.t()}, move_struct) ::
@@ -46,4 +51,12 @@ defmodule BattleCity.Business.Move do
         {:halt, Environment.copy_rxy(source, %{o | reason: reason})}
     end
   end
+
+  @spec maybe_changed(move_struct, move_struct) :: move_struct
+  defp maybe_changed(%Tank{position: %{rx: rx, ry: ry}} = o, %Tank{position: %{rx: rx, ry: ry}}),
+    do: o
+
+  defp maybe_changed(%Tank{} = o, %Tank{}), do: %{o | changed?: true}
+
+  defp maybe_changed(o, _), do: o
 end

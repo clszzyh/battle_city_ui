@@ -78,7 +78,15 @@ defmodule BattleCity.Context do
     |> delete_object(:bullets, id)
   end
 
-  def handle_object(
+  def handle_object(ctx, %Tank{changed?: false}), do: ctx
+
+  def handle_object(ctx, %Tank{changed?: true} = tank),
+    do: put_changed_object(ctx, %{tank | changed?: false})
+
+  def handle_object(ctx, other), do: put_changed_object(ctx, other)
+
+  @spec put_changed_object(__MODULE__.t(), object_struct) :: __MODULE__.t()
+  def put_changed_object(
         %__MODULE__{objects: objects} = ctx,
         %{
           position: %{} = position,
