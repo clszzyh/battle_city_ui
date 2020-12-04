@@ -8,7 +8,7 @@ defmodule BattleCity.Position do
   @size 12
 
   @border 4
-  @width_real @border * 2
+  @width @border * 2
 
   @atom 2
 
@@ -19,10 +19,10 @@ defmodule BattleCity.Position do
   @xmid round((@xmin + @xmax) * 0.5)
   @x_player_1 round(@xmid - @atom - 0.5 * @atom)
 
-  @xmin_real @xmin * @width_real
-  @xmax_real @xmax * @width_real
-  @ymin_real @ymin * @width_real
-  @ymax_real @ymax * @width_real
+  @rxmin @xmin * @width
+  @rxmax @xmax * @width
+  @rymin @ymin * @width
+  @rymax @ymax * @width
 
   @x_range @xmin..@xmax
   @y_range @ymin..@ymax
@@ -30,10 +30,11 @@ defmodule BattleCity.Position do
 
   @type x :: unquote(@xmin)..unquote(@xmax)
   @type y :: unquote(@ymin)..unquote(@ymax)
-  # @typep x_real :: unquote(@xmin_real)..unquote(@xmax_real)
-  # @typep y_real :: unquote(@ymin_real)..unquote(@ymax_real)
+  @type rx :: unquote(@rxmin)..unquote(@rxmax)
+  @type ry :: unquote(@rymin)..unquote(@rymax)
   @type xy :: {x, y}
-  # @typep x_or_y_real :: x_real | y_real
+  @typep rx_or_ry :: rx | ry
+  @typep rx_or_ry_map :: %{(:rx | :ry) => rx_or_ry}
   @type speed :: 1..10
   @typep x_or_y :: x | y
   @typep atom_x_or_y :: :x | :y
@@ -58,10 +59,10 @@ defmodule BattleCity.Position do
 
   defguard is_on_border(p)
            when is_struct(p, __MODULE__) and
-                  ((p.rx == @xmin_real and p.direction == :left) or
-                     (p.rx == @xmax_real and p.direction == :right) or
-                     (p.ry == @ymin_real and p.direction == :up) or
-                     (p.ry == @ymax_real and p.direction == :down))
+                  ((p.rx == @rxmin and p.direction == :left) or
+                     (p.rx == @rxmax and p.direction == :right) or
+                     (p.ry == @rymin and p.direction == :up) or
+                     (p.ry == @rymax and p.direction == :down))
 
   @spec init(map) :: __MODULE__.t()
   def init(map \\ %{})
@@ -79,7 +80,7 @@ defmodule BattleCity.Position do
   end
 
   def init(%{x: x, y: y} = map) do
-    map = map |> Map.merge(%{rx: x * @width_real, ry: y * @width_real}) |> Map.take(@keys)
+    map = map |> Map.merge(%{rx: x * @width, ry: y * @width}) |> Map.take(@keys)
     struct!(__MODULE__, map)
   end
 
@@ -94,6 +95,7 @@ defmodule BattleCity.Position do
   def objects, do: @objects
   def size, do: @size
   def atom, do: @atom
+  def width, do: @width
 
   @spec round(__MODULE__.t()) :: xy()
   def round(%__MODULE__{x: x, y: y, direction: direction}) do
@@ -106,21 +108,26 @@ defmodule BattleCity.Position do
   defp normalize_number(:y, n, :up), do: n + 1
   defp normalize_number(_, n, _), do: n - 1
 
-  @spec vector_with_normalize(__MODULE__.t(), speed) :: {atom_x_or_y, x_or_y}
+  @spec vector_with_normalize(__MODULE__.t(), speed) :: {atom_x_or_y, rx_or_ry_map, x_or_y}
   def vector_with_normalize(%{direction: direction} = p, speed) do
     {x_or_y, target} = vector(p, speed)
-    {x_or_y, normalize_number(x_or_y, div(target, @width_real), direction)}
+
+    map =
+      case x_or_y do
+        :x -> %{rx: target}
+        :y -> %{ry: target}
+      end
+
+    {x_or_y, map, normalize_number(x_or_y, div(target, @width), direction)}
   end
 
   @spec vector(__MODULE__.t(), speed) :: {atom_x_or_y, speed}
-  def vector(%{direction: :right, rx: rx}, speed) when rx + speed <= @xmax_real,
-    do: {:x, rx + speed}
-
-  def vector(%{direction: :right}, _), do: {:x, @xmax_real}
+  def vector(%{direction: :right, rx: rx}, speed) when rx + speed <= @rxmax, do: {:x, rx + speed}
+  def vector(%{direction: :right}, _), do: {:x, @rxmax}
   def vector(%{direction: :left, rx: rx}, speed) when rx - speed >= 0, do: {:x, rx - speed}
   def vector(%{direction: :left}, _), do: {:x, 0}
-  def vector(%{direction: :up, ry: ry}, speed) when ry + speed <= @ymax_real, do: {:y, ry + speed}
-  def vector(%{direction: :up}, _), do: {:y, @ymax_real}
+  def vector(%{direction: :up, ry: ry}, speed) when ry + speed <= @rymax, do: {:y, ry + speed}
+  def vector(%{direction: :up}, _), do: {:y, @rymax}
   def vector(%{direction: :down, ry: ry}, speed) when ry - speed >= 0, do: {:y, ry - speed}
   def vector(%{direction: :down}, _), do: {:y, 0}
 end

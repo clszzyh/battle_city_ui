@@ -26,17 +26,19 @@ defmodule BattleCity.Business.Move do
   def move(%Tank{freezed?: true} = tank, _), do: tank
 
   def move(%{position: %{x: x, y: y} = position, speed: speed} = o, map) do
-    {xory, xy} = Position.vector_with_normalize(position, speed)
+    {xory, xy_map, xy} = Position.vector_with_normalize(position, speed)
 
-    paths =
+    path =
       case xory do
         :x -> for i <- x..xy, do: Map.fetch!(map, {i, y})
         :y -> for i <- y..xy, do: Map.fetch!(map, {x, i})
       end
 
-    Enum.reduce_while(paths, o, &do_move/2)
+    o = %{o | position: Map.merge(position, xy_map)}
+    path |> tl |> Enum.zip(path) |> Enum.reduce_while(o, &do_move/2)
   end
 
-  @spec do_move(Environment.t(), move_struct) :: {:halt, atom()} | {:cont, move_struct}
+  @spec do_move({Environment.t(), Environment.t()}, move_struct) ::
+          {:halt, atom()} | {:cont, move_struct}
   defp do_move(_, o), do: {:cont, o}
 end

@@ -81,6 +81,8 @@ defmodule BattleCity.Compile do
     Map.fetch!(@environment_map, prefix).init(%{
       x: x * Position.atom(),
       y: y * Position.atom(),
+      rx: x * Position.atom() * Position.width(),
+      ry: y * Position.atom() * Position.width(),
       shape: Map.fetch!(@suffix_map, suffix)
     })
   end

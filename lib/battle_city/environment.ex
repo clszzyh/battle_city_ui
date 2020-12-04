@@ -16,7 +16,9 @@ defmodule BattleCity.Environment do
           health: health,
           shape: shape,
           x: Position.x(),
-          y: Position.y()
+          y: Position.y(),
+          rx: Position.rx(),
+          ry: Position.ry()
         }
 
   @enforce_keys [:enter?, :health]
@@ -25,6 +27,8 @@ defmodule BattleCity.Environment do
     :id,
     :x,
     :y,
+    :rx,
+    :ry,
     :shape,
     enter?: false,
     health: 0
