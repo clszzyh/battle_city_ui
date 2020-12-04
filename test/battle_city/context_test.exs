@@ -11,11 +11,17 @@ defmodule BattleCity.ContextTest do
   setup_all do
     ctx = Context.init(Stage.S1)
     player = ctx.tanks |> Map.values() |> Enum.find(&match?(%{enemy?: false}, &1))
-    [ctx: ctx, player: player]
+    [ctx: ctx, player: player, map: ctx.stage.map]
   end
 
-  test "context init", %{ctx: ctx} do
+  test "context init", %{ctx: ctx, player: player} do
     assert Enum.count(ctx.objects) == (Position.size() + 1) * (Position.size() + 1)
+    assert player.position.x == 8
+    assert player.position.y == 24
+    assert player.position.rx == 9 * 8
+    assert player.position.ry == 24 * 8
+    assert player.position.direction == :up
+    assert player.speed == 2
   end
 
   test "Put tank", %{ctx: ctx} do
@@ -28,12 +34,29 @@ defmodule BattleCity.ContextTest do
     assert Enum.count(new_ctx.power_ups) == Enum.count(ctx.power_ups) + 1
   end
 
-  test "move", %{ctx: ctx, player: player} do
-    assert player.position.x == 8
-    assert player.position.y == 24
-    assert player.position.rx == 9 * 8
-    assert player.position.ry == 24 * 8
-    ctx = ctx |> Context.put_object(%{player | moving?: true})
-    _ctx = ctx |> Move.move_all()
+  test "move_slow", %{player: %{position: position} = player, map: map} do
+    player = %{player | moving?: true, speed: 4}
+    # _ctx = ctx |> Context.put_object(player)
+    new_player = Move.move(player, map)
+
+    assert new_player.position.rt == position.ry - 4
+    assert new_player.position.t == position.y
+    assert new_player.position.path == [{position.x, position.y}]
+
+    assert new_player.position.x == position.x
+    assert new_player.position.y == position.y
+  end
+
+  test "move_fast", %{player: %{position: position} = player, map: map} do
+    player = %{player | moving?: true, speed: 14}
+    # _ctx = ctx |> Context.put_object(player)
+    new_player = Move.move(player, map)
+
+    assert new_player.position.rt == position.ry - 14
+    assert new_player.position.t == position.y - 2
+    assert new_player.position.path == [{position.x, position.y}, {position.x, position.y - 2}]
+
+    assert new_player.position.x == position.x
+    assert new_player.position.y == position.y - 2
   end
 end

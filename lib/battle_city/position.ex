@@ -97,16 +97,38 @@ defmodule BattleCity.Position do
   @spec destination(__MODULE__.t(), speed) :: __MODULE__.t()
   def destination(%{direction: direction, x: x, y: y} = p, speed) do
     rt = target(p, speed)
-    t = normalize_number(direction, div(rt, @width))
+    t = normalize_number(direction, div_even(rt + direction_border(direction)))
 
     path =
       if direction in [:up, :down] do
-        for i <- y..t, do: {x, i}
+        for i <- y..t, rem(i, 2) == 0, do: {x, i}
       else
-        for i <- x..t, do: {i, y}
+        for i <- x..t, rem(i, 2) == 0, do: {i, y}
       end
 
     %{p | rt: rt, t: t, path: path}
+  end
+
+  defp direction_border(:up), do: -0.1
+  defp direction_border(:down), do: 0.1
+  defp direction_border(:right), do: 0.1
+  defp direction_border(:left), do: -0.1
+
+  @doc """
+    iex> #{__MODULE__}.div_even(#{@width * 3 + 0.1})
+    4
+    iex> #{__MODULE__}.div_even(#{@width * 3 - 0.1})
+    2
+    iex> #{__MODULE__}.div_even(#{@width * 4 + 0.1})
+    4
+    iex> #{__MODULE__}.div_even(#{@width * 5 + 0.1})
+    6
+    iex> #{__MODULE__}.div_even(#{@width * 5 - 0.1})
+    4
+  """
+  @spec div_even(float) :: x_or_y
+  def div_even(rt) do
+    round(rt / @width / @atom) * @atom
   end
 
   @spec normalize(__MODULE__.t()) :: __MODULE__.t()
@@ -115,7 +137,6 @@ defmodule BattleCity.Position do
   end
 
   @doc """
-  ## Example
     iex> #{__MODULE__}.normalize_number(:up, 2, :x)
     2
     iex> #{__MODULE__}.normalize_number(:up, 3)
@@ -133,21 +154,20 @@ defmodule BattleCity.Position do
   def normalize_number(_, n, _), do: n - 1
 
   @doc """
-  ## Example
     iex> #{__MODULE__}.target(%{direction: :right, rx: 0}, 2)
     2
     iex> #{__MODULE__}.target(%{direction: :left, rx: 1}, 2)
     0
-    iex> #{__MODULE__}.target(%{direction: :up, ry: 1}, 2)
-    3
+    iex> #{__MODULE__}.target(%{direction: :up, ry: 3}, 2)
+    1
   """
   @spec target(__MODULE__.t(), speed) :: rx_or_ry
   def target(%{direction: :right, rx: rx}, speed) when rx + speed <= @rxmax, do: rx + speed
   def target(%{direction: :right}, _), do: @rxmax
   def target(%{direction: :left, rx: rx}, speed) when rx - speed >= 0, do: rx - speed
   def target(%{direction: :left}, _), do: 0
-  def target(%{direction: :up, ry: ry}, speed) when ry + speed <= @rymax, do: ry + speed
-  def target(%{direction: :up}, _), do: @rymax
-  def target(%{direction: :down, ry: ry}, speed) when ry - speed >= 0, do: ry - speed
-  def target(%{direction: :down}, _), do: 0
+  def target(%{direction: :up, ry: ry}, speed) when ry - speed >= 0, do: ry - speed
+  def target(%{direction: :up}, _), do: 0
+  def target(%{direction: :down, ry: ry}, speed) when ry + speed <= @rymax, do: ry + speed
+  def target(%{direction: :down}, _), do: @rymax
 end
