@@ -4,6 +4,8 @@ defmodule BattleCity.Bullet do
   alias BattleCity.Action
   alias BattleCity.Position
 
+  @type power :: 1..10
+
   @type t :: %__MODULE__{
           speed: Position.speed(),
           position: Position.t(),
@@ -12,6 +14,7 @@ defmodule BattleCity.Bullet do
           tank_id: BattleCity.id(),
           event_id: BattleCity.id(),
           reason: BattleCity.reason(),
+          power: power,
           enemy?: boolean(),
           hidden?: boolean(),
           dead?: boolean()
@@ -26,6 +29,7 @@ defmodule BattleCity.Bullet do
     :tank_id,
     :event_id,
     :enemy?,
+    power: 1,
     __actions__: [],
     hidden?: false,
     dead?: false

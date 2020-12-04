@@ -102,6 +102,10 @@ defmodule BattleCity.Context do
     Map.merge(ctx, %{key => map, :objects => Map.put(objects, {x, y}, o)})
   end
 
+  def fetch_object!(ctx, key, id) do
+    ctx |> Map.fetch!(key) |> Map.fetch!(id)
+  end
+
   @spec update_object_raw(
           __MODULE__.t(),
           BattleCity.object_keys(),

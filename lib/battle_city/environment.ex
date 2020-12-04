@@ -70,7 +70,7 @@ defmodule BattleCity.Environment do
 
   def enter(
         %__MODULE__{enter?: false, health: health, x: x, y: y, id: env_id},
-        %Bullet{__actions__: actions, id: bullet_id} = bullet
+        %Bullet{__actions__: actions, power: power, id: bullet_id} = bullet
       )
       when health > 0 do
     action = %Action{
@@ -79,7 +79,7 @@ defmodule BattleCity.Environment do
       target_type: :environment,
       source_type: :bullet,
       kind: :damage,
-      value: 1,
+      value: power,
       args: %{x: x, y: y}
     }
 

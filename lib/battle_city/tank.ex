@@ -9,16 +9,16 @@ defmodule BattleCity.Tank do
   alias BattleCity.Utils
   alias __MODULE__
 
-  defmodule Base do
-    @typep health :: 1..10
-    @typep points :: integer
-    @typep level :: 1..4
+  @type health :: 1..10
+  @type points :: integer
+  @type level :: 1..4
 
+  defmodule Base do
     @type t :: %__MODULE__{
             __module__: module,
-            level: level(),
-            points: points(),
-            health: health(),
+            level: Tank.level(),
+            points: Tank.points(),
+            health: Tank.health(),
             move_speed: Position.speed(),
             bullet_speed: Position.speed()
           }
@@ -64,7 +64,8 @@ defmodule BattleCity.Tank do
             meta: meta,
             id: Utils.random(),
             position: Position.init(map),
-            speed: meta.move_speed
+            speed: meta.move_speed,
+            health: meta.health
           }
 
           struct!(Tank, map |> Map.take(unquote(keys)) |> Map.merge(data))
@@ -84,6 +85,7 @@ defmodule BattleCity.Tank do
           speed: Position.speed(),
           lifes: integer(),
           score: integer(),
+          health: health(),
           reason: BattleCity.reason(),
           enemy?: boolean(),
           hiden?: boolean(),
@@ -103,6 +105,7 @@ defmodule BattleCity.Tank do
     :reason,
     :position,
     :speed,
+    :health,
     score: 0,
     dead?: false,
     shield?: false,
@@ -135,4 +138,11 @@ defmodule BattleCity.Tank do
       speed: speed
     }
   end
+
+  @spec hit(__MODULE__.t(), Bullet.t()) :: __MODULE__.t()
+  def hit(%__MODULE__{health: health} = tank, %Bullet{power: power}) when power < health do
+    %__MODULE__{tank | health: health - power}
+  end
+
+  def hit(%__MODULE__{} = tank, %Bullet{}), do: %{tank | dead?: true}
 end
