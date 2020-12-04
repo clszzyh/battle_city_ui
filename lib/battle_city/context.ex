@@ -12,14 +12,17 @@ defmodule BattleCity.Context do
   @typep state :: :started | :paused | :game_over | :complete
 
   @type object_struct :: PowerUp.t() | Tank.t() | Bullet.t() | nil
-  @typep object_type :: PowerUp | Tank | Bullet
-  @typep object :: {object_type, BattleCity.id()}
+  # @typep object_type :: PowerUp | Tank | Bullet
+  @typep object_keys :: :power_ups | :tanks | :bullets
+  @typep object :: {object_keys, BattleCity.id()}
 
   @object_struct_map %{
     PowerUp => :power_ups,
     Tank => :tanks,
     Bullet => :bullets
   }
+
+  @object_values Map.values(@object_struct_map)
 
   @type t :: %__MODULE__{
           rest_enemies: integer,
@@ -66,6 +69,12 @@ defmodule BattleCity.Context do
   def put_object(ctx, []), do: ctx
   def put_object(ctx, [o | rest]), do: ctx |> put_object(o) |> put_object(rest)
 
+  def put_object(%{} = ctx, %Bullet{dead?: true, id: id, tank_id: tank_id}) do
+    ctx
+    |> update_object_raw(:tanks, tank_id, fn x -> %{x | shootable?: true} end)
+    |> delete_object(:bullets, id)
+  end
+
   def put_object(
         %__MODULE__{objects: objects} = ctx,
         %{
@@ -78,7 +87,41 @@ defmodule BattleCity.Context do
     map = ctx |> Map.fetch!(key) |> Map.put(id, o)
 
     {x, y} = Position.round(position)
-    o = objects |> Map.fetch!({x, y}) |> MapSet.put({id, struct})
+    o = objects |> Map.fetch!({x, y}) |> MapSet.put({key, id})
     Map.merge(ctx, %{key => map, :objects => Map.put(objects, {x, y}, o)})
+  end
+
+  @spec update_object_raw(
+          __MODULE__.t(),
+          object_keys,
+          BattleCity.id(),
+          (object_struct -> object_struct)
+        ) :: __MODULE__.t()
+  def update_object_raw(ctx, key, id, f) do
+    data = ctx |> Map.fetch!(key)
+
+    data
+    |> Map.get(id)
+    |> case do
+      nil -> ctx
+      o -> Map.put(ctx, key, Map.put(data, id, f.(o)))
+    end
+  end
+
+  @spec delete_object(__MODULE__.t(), object_keys, BattleCity.id()) :: __MODULE__.t()
+  def delete_object(%{objects: objects} = ctx, key, id) when key in @object_values do
+    data = ctx |> Map.fetch!(key)
+
+    data
+    |> Map.get(id)
+    |> case do
+      nil ->
+        ctx
+
+      o ->
+        xy = {o.position.x, o.position.y}
+        o = objects |> Map.fetch!(xy) |> MapSet.delete({key, id})
+        ctx |> Map.merge(%{key => Map.delete(data, id), :objects => Map.put(objects, xy, o)})
+    end
   end
 end

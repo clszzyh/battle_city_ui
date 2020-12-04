@@ -8,7 +8,8 @@ defmodule BattleCity.Bullet do
           position: Position.t(),
           id: BattleCity.id(),
           tank_id: BattleCity.id(),
-          event_id: BattleCity.id()
+          event_id: BattleCity.id(),
+          dead?: boolean()
         }
 
   @enforce_keys [:id, :speed, :position, :tank_id, :event_id]
@@ -17,6 +18,7 @@ defmodule BattleCity.Bullet do
     :position,
     :id,
     :tank_id,
-    :event_id
+    :event_id,
+    dead?: false
   ]
 end

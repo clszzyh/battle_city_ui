@@ -40,5 +40,8 @@ defmodule BattleCity.Business.Move do
 
   @spec do_move({Environment.t(), Environment.t()}, move_struct) ::
           {:halt, atom()} | {:cont, move_struct}
-  defp do_move(_, o), do: {:cont, o}
+  defp do_move({_target, _source}, o) do
+    # Environment.enter(target, o)
+    {:cont, o}
+  end
 end
