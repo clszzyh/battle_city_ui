@@ -49,6 +49,11 @@ defmodule BattleCity.PowerUp do
     end
   end
 
+  @spec add(Tank.t(), __MODULE__.t()) :: Tank.t()
+  def add(%Tank{} = tank, %__MODULE__{}) do
+    tank
+  end
+
   @spec on(Context.t(), Tank.t(), __MODULE__.t()) :: BattleCity.invoke_result()
   def on(%Context{} = ctx, %Tank{} = tank, %__MODULE__{} = powerup) do
     powerup.__module__.handle_on(ctx, tank)

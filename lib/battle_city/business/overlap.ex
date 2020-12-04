@@ -3,6 +3,7 @@ defmodule BattleCity.Business.Overlap do
 
   alias BattleCity.Context
   alias BattleCity.Position
+  alias BattleCity.PowerUp
   alias BattleCity.Tank
 
   @typep f :: BattleCity.fingerprint()
@@ -42,8 +43,10 @@ defmodule BattleCity.Business.Overlap do
     ctx |> Context.delete_object(:bullets, bid) |> Context.put_object(tank)
   end
 
-  ## TODO add power up
-  defp do_resolve({_, {:t, _tid, _}, {:p, pid, _}}, ctx) do
-    ctx |> Context.delete_object(:power_ups, pid)
+  defp do_resolve({_, {:t, tid, _}, {:p, pid, _}}, ctx) do
+    power_up = Context.fetch_object!(ctx, :power_ups, pid)
+    tank = Context.fetch_object!(ctx, :tanks, tid)
+    tank = PowerUp.add(tank, power_up)
+    ctx |> Context.delete_object(:power_ups, pid) |> Context.put_object(tank)
   end
 end
