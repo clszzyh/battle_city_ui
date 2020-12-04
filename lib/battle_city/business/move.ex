@@ -42,8 +42,8 @@ defmodule BattleCity.Business.Move do
          new_o <- Environment.copy_xy(target, new_o) do
       {:cont, new_o}
     else
-      {:error, _reason} ->
-        {:halt, Environment.copy_rxy(source, o)}
+      {:error, reason} ->
+        {:halt, Environment.copy_rxy(source, %{o | reason: reason})}
     end
   end
 end

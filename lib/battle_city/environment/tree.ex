@@ -6,12 +6,12 @@ defmodule BattleCity.Environment.Tree do
     enter?: true
 
   @impl true
-  def handle_enter(_, %Tank{} = t) do
-    %{t | hiden?: true}
+  def handle_enter(_, %{} = t) do
+    {:ok, %{t | hiden?: true}}
   end
 
   @impl true
-  def handle_leave(_, %Tank{} = t) do
-    %{t | hiden?: false}
+  def handle_leave(_, %{} = t) do
+    {:ok, %{t | hiden?: false}}
   end
 end

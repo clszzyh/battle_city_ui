@@ -1,6 +1,7 @@
 defmodule BattleCity.Tank do
   @moduledoc false
 
+  alias BattleCity.Action
   alias BattleCity.Bullet
   alias BattleCity.Config
   alias BattleCity.Event
@@ -78,6 +79,7 @@ defmodule BattleCity.Tank do
           __module__: module(),
           meta: Base.t(),
           id: BattleCity.id(),
+          __actions__: [Action.t()],
           killer: BattleCity.id(),
           position: Position.t(),
           speed: Position.speed(),
@@ -110,6 +112,7 @@ defmodule BattleCity.Tank do
     hiden?: false,
     moving?: false,
     freezed?: false,
+    __actions__: [],
     lifes: Config.life_count()
   ]
 

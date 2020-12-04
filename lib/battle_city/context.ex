@@ -11,8 +11,6 @@ defmodule BattleCity.Context do
 
   @typep state :: :started | :paused | :game_over | :complete
   @typep object_struct :: PowerUp.t() | Tank.t() | Bullet.t() | nil
-  @typep object_keys :: :power_ups | :tanks | :bullets
-  @typep object :: {object_keys, BattleCity.id()}
 
   @object_struct_map %{PowerUp => :power_ups, Tank => :tanks, Bullet => :bullets}
   @object_values Map.values(@object_struct_map)
@@ -21,7 +19,7 @@ defmodule BattleCity.Context do
           rest_enemies: integer,
           shovel?: boolean,
           state: state(),
-          objects: %{Position.coordinate() => MapSet.t(object)},
+          objects: %{Position.coordinate() => MapSet.t(BattleCity.object())},
           stage: Stage.t(),
           power_ups: %{BattleCity.id() => PowerUp.t()},
           tanks: %{BattleCity.id() => Tank.t()},
@@ -87,7 +85,7 @@ defmodule BattleCity.Context do
 
   @spec update_object_raw(
           __MODULE__.t(),
-          object_keys,
+          BattleCity.object_keys(),
           BattleCity.id(),
           (object_struct -> object_struct)
         ) :: __MODULE__.t()
@@ -102,7 +100,7 @@ defmodule BattleCity.Context do
     end
   end
 
-  @spec delete_object(__MODULE__.t(), object_keys, BattleCity.id()) :: __MODULE__.t()
+  @spec delete_object(__MODULE__.t(), BattleCity.object_keys(), BattleCity.id()) :: __MODULE__.t()
   def delete_object(%{objects: objects} = ctx, key, id) when key in @object_values do
     data = ctx |> Map.fetch!(key)
 

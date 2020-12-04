@@ -1,14 +1,15 @@
 defmodule BattleCity.Environment do
   @moduledoc false
 
+  alias BattleCity.Action
   alias BattleCity.Bullet
-  alias BattleCity.Context
   alias BattleCity.Position
   alias BattleCity.Tank
 
   @typep health :: integer() | :infinite
   @typep shape :: nil | binary()
   @type object :: Tank.t() | Bullet.t()
+  @typep enter_result :: {:error, BattleCity.reason()} | {:ok, object}
 
   @type t :: %__MODULE__{
           __module__: module(),
@@ -37,43 +38,19 @@ defmodule BattleCity.Environment do
 
   use BattleCity.StructCollect
 
-  @callback handle_enter(Context.t(), Tank.t()) :: BattleCity.invoke_tank_result()
-  @callback handle_leave(Context.t(), Tank.t()) :: BattleCity.invoke_tank_result()
-
-  @callback handle_hit(Context.t(), Bullet.t()) :: BattleCity.inner_callback_bullet_result()
-  @optional_callbacks handle_enter: 2, handle_leave: 2, handle_hit: 2
+  @callback handle_enter(__MODULE__.t(), object) :: enter_result
+  @callback handle_leave(__MODULE__.t(), object) :: enter_result
 
   defmacro __using__(opt \\ []) do
     obj = struct!(__MODULE__, opt)
-    ast = generate_ast(obj)
 
     quote location: :keep do
       alias BattleCity.Tank
-      unquote(ast)
-
+      @impl true
+      def handle_enter(_, o), do: {:ok, o}
+      @impl true
+      def handle_leave(_, o), do: {:ok, o}
       init_ast(unquote(__MODULE__), __MODULE__, unquote(Macro.escape(obj)))
-    end
-  end
-
-  @spec on(Context.t(), Tank.t(), __MODULE__.t()) :: BattleCity.invoke_result()
-  def on(%Context{} = ctx, %Tank{} = tank, %__MODULE__{} = environment) do
-    if function_exported?(environment.__module__, :handle_on, 2) do
-      environment.__module__.handle_on(ctx, tank)
-      |> BattleCity.parse_tank_result(ctx, tank)
-      |> Context.put_object()
-    else
-      Context.put_object(ctx, tank)
-    end
-  end
-
-  @spec off(Context.t(), Tank.t(), __MODULE__.t()) :: BattleCity.invoke_result()
-  def off(%Context{} = ctx, %Tank{} = tank, %__MODULE__{} = environment) do
-    if function_exported?(environment.__module__, :handle_off, 2) do
-      environment.__module__.handle_off(ctx, tank)
-      |> BattleCity.parse_tank_result(ctx, tank)
-      |> Context.put_object()
-    else
-      Context.put_object(ctx, tank)
     end
   end
 
@@ -87,49 +64,33 @@ defmodule BattleCity.Environment do
     %{o | position: %{position | x: x, y: y, path: rest}}
   end
 
-  @spec enter(__MODULE__.t(), object) :: {:ok, object}
-  def enter(%__MODULE__{}, o) do
-    {:ok, o}
+  @spec enter(__MODULE__.t(), object) :: enter_result
+  def enter(%__MODULE__{enter?: false}, %Tank{}), do: {:error, :forbidden}
+  def enter(%__MODULE__{enter?: false, health: :infinite}, %Bullet{}), do: {:error, :forbidden}
+
+  def enter(
+        %__MODULE__{enter?: false, health: health, id: env_id},
+        %Bullet{__actions__: actions, id: bullet_id} = bullet
+      )
+      when health > 0 do
+    action = %Action{
+      target_id: env_id,
+      source_id: bullet_id,
+      target_type: :environment,
+      source_type: :bullet,
+      kind: :damage,
+      value: 1
+    }
+
+    {:ok, %{bullet | dead?: true, __actions__: [action | actions]}}
   end
 
-  @spec leave(__MODULE__.t(), object) :: {:ok, object}
-  def leave(%__MODULE__{}, o) do
-    {:ok, o}
+  def enter(%__MODULE__{__module__: module} = environment, o) do
+    module.handle_enter(environment, o)
   end
 
-  defp generate_ast(%__MODULE__{health: :infinite, enter?: false}) do
-    quote do
-      @impl true
-      def handle_hit(_, _), do: :ignored
-      @impl true
-      def handle_enter(_, _), do: {:error, :forbidden}
-    end
-  end
-
-  defp generate_ast(%__MODULE__{health: 0, enter?: false}) do
-    quote do
-      @impl true
-      def handle_hit(_, _), do: :ignored
-      @impl true
-      def handle_enter(_, _), do: {:error, :forbidden}
-    end
-  end
-
-  defp generate_ast(%__MODULE__{health: 0, enter?: true}) do
-    quote do
-      @impl true
-      def handle_hit(_, _), do: :ignored
-      @impl true
-      def handle_enter(_, _), do: :ignored
-    end
-  end
-
-  defp generate_ast(%__MODULE__{health: health, enter?: false}) when health > 0 do
-    quote do
-      @impl true
-      def handle_hit(_, _), do: :ignored
-      @impl true
-      def handle_enter(_, _), do: :ignored
-    end
+  @spec leave(__MODULE__.t(), object) :: enter_result
+  def leave(%__MODULE__{__module__: module} = environment, o) do
+    module.handle_leave(environment, o)
   end
 end
