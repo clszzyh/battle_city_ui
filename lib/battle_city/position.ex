@@ -83,7 +83,7 @@ defmodule BattleCity.Position do
 
   def init(%{x: x, y: y} = map) do
     map = map |> Map.merge(%{rx: x * @width, ry: y * @width}) |> Map.take(@keys)
-    struct!(__MODULE__, map)
+    struct!(__MODULE__, map) |> normalize()
   end
 
   defp fetch_diretion(:random), do: Enum.random(@diretions)
@@ -99,9 +99,9 @@ defmodule BattleCity.Position do
   def atom, do: @atom
   def width, do: @width
 
-  @spec round(__MODULE__.t()) :: xy()
-  def round(%__MODULE__{x: x, y: y, direction: direction}) do
-    {normalize_number(:x, x, direction), normalize_number(:y, y, direction)}
+  @spec normalize(__MODULE__.t()) :: __MODULE__.t()
+  def normalize(%__MODULE__{x: x, y: y, direction: direction} = p) do
+    %{p | x: normalize_number(:x, x, direction), y: normalize_number(:y, y, direction)}
   end
 
   @spec normalize_number(:x | :y, x_or_y(), direction()) :: x_or_y()

@@ -8,7 +8,7 @@ defmodule BattleCity.Compile do
   require Logger
 
   ## TODO @stage_path "priv/stages/*.json"
-  @stage_path "priv/stages/35.json"
+  @stage_path "priv/stages/1.json"
 
   @bot_map %{
     "fast" => Tank.Fast,

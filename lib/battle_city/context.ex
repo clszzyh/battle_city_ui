@@ -80,7 +80,7 @@ defmodule BattleCity.Context do
     key = Map.fetch!(@object_struct_map, struct)
     map = ctx |> Map.fetch!(key) |> Map.put(id, o)
 
-    {x, y} = Position.round(position)
+    %{x: x, y: y} = Position.normalize(position)
     o = objects |> Map.fetch!({x, y}) |> MapSet.put({key, id})
     Map.merge(ctx, %{key => map, :objects => Map.put(objects, {x, y}, o)})
   end
