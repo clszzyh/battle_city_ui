@@ -39,16 +39,18 @@ defmodule BattleCity.Position do
   @typep x_or_y :: x | y
   @typep atom_x_or_y :: :x | :y
   @type path :: {atom_x_or_y, x_or_y}
+  @type vector :: {}
 
   @type t :: %__MODULE__{
           direction: direction(),
           x: x(),
-          y: y()
+          y: y(),
+          vector: vector
         }
 
   @keys [:direction, :x, :y, :rx, :ry]
   @enforce_keys [:direction, :x, :y, :rx, :ry]
-  defstruct [:x, :y, :direction, :rx, :ry]
+  defstruct [:x, :y, :direction, :rx, :ry, :vector]
 
   @objects for x <- @x_range,
                y <- @y_range,

@@ -9,19 +9,21 @@ defmodule BattleCity.Business.Move do
   alias BattleCity.Tank
   import BattleCity.Position, only: [is_on_border: 1]
 
-  @typep move_struct :: Tank.t() | Bullet.t()
+  @typep move_struct :: Environment.object()
 
-  @spec move_objects(Context.t()) :: Context.t()
-  def move_objects(%Context{} = ctx) do
+  @spec move_all(Context.t()) :: Context.t()
+  def move_all(%Context{} = ctx) do
     bullets = Enum.map(ctx.bullets, &move(elem(&1, 1), ctx.stage.map))
     tanks = Enum.map(ctx.tanks, &move(elem(&1, 1), ctx.stage.map))
     ctx |> Context.put_object(bullets) |> Context.put_object(tanks)
   end
 
   @spec move(move_struct, Stage.map_data()) :: move_struct
-  def move(%Bullet{position: position}, _) when is_on_border(position), do: nil
+  def move(%Bullet{position: position} = bullet, _) when is_on_border(position),
+    do: %{bullet | dead?: true}
+
   def move(%Tank{position: position} = tank, _) when is_on_border(position), do: tank
-  def move(%Tank{dead?: true}, _), do: nil
+  def move(%Tank{dead?: true} = tank, _), do: tank
   def move(%Tank{moving?: false} = tank, _), do: tank
   def move(%Tank{freezed?: true} = tank, _), do: tank
 
@@ -40,8 +42,14 @@ defmodule BattleCity.Business.Move do
 
   @spec do_move({Environment.t(), Environment.t()}, move_struct) ::
           {:halt, atom()} | {:cont, move_struct}
-  defp do_move({_target, _source}, o) do
-    # Environment.enter(target, o)
-    {:cont, o}
+  defp do_move({target, source}, o) do
+    with {:ok, new_o} <- Environment.enter(target, o),
+         {:ok, new_o} <- Environment.leave(source, new_o),
+         {:ok, new_o} <- Environment.copy_xy(target, new_o) do
+      {:cont, new_o}
+    else
+      _ ->
+        {:halt, o}
+    end
   end
 end

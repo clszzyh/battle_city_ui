@@ -6,6 +6,6 @@ defmodule BattleCity.Business.Game do
 
   @spec next(Context.t()) :: Context.t()
   def next(%Context{} = ctx) do
-    ctx |> Move.move_objects()
+    ctx |> Move.move_all()
   end
 end

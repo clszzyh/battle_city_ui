@@ -10,18 +10,11 @@ defmodule BattleCity.Context do
   alias BattleCity.Tank
 
   @typep state :: :started | :paused | :game_over | :complete
-
-  @type object_struct :: PowerUp.t() | Tank.t() | Bullet.t() | nil
-  # @typep object_type :: PowerUp | Tank | Bullet
+  @typep object_struct :: PowerUp.t() | Tank.t() | Bullet.t() | nil
   @typep object_keys :: :power_ups | :tanks | :bullets
   @typep object :: {object_keys, BattleCity.id()}
 
-  @object_struct_map %{
-    PowerUp => :power_ups,
-    Tank => :tanks,
-    Bullet => :bullets
-  }
-
+  @object_struct_map %{PowerUp => :power_ups, Tank => :tanks, Bullet => :bullets}
   @object_values Map.values(@object_struct_map)
 
   @type t :: %__MODULE__{
@@ -68,8 +61,9 @@ defmodule BattleCity.Context do
   def put_object(ctx, nil), do: ctx
   def put_object(ctx, []), do: ctx
   def put_object(ctx, [o | rest]), do: ctx |> put_object(o) |> put_object(rest)
+  def put_object(ctx, %Tank{dead?: true, id: id}), do: delete_object(ctx, :tanks, id)
 
-  def put_object(%{} = ctx, %Bullet{dead?: true, id: id, tank_id: tank_id}) do
+  def put_object(ctx, %Bullet{dead?: true, id: id, tank_id: tank_id}) do
     ctx
     |> update_object_raw(:tanks, tank_id, fn x -> %{x | shootable?: true} end)
     |> delete_object(:bullets, id)

@@ -8,6 +8,7 @@ defmodule BattleCity.Environment do
 
   @typep health :: integer() | :infinite
   @typep shape :: nil | binary()
+  @type object :: Tank.t() | Bullet.t()
 
   @type t :: %__MODULE__{
           __module__: module(),
@@ -74,6 +75,21 @@ defmodule BattleCity.Environment do
     else
       Context.put_object(ctx, tank)
     end
+  end
+
+  @spec copy_xy(__MODULE__.t(), object) :: {:ok, object}
+  def copy_xy(%__MODULE__{x: x, y: y, rx: rx, ry: ry}, %{position: position} = o) do
+    {:ok, %{o | position: %{position | x: x, y: y, rx: rx, ry: ry}}}
+  end
+
+  @spec enter(__MODULE__.t(), object) :: {:ok, object}
+  def enter(%__MODULE__{}, o) do
+    {:ok, o}
+  end
+
+  @spec leave(__MODULE__.t(), object) :: {:ok, object}
+  def leave(%__MODULE__{}, o) do
+    {:ok, o}
   end
 
   defp generate_ast(%__MODULE__{health: :infinite, enter?: false}) do
