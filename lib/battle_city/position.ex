@@ -52,8 +52,8 @@ defmodule BattleCity.Position do
   defstruct [:x, :y, :direction, :rx, :ry, :vector]
 
   @objects for x <- @x_range,
-               y <- @y_range,
                rem(x, 2) == 0,
+               y <- @y_range,
                rem(y, 2) == 0,
                do: {{x, y}, MapSet.new()},
                into: %{}
@@ -65,20 +65,19 @@ defmodule BattleCity.Position do
                      (p.ry == @rymin and p.direction == :up) or
                      (p.ry == @rymax and p.direction == :down))
 
+  def objects, do: @objects
+  def size, do: @size
+  def atom, do: @atom
+  def width, do: @width
+
   @spec init(map) :: __MODULE__.t()
   def init(map \\ %{})
 
-  def init(%{direction: direction} = map) when direction not in @diretions do
-    init(%{map | direction: fetch_diretion(direction)})
-  end
+  def init(%{direction: d} = map) when not is_atom(d),
+    do: init(%{map | direction: fetch_diretion(d)})
 
-  def init(%{x: x} = map) when is_atom(x) do
-    init(%{map | x: fetch_x(x)})
-  end
-
-  def init(%{y: y} = map) when is_atom(y) do
-    init(%{map | y: fetch_y(y)})
-  end
+  def init(%{x: x} = map) when is_atom(x), do: init(%{map | x: fetch_x(x)})
+  def init(%{y: y} = map) when is_atom(y), do: init(%{map | y: fetch_y(y)})
 
   def init(%{x: x, y: y} = map) do
     map = map |> Map.merge(%{rx: x * @width, ry: y * @width}) |> Map.take(@keys)
@@ -93,10 +92,18 @@ defmodule BattleCity.Position do
   defp fetch_y(:y_random_enemy), do: @ymin
   defp fetch_y(:y_random), do: Enum.random(@y_range)
 
-  def objects, do: @objects
-  def size, do: @size
-  def atom, do: @atom
-  def width, do: @width
+  @spec vector_with_normalize(__MODULE__.t(), speed) :: {atom_x_or_y, rx_or_ry_map, x_or_y}
+  def vector_with_normalize(%{direction: direction} = p, speed) do
+    {x_or_y, target} = vector(p, speed)
+
+    map =
+      case x_or_y do
+        :x -> %{rx: target}
+        :y -> %{ry: target}
+      end
+
+    {x_or_y, map, normalize_number(x_or_y, direction, div(target, @width))}
+  end
 
   @spec normalize(__MODULE__.t()) :: __MODULE__.t()
   def normalize(%__MODULE__{x: x, y: y, direction: direction} = p) do
@@ -118,21 +125,7 @@ defmodule BattleCity.Position do
   def normalize_number(:y, :up, n), do: n + 1
   def normalize_number(_, _, n), do: n - 1
 
-  @spec vector_with_normalize(__MODULE__.t(), speed) :: {atom_x_or_y, rx_or_ry_map, x_or_y}
-  def vector_with_normalize(%{direction: direction} = p, speed) do
-    {x_or_y, target} = vector(p, speed)
-
-    map =
-      case x_or_y do
-        :x -> %{rx: target}
-        :y -> %{ry: target}
-      end
-
-    {x_or_y, map, normalize_number(x_or_y, direction, div(target, @width))}
-  end
-
   @doc """
-
   ## Example
     iex> #{__MODULE__}.vector(%{direction: :right, rx: 0}, 2)
     {:x, 2}
