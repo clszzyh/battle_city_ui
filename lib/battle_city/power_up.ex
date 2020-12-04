@@ -1,6 +1,7 @@
 defmodule BattleCity.PowerUp do
   @moduledoc false
 
+  alias BattleCity.Action
   alias BattleCity.Config
   alias BattleCity.Context
   alias BattleCity.Position
@@ -12,7 +13,8 @@ defmodule BattleCity.PowerUp do
           __module__: module(),
           id: BattleCity.id(),
           duration: duration(),
-          position: Position.t()
+          position: Position.t(),
+          __actions__: [Action.t()]
         }
 
   @enforce_keys []
@@ -20,6 +22,7 @@ defmodule BattleCity.PowerUp do
     :__module__,
     :id,
     :position,
+    __actions__: [],
     duration: Config.power_up_duration()
   ]
 

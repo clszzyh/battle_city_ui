@@ -1,6 +1,7 @@
 defmodule BattleCity.Context do
   @moduledoc false
 
+  alias BattleCity.Action
   alias BattleCity.Bullet
   alias BattleCity.Business.Generate
   alias BattleCity.Config
@@ -59,15 +60,25 @@ defmodule BattleCity.Context do
   def put_object(ctx, nil), do: ctx
   def put_object(ctx, []), do: ctx
   def put_object(ctx, [o | rest]), do: ctx |> put_object(o) |> put_object(rest)
-  def put_object(ctx, %Tank{dead?: true, id: id}), do: delete_object(ctx, :tanks, id)
 
-  def put_object(ctx, %Bullet{dead?: true, id: id, tank_id: tank_id}) do
+  def put_object(ctx, o) do
+    ctx |> handle_actions(o.__actions__) |> handle_object(o)
+  end
+
+  @spec handle_actions(__MODULE__.t(), [Action.t()]) :: __MODULE__.t()
+  def handle_actions(ctx, []), do: ctx
+  def handle_actions(ctx, [a | rest]), do: ctx |> Action.handle(a) |> handle_actions(rest)
+
+  @spec handle_object(__MODULE__.t(), object_struct) :: __MODULE__.t()
+  def handle_object(ctx, %Tank{dead?: true, id: id}), do: delete_object(ctx, :tanks, id)
+
+  def handle_object(ctx, %Bullet{dead?: true, id: id, tank_id: tank_id}) do
     ctx
     |> update_object_raw(:tanks, tank_id, fn x -> %{x | shootable?: true} end)
     |> delete_object(:bullets, id)
   end
 
-  def put_object(
+  def handle_object(
         %__MODULE__{objects: objects} = ctx,
         %{
           position: %{} = position,

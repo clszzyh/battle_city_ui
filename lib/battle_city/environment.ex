@@ -69,7 +69,7 @@ defmodule BattleCity.Environment do
   def enter(%__MODULE__{enter?: false, health: :infinite}, %Bullet{}), do: {:error, :forbidden}
 
   def enter(
-        %__MODULE__{enter?: false, health: health, id: env_id},
+        %__MODULE__{enter?: false, health: health, x: x, y: y, id: env_id},
         %Bullet{__actions__: actions, id: bullet_id} = bullet
       )
       when health > 0 do
@@ -79,7 +79,8 @@ defmodule BattleCity.Environment do
       target_type: :environment,
       source_type: :bullet,
       kind: :damage,
-      value: 1
+      value: 1,
+      args: %{x: x, y: y}
     }
 
     {:ok, %{bullet | dead?: true, __actions__: [action | actions]}}

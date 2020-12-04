@@ -1,8 +1,10 @@
 defmodule BattleCity.Action do
   @moduledoc false
 
+  alias BattleCity.Context
+
   @typep kind :: :damage
-  @typep value :: term
+  @typep value :: number
   @typep id :: BattleCity.id()
   @typep type :: :bullet | :environment
 
@@ -25,4 +27,16 @@ defmodule BattleCity.Action do
     :value,
     args: %{}
   ]
+
+  @spec handle(Context.t(), __MODULE__.t()) :: Context.t()
+  def handle(%Context{stage: %{map: map_data} = stage} = ctx, %__MODULE__{
+        target_type: :environment,
+        kind: :damage,
+        value: value,
+        args: %{x: x, y: y}
+      }) do
+    %{health: health} = environment = Map.fetch!(map_data, {x, y})
+    map_data = Map.put(map_data, {x, y}, %{environment | health: health - value})
+    %{ctx | stage: %{stage | map: map_data}}
+  end
 end
