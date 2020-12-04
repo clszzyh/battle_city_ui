@@ -26,30 +26,32 @@ defmodule BattleCity.Position do
   @y_range @ymin..@ymax
   @diretions [:up, :down, :left, :right]
 
+  @type speed :: 1..10
   @type x :: unquote(@xmin)..unquote(@xmax)
   @type y :: unquote(@ymin)..unquote(@ymax)
   @type rx :: unquote(@rxmin)..unquote(@rxmax)
   @type ry :: unquote(@rymin)..unquote(@rymax)
-  @type xy :: {x, y}
-  @typep rx_or_ry :: rx | ry
-  @typep rx_or_ry_map :: %{(:rx | :ry) => rx_or_ry}
-  @type speed :: 1..10
+  @type coordinate :: {x, y}
+
   @typep x_or_y :: x | y
-  @typep atom_x_or_y :: :x | :y
-  @type path :: {atom_x_or_y, x_or_y}
-  @type vector ::
-          nil | %{type: atom_x_or_y, rxy1: rx_or_ry, rxy2: rx_or_ry, xy1: x_or_y, xy2: x_or_y}
+  @typep rx_or_ry :: rx | ry
+
+  @typep path :: [coordinate]
 
   @type t :: %__MODULE__{
           direction: direction(),
           x: x(),
           y: y(),
-          vector: vector
+          rx: rx(),
+          ry: ry(),
+          rt: rx_or_ry(),
+          t: x_or_y(),
+          path: path()
         }
 
   @keys [:direction, :x, :y, :rx, :ry]
   @enforce_keys [:direction, :x, :y, :rx, :ry]
-  defstruct [:x, :y, :direction, :rx, :ry, :vector]
+  defstruct [:x, :y, :direction, :rx, :ry, :rt, :t, :path]
 
   @objects for x <- @x_range,
                rem(x, 2) == 0,
@@ -92,55 +94,60 @@ defmodule BattleCity.Position do
   defp fetch_y(:y_random_enemy), do: @ymin
   defp fetch_y(:y_random), do: Enum.random(@y_range)
 
-  @spec vector_with_normalize(__MODULE__.t(), speed) :: {atom_x_or_y, rx_or_ry_map, x_or_y}
-  def vector_with_normalize(%{direction: direction} = p, speed) do
-    {x_or_y, target} = vector(p, speed)
+  @spec destination(__MODULE__.t(), speed) :: __MODULE__.t()
+  def destination(%{direction: direction, x: x, y: y} = p, speed) do
+    rt = target(p, speed)
+    t = normalize_number(direction, div(rt, @width))
 
-    map =
-      case x_or_y do
-        :x -> %{rx: target}
-        :y -> %{ry: target}
+    path =
+      if direction in [:up, :down] do
+        for i <- y..t, do: {x, i}
+      else
+        for i <- x..t, do: {i, y}
       end
 
-    {x_or_y, map, normalize_number(x_or_y, direction, div(target, @width))}
+    %{p | rt: rt, t: t, path: path}
   end
 
   @spec normalize(__MODULE__.t()) :: __MODULE__.t()
   def normalize(%__MODULE__{x: x, y: y, direction: direction} = p) do
-    %{p | x: normalize_number(:x, direction, x), y: normalize_number(:y, direction, y)}
+    %{p | x: normalize_number(direction, x, :x), y: normalize_number(direction, y, :y)}
   end
 
   @doc """
   ## Example
-    iex> #{__MODULE__}.normalize_number(:x, :up, 2)
+    iex> #{__MODULE__}.normalize_number(:up, 2, :x)
     2
-    iex> #{__MODULE__}.normalize_number(:y, :up, 3)
+    iex> #{__MODULE__}.normalize_number(:up, 3)
     4
-    iex> #{__MODULE__}.normalize_number(:x, :down, 3)
+    iex> #{__MODULE__}.normalize_number(:down, 3)
     2
   """
-  @spec normalize_number(:x | :y, direction(), x_or_y()) :: x_or_y()
-  def normalize_number(_, _, n) when is_even(n), do: n
-  def normalize_number(:x, :right, n), do: n + 1
-  def normalize_number(:y, :up, n), do: n + 1
-  def normalize_number(_, _, n), do: n - 1
+  @spec normalize_number(direction(), x_or_y(), :x | :y | nil) :: x_or_y()
+  def normalize_number(direction, n, x_or_y \\ nil)
+  def normalize_number(_, n, _) when is_even(n), do: n
+  def normalize_number(:right, n, :x), do: n + 1
+  def normalize_number(:right, n, nil), do: n + 1
+  def normalize_number(:up, n, :y), do: n + 1
+  def normalize_number(:up, n, nil), do: n + 1
+  def normalize_number(_, n, _), do: n - 1
 
   @doc """
   ## Example
-    iex> #{__MODULE__}.vector(%{direction: :right, rx: 0}, 2)
-    {:x, 2}
-    iex> #{__MODULE__}.vector(%{direction: :left, rx: 1}, 2)
-    {:x, 0}
-    iex> #{__MODULE__}.vector(%{direction: :up, ry: 1}, 2)
-    {:y, 3}
+    iex> #{__MODULE__}.target(%{direction: :right, rx: 0}, 2)
+    2
+    iex> #{__MODULE__}.target(%{direction: :left, rx: 1}, 2)
+    0
+    iex> #{__MODULE__}.target(%{direction: :up, ry: 1}, 2)
+    3
   """
-  @spec vector(__MODULE__.t(), speed) :: {atom_x_or_y, speed}
-  def vector(%{direction: :right, rx: rx}, speed) when rx + speed <= @rxmax, do: {:x, rx + speed}
-  def vector(%{direction: :right}, _), do: {:x, @rxmax}
-  def vector(%{direction: :left, rx: rx}, speed) when rx - speed >= 0, do: {:x, rx - speed}
-  def vector(%{direction: :left}, _), do: {:x, 0}
-  def vector(%{direction: :up, ry: ry}, speed) when ry + speed <= @rymax, do: {:y, ry + speed}
-  def vector(%{direction: :up}, _), do: {:y, @rymax}
-  def vector(%{direction: :down, ry: ry}, speed) when ry - speed >= 0, do: {:y, ry - speed}
-  def vector(%{direction: :down}, _), do: {:y, 0}
+  @spec target(__MODULE__.t(), speed) :: rx_or_ry
+  def target(%{direction: :right, rx: rx}, speed) when rx + speed <= @rxmax, do: rx + speed
+  def target(%{direction: :right}, _), do: @rxmax
+  def target(%{direction: :left, rx: rx}, speed) when rx - speed >= 0, do: rx - speed
+  def target(%{direction: :left}, _), do: 0
+  def target(%{direction: :up, ry: ry}, speed) when ry + speed <= @rymax, do: ry + speed
+  def target(%{direction: :up}, _), do: @rymax
+  def target(%{direction: :down, ry: ry}, speed) when ry - speed >= 0, do: ry - speed
+  def target(%{direction: :down}, _), do: 0
 end

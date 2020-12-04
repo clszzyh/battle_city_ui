@@ -7,7 +7,7 @@ defmodule BattleCity.Stage do
   alias BattleCity.Process.StageCache
 
   @type bots :: [{atom(), integer()}]
-  @type map_data :: %{Position.xy() => Environment.t()}
+  @type map_data :: %{Position.coordinate() => Environment.t()}
 
   @type t :: %__MODULE__{
           __module__: module,

@@ -21,7 +21,7 @@ defmodule BattleCity.Context do
           rest_enemies: integer,
           shovel?: boolean,
           state: state(),
-          objects: %{Position.xy() => MapSet.t(object)},
+          objects: %{Position.coordinate() => MapSet.t(object)},
           stage: Stage.t(),
           power_ups: %{BattleCity.id() => PowerUp.t()},
           tanks: %{BattleCity.id() => Tank.t()},
