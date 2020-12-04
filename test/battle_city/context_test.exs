@@ -36,12 +36,11 @@ defmodule BattleCity.ContextTest do
 
   test "move_slow", %{player: %{position: position} = player, map: map} do
     player = %{player | moving?: true, speed: 4}
-    # _ctx = ctx |> Context.put_object(player)
     new_player = Move.move(player, map)
 
     assert new_player.position.rt == position.ry - 4
     assert new_player.position.t == position.y
-    assert new_player.position.path == [{position.x, position.y}]
+    assert new_player.position.path == []
 
     assert new_player.position.x == position.x
     assert new_player.position.y == position.y
@@ -49,12 +48,11 @@ defmodule BattleCity.ContextTest do
 
   test "move_fast", %{player: %{position: position} = player, map: map} do
     player = %{player | moving?: true, speed: 14}
-    # _ctx = ctx |> Context.put_object(player)
     new_player = Move.move(player, map)
 
     assert new_player.position.rt == position.ry - 14
     assert new_player.position.t == position.y - 2
-    assert new_player.position.path == [{position.x, position.y}, {position.x, position.y - 2}]
+    assert new_player.position.path == []
 
     assert new_player.position.x == position.x
     assert new_player.position.y == position.y - 2

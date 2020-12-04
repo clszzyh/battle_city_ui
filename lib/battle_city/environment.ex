@@ -77,9 +77,14 @@ defmodule BattleCity.Environment do
     end
   end
 
-  @spec copy_xy(__MODULE__.t(), object) :: {:ok, object}
-  def copy_xy(%__MODULE__{x: x, y: y, rx: rx, ry: ry}, %{position: position} = o) do
-    {:ok, %{o | position: %{position | x: x, y: y, rx: rx, ry: ry}}}
+  @spec copy_rxy(__MODULE__.t(), object) :: object
+  def copy_rxy(%{rx: rx, ry: ry}, %{position: position} = o) do
+    %{o | position: %{position | rx: rx, ry: ry, path: []}}
+  end
+
+  @spec copy_xy(__MODULE__.t(), object) :: object
+  def copy_xy(%{x: x, y: y}, %{position: %{path: [_ | rest]} = position} = o) do
+    %{o | position: %{position | x: x, y: y, path: rest}}
   end
 
   @spec enter(__MODULE__.t(), object) :: {:ok, object}

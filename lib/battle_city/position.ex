@@ -109,11 +109,6 @@ defmodule BattleCity.Position do
     %{p | rt: rt, t: t, path: path}
   end
 
-  defp direction_border(:up), do: -0.1
-  defp direction_border(:down), do: 0.1
-  defp direction_border(:right), do: 0.1
-  defp direction_border(:left), do: -0.1
-
   @doc """
     iex> #{__MODULE__}.div_even(#{@width * 3 + 0.1})
     4
@@ -127,9 +122,12 @@ defmodule BattleCity.Position do
     4
   """
   @spec div_even(float) :: x_or_y
-  def div_even(rt) do
-    round(rt / @width / @atom) * @atom
-  end
+  def div_even(rt), do: round(rt / @width / @atom) * @atom
+
+  defp direction_border(:up), do: -0.1
+  defp direction_border(:down), do: 0.1
+  defp direction_border(:right), do: 0.1
+  defp direction_border(:left), do: -0.1
 
   @spec normalize(__MODULE__.t()) :: __MODULE__.t()
   def normalize(%__MODULE__{x: x, y: y, direction: direction} = p) do
