@@ -6,12 +6,10 @@ defmodule BattleCity.Position do
   import Integer, only: [is_even: 1]
 
   @size 12
-
   @border 4
-  @width @border * 2
 
   @atom 2
-
+  @width @border * 2
   @xmin 0
   @xmax @size * @atom
   @ymin 0
@@ -39,7 +37,8 @@ defmodule BattleCity.Position do
   @typep x_or_y :: x | y
   @typep atom_x_or_y :: :x | :y
   @type path :: {atom_x_or_y, x_or_y}
-  @type vector :: {}
+  @type vector ::
+          nil | %{type: atom_x_or_y, rxy1: rx_or_ry, rxy2: rx_or_ry, xy1: x_or_y, xy2: x_or_y}
 
   @type t :: %__MODULE__{
           direction: direction(),
@@ -101,14 +100,23 @@ defmodule BattleCity.Position do
 
   @spec normalize(__MODULE__.t()) :: __MODULE__.t()
   def normalize(%__MODULE__{x: x, y: y, direction: direction} = p) do
-    %{p | x: normalize_number(:x, x, direction), y: normalize_number(:y, y, direction)}
+    %{p | x: normalize_number(:x, direction, x), y: normalize_number(:y, direction, y)}
   end
 
-  @spec normalize_number(:x | :y, x_or_y(), direction()) :: x_or_y()
-  defp normalize_number(_, n, _) when is_even(n), do: n
-  defp normalize_number(:x, n, :right), do: n + 1
-  defp normalize_number(:y, n, :up), do: n + 1
-  defp normalize_number(_, n, _), do: n - 1
+  @doc """
+  ## Example
+    iex> #{__MODULE__}.normalize_number(:x, :up, 2)
+    2
+    iex> #{__MODULE__}.normalize_number(:y, :up, 3)
+    4
+    iex> #{__MODULE__}.normalize_number(:x, :down, 3)
+    2
+  """
+  @spec normalize_number(:x | :y, direction(), x_or_y()) :: x_or_y()
+  def normalize_number(_, _, n) when is_even(n), do: n
+  def normalize_number(:x, :right, n), do: n + 1
+  def normalize_number(:y, :up, n), do: n + 1
+  def normalize_number(_, _, n), do: n - 1
 
   @spec vector_with_normalize(__MODULE__.t(), speed) :: {atom_x_or_y, rx_or_ry_map, x_or_y}
   def vector_with_normalize(%{direction: direction} = p, speed) do
@@ -120,9 +128,19 @@ defmodule BattleCity.Position do
         :y -> %{ry: target}
       end
 
-    {x_or_y, map, normalize_number(x_or_y, div(target, @width), direction)}
+    {x_or_y, map, normalize_number(x_or_y, direction, div(target, @width))}
   end
 
+  @doc """
+
+  ## Example
+    iex> #{__MODULE__}.vector(%{direction: :right, rx: 0}, 2)
+    {:x, 2}
+    iex> #{__MODULE__}.vector(%{direction: :left, rx: 1}, 2)
+    {:x, 0}
+    iex> #{__MODULE__}.vector(%{direction: :up, ry: 1}, 2)
+    {:y, 3}
+  """
   @spec vector(__MODULE__.t(), speed) :: {atom_x_or_y, speed}
   def vector(%{direction: :right, rx: rx}, speed) when rx + speed <= @rxmax, do: {:x, rx + speed}
   def vector(%{direction: :right}, _), do: {:x, @rxmax}

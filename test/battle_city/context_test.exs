@@ -1,5 +1,6 @@
 defmodule BattleCity.ContextTest do
   use ExUnit.Case, async: true
+  doctest BattleCity.Position
 
   alias BattleCity.Business.Generate
   alias BattleCity.Business.Move
