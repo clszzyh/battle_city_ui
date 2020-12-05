@@ -44,9 +44,8 @@ defmodule BattleCity.Process.ProcessRegistry do
     {:via, Registry, {__MODULE__, key}}
   end
 
-  def lookup(key) do
-    Registry.lookup(__MODULE__, key)
-  end
+  def lookup(key), do: Registry.lookup(__MODULE__, key)
+  def count, do: Registry.count(__MODULE__)
 
   def pid(key) do
     key
@@ -55,5 +54,10 @@ defmodule BattleCity.Process.ProcessRegistry do
       [{pid, _}] when is_pid(pid) -> pid
       _ -> nil
     end
+  end
+
+  def list do
+    ary = Registry.select(__MODULE__, [{{:"$1", :"$2", :_}, [], [{{:"$1", :"$2"}}]}])
+    for {{module, name}, pid} <- ary, do: %{module: module, name: name, pid: pid}
   end
 end

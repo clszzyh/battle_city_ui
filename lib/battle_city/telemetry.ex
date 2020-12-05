@@ -6,7 +6,7 @@ defmodule BattleCity.Telemetry do
   @prefix :battle_city
   @handler_id "#{@prefix}-default-logger"
 
-  @events Enum.flat_map([:game_init, :game_loop, :game_event], fn x ->
+  @events Enum.flat_map([:game_init, :game_event], fn x ->
             [
               [@prefix, x, :start],
               [@prefix, x, :stop],

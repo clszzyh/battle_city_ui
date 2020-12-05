@@ -43,7 +43,10 @@ defmodule BattleCityWeb.Router do
       live_dashboard "/dashboard",
         metrics: BattleCityWeb.Telemetry,
         ecto_repos: [BattleCity.Repo],
-        metrics_history: {BattleCity.Process.TelemetryStorage, :metrics_history, []}
+        metrics_history: {BattleCity.Process.TelemetryStorage, :metrics_history, []},
+        additional_pages: [
+          process_registry: BattleCityWeb.LiveDashboard.ProcessRegistryPage
+        ]
     end
   end
 end
