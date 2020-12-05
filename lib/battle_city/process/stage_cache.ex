@@ -19,7 +19,14 @@ defmodule BattleCity.Process.StageCache do
   def stages_show do
     for {n, s} <- stages() do
       i = s.init
-      %{name: n, module: s, difficulty: i.difficulty, bots: inspect(i.bots)}
+
+      %{
+        name: n,
+        module: s,
+        difficulty: i.difficulty,
+        bots: inspect(i.bots),
+        raw: inspect(s.__raw__)
+      }
     end
   end
 

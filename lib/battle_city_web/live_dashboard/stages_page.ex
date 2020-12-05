@@ -33,7 +33,8 @@ defmodule BattleCityWeb.LiveDashboard.StagesPage do
       %{field: :name},
       %{field: :module, sortable: :asc},
       %{field: :difficulty},
-      %{field: :bots}
+      %{field: :bots},
+      %{field: :raw}
     ]
   end
 
