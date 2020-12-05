@@ -1,6 +1,8 @@
 defmodule BattleCityWeb.Components.TankComponent do
   use Phoenix.LiveDashboard.Web, :live_component
 
+  alias BattleCity.Context
+  alias BattleCity.Display
   alias BattleCity.Process.GameServer
   # alias BattleCity.Tank
 
@@ -8,7 +10,7 @@ defmodule BattleCityWeb.Components.TankComponent do
 
   @impl true
   def mount(socket) do
-    {:ok, assign(socket, ctx: nil, id: nil, type: nil)}
+    {:ok, assign(socket, tank: nil)}
   end
 
   @impl true
@@ -17,29 +19,31 @@ defmodule BattleCityWeb.Components.TankComponent do
     <div class="tabular-info">
         <table class="table table-hover tabular-info-table">
           <tbody>
-            <tr><td class="border-top-0">rest_enemies</td><td class="border-top-0"><pre><%= @ctx.rest_enemies %></pre></td></tr>
-            <tr><td>shovel?</td><td><pre><%= @ctx.shovel? %></pre></td></tr>
-            <tr><td>state</td><td><pre><%= @ctx.state %></pre></td></tr>
-            <tr><td>loop_interval</td><td><pre><%= @ctx.loop_interval %></pre></td></tr>
-            <tr><td>stage</td><td><pre><%= @stage_key %></pre></td></tr>
-            <tr><td>objects</td><td><pre><%= @ctx.objects |> Map.values() |> Enum.map(&MapSet.size/1) |> Enum.sum %></pre></td></tr>
-            <tr><td>power_ups</td><td><pre><%= Enum.count @ctx.power_ups %></pre></td></tr>
-            <tr><td>tanks</td><td><pre><%= Enum.count @ctx.tanks %></pre></td></tr>
-            <tr><td>bullets</td><td><pre><%= Enum.count @ctx.bullets %></pre></td></tr>
+            <%= for {k, v} <- @tank do %>
+              <tr><td><%= k %></td><td><pre><%= v %></pre></td></tr>
+            <% end %>
           </tbody>
         </table>
+
+        <%= if @page.allow_destructive_actions do %>
+          <div class="modal-footer">
+            <button class="btn btn-danger" phx-target="<%= @myself %>" phx-click="kill">Kill process</button>
+          </div>
+        <% end %>
     </div>
     """
   end
 
   @impl true
-  def update(%{id: @tank_prefix <> pid, path: path, return_to: return_to, page: page}, socket) do
+  def update(%{id: @tank_prefix <> s, path: path, return_to: return_to, page: page}, socket) do
+    [pid, id] = String.split(s, ";")
     pid = :erlang.list_to_pid(String.to_charlist(pid))
     ctx = GameServer.ctx(pid)
+    tank = Context.fetch_object!(ctx, :tanks, id)
 
     {:ok,
      assign(socket,
-       ctx: ctx,
+       tank: Display.columns(tank),
        pid: pid,
        path: path,
        page: page,

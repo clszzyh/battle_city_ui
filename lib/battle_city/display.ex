@@ -3,7 +3,7 @@ defmodule BattleCity.Display do
 
   @spec columns(ComplexDisplay.t(), keyword()) :: keyword
   def columns(o, opts \\ []) do
-    SimpleDisplay.columns(o) ++ ComplexDisplay.columns(o, opts)
+    SimpleDisplay.columns(o) ++ ComplexDisplay.columns(o, Map.new(opts))
   end
 end
 
@@ -29,20 +29,32 @@ defimpl SimpleDisplay, for: Any do
 end
 
 defprotocol ComplexDisplay do
-  @spec columns(t, keyword) :: keyword
+  @spec columns(t, map) :: keyword
   def columns(struct, opts)
 end
 
 defimpl ComplexDisplay, for: BattleCity.Context do
-  def columns(%{} = o, stage_fn: stage_fn) when is_function(stage_fn) do
-    columns(o, []) ++ [stage: stage_fn.(o.stage.name)]
+  def columns(%{} = o, %{stage_fn: stage_fn} = m) when is_function(stage_fn) do
+    columns(o, %{m | stage_fn: nil}) ++ [stage: stage_fn.(o.stage.name)]
   end
 
-  def columns(%{} = o, []) do
+  def columns(%{} = o, %{tank_fn: tank_fn} = m) when is_function(tank_fn) do
+    tanks =
+      o.tanks
+      |> Enum.map(fn {id, %{position: p}} ->
+        x = String.pad_leading(to_string(p.x), 2)
+        y = String.pad_leading(to_string(p.y), 2)
+        tank_fn.("{#{x} , #{y}} -> #{id}", id)
+      end)
+      |> Enum.intersperse({:safe, "<br />"})
+
+    columns(o, %{m | tank_fn: nil}) ++ [tanks: tanks]
+  end
+
+  def columns(%{} = o, _) do
     [
       objects: o.objects |> Map.values() |> Enum.map(&MapSet.size/1) |> Enum.sum(),
       power_ups: Enum.count(o.power_ups),
-      tanks: Enum.count(o.tanks),
       bullets: Enum.count(o.bullets)
     ]
   end

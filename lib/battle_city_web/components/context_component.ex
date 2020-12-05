@@ -6,6 +6,7 @@ defmodule BattleCityWeb.Components.ContextComponent do
 
   @context_prefix "CONTEXT"
   @stage_prefix "STAGE"
+  @tank_prefix "TANK"
 
   @impl true
   def mount(socket) do
@@ -39,9 +40,13 @@ defmodule BattleCityWeb.Components.ContextComponent do
     ctx = GameServer.ctx(pid)
     stage_fn = fn n -> live_patch(n, to: path.(node(pid), info: @stage_prefix <> pids)) end
 
+    tank_fn = fn n, id ->
+      live_patch(n, to: path.(node(pid), info: "#{@tank_prefix}#{pids};#{id}"))
+    end
+
     {:ok,
      assign(socket,
-       ctx: Display.columns(ctx, stage_fn: stage_fn),
+       ctx: Display.columns(ctx, stage_fn: stage_fn, tank_fn: tank_fn),
        pid: pid,
        path: path,
        page: page,
