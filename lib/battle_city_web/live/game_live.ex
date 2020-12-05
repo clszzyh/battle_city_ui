@@ -4,7 +4,7 @@ defmodule BattleCityWeb.GameLive do
   alias BattleCity.Process.StageCache
   require Logger
 
-  @default_level "35"
+  @default_level "1"
 
   @impl true
   def mount(%{"level" => level}, _session, socket) do
