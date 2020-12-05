@@ -7,12 +7,18 @@ defmodule BattleCity.Game do
   alias BattleCity.Context
   alias BattleCity.Event
   alias BattleCity.Position
+  alias BattleCity.Process.GameSupervisor
   alias BattleCity.Process.StageCache
   alias BattleCity.Tank
   alias BattleCity.Telemetry
   require Logger
 
   @default_stage 1
+
+  @mock_range 0..10
+  def mock do
+    for i <- @mock_range, do: GameSupervisor.server_process("mock - #{i}")
+  end
 
   @spec init(BattleCity.slug(), map()) :: Context.t()
   def init(slug, opts \\ %{}) do

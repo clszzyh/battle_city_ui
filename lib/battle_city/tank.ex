@@ -67,7 +67,6 @@ defmodule BattleCity.Tank do
           data = %{
             __module__: __MODULE__,
             meta: meta,
-            id: Utils.random(),
             position: Position.init(map),
             speed: meta.move_speed,
             health: meta.health
@@ -135,7 +134,6 @@ defmodule BattleCity.Tank do
         %Event{id: event_id}
       ) do
     %Bullet{
-      id: Utils.random(),
       enemy?: enemy?,
       position: position,
       tank_id: tank_id,

@@ -28,7 +28,11 @@ defmodule BattleCity.Application do
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: BattleCity.Supervisor]
-    Supervisor.start_link(children, opts)
+    result = Supervisor.start_link(children, opts)
+
+    if Mix.env() != :test, do: _ = BattleCity.Game.mock()
+
+    result
   end
 
   # Tell Phoenix to update the endpoint configuration

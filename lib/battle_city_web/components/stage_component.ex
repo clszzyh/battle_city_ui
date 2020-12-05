@@ -8,7 +8,7 @@ defmodule BattleCityWeb.Components.StageComponent do
 
   @impl true
   def mount(socket) do
-    {:ok, assign(socket, :stage, nil)}
+    {:ok, assign(socket, stage: nil)}
   end
 
   @impl true

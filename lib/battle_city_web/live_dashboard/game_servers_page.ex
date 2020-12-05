@@ -7,6 +7,7 @@ defmodule BattleCityWeb.LiveDashboard.GameServersPage do
   @title "Game Servers"
   @context_prefix "CONTEXT"
   @stage_prefix "STAGE"
+  @tank_prefix "TANK"
 
   @impl true
   def menu_link(_, _) do
@@ -33,6 +34,7 @@ defmodule BattleCityWeb.LiveDashboard.GameServersPage do
 
   def component(@context_prefix <> _), do: BattleCityWeb.Components.ContextComponent
   def component(@stage_prefix <> _), do: BattleCityWeb.Components.StageComponent
+  def component(@tank_prefix <> _), do: BattleCityWeb.Components.TankComponent
 
   defp columns do
     [

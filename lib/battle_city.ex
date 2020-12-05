@@ -12,7 +12,7 @@ defmodule BattleCity do
   alias BattleCity.Tank
 
   @type slug :: binary()
-  @type id :: binary()
+  @type id :: binary() | nil
   @type reason :: atom()
   @type object_keys :: :power_ups | :tanks | :bullets
   @typep fingerprint_keys :: :p | :t | :b

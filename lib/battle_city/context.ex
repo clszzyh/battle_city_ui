@@ -21,6 +21,7 @@ defmodule BattleCity.Context do
           rest_enemies: integer,
           shovel?: boolean,
           loop_interval: integer(),
+          __counters__: map(),
           state: state(),
           objects: %{Position.coordinate() => MapSet.t(BattleCity.fingerprint())},
           stage: Stage.t(),
@@ -38,6 +39,7 @@ defmodule BattleCity.Context do
     bullets: %{},
     power_ups: %{},
     objects: %{},
+    __counters__: %{player: 0, power_up: 0, bullet: 0, enemy: 0},
     rest_enemies: Config.rest_enemies(),
     state: :started,
     shovel?: false
@@ -50,6 +52,22 @@ defmodule BattleCity.Context do
   def put_object(ctx, nil), do: ctx
   def put_object(ctx, []), do: ctx
   def put_object(ctx, [o | rest]), do: ctx |> put_object(o) |> put_object(rest)
+
+  def put_object(%{__counters__: %{bullet: i} = c} = ctx, %Bullet{id: nil} = o) do
+    put_object(%{ctx | __counters__: %{c | bullet: i + 1}}, %{o | id: "b#{i}"})
+  end
+
+  def put_object(%{__counters__: %{power_up: i} = c} = ctx, %PowerUp{id: nil} = o) do
+    put_object(%{ctx | __counters__: %{c | power_up: i + 1}}, %{o | id: "p#{i}"})
+  end
+
+  def put_object(%{__counters__: %{enemy: i} = c} = ctx, %Tank{id: nil, enemy?: true} = o) do
+    put_object(%{ctx | __counters__: %{c | enemy: i + 1}}, %{o | id: "e#{i}"})
+  end
+
+  def put_object(%{__counters__: %{player: i} = c} = ctx, %Tank{id: nil, enemy?: false} = o) do
+    put_object(%{ctx | __counters__: %{c | player: i + 1}}, %{o | id: "t#{i}"})
+  end
 
   def put_object(ctx, o) do
     ctx |> handle_actions(o.__actions__) |> handle_object(o)

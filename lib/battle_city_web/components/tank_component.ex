@@ -1,14 +1,14 @@
-defmodule BattleCityWeb.Components.ContextComponent do
+defmodule BattleCityWeb.Components.TankComponent do
   use Phoenix.LiveDashboard.Web, :live_component
 
   alias BattleCity.Process.GameServer
+  # alias BattleCity.Tank
 
-  @context_prefix "CONTEXT"
-  @stage_prefix "STAGE"
+  @tank_prefix "TANK"
 
   @impl true
   def mount(socket) do
-    {:ok, assign(socket, :ctx, nil)}
+    {:ok, assign(socket, ctx: nil, id: nil, type: nil)}
   end
 
   @impl true
@@ -28,36 +28,22 @@ defmodule BattleCityWeb.Components.ContextComponent do
             <tr><td>bullets</td><td><pre><%= Enum.count @ctx.bullets %></pre></td></tr>
           </tbody>
         </table>
-
-        <%= if @page.allow_destructive_actions do %>
-          <div class="modal-footer">
-            <button class="btn btn-danger" phx-target="<%= @myself %>" phx-click="kill">Kill process</button>
-          </div>
-        <% end %>
     </div>
     """
   end
 
   @impl true
-  def update(%{id: @context_prefix <> pids, path: path, return_to: return_to, page: page}, socket) do
-    pid = :erlang.list_to_pid(String.to_charlist(pids))
+  def update(%{id: @tank_prefix <> pid, path: path, return_to: return_to, page: page}, socket) do
+    pid = :erlang.list_to_pid(String.to_charlist(pid))
     ctx = GameServer.ctx(pid)
 
     {:ok,
      assign(socket,
        ctx: ctx,
-       stage_key: live_patch(ctx.stage.name, to: path.(node(pid), info: @stage_prefix <> pids)),
        pid: pid,
        path: path,
        page: page,
        return_to: return_to
      )}
-  end
-
-  @impl true
-  def handle_event("kill", _, socket) do
-    true = socket.assigns.page.allow_destructive_actions
-    Process.exit(socket.assigns.pid, :kill)
-    {:noreply, push_patch(socket, to: socket.assigns.return_to)}
   end
 end

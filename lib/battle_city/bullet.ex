@@ -20,7 +20,7 @@ defmodule BattleCity.Bullet do
           dead?: boolean()
         }
 
-  @enforce_keys [:id, :speed, :position, :tank_id, :event_id, :enemy?]
+  @enforce_keys [:speed, :position, :tank_id, :event_id, :enemy?]
   defstruct [
     :speed,
     :position,

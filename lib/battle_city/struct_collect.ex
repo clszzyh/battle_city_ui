@@ -1,8 +1,6 @@
 defmodule BattleCity.StructCollect do
   @moduledoc false
 
-  alias BattleCity.Utils
-
   defmacro __using__(_env) do
     quote do
       import unquote(__MODULE__)
@@ -20,27 +18,12 @@ defmodule BattleCity.StructCollect do
   end
 
   defmacro init_ast(behaviour_module, current_module, keyword) when is_atom(behaviour_module) do
-    has_id? = Map.has_key?(behaviour_module.__struct__(), :id)
     keys = Map.keys(behaviour_module.__struct__())
-
-    ast =
-      if has_id? do
-        quote do
-          defp maybe_add_id(map), do: Map.put(map, :id, Utils.random())
-        end
-      else
-        quote do
-          defp maybe_add_id(map), do: map
-        end
-      end
 
     quote do
       @obj Map.put(unquote(keyword), :__module__, unquote(current_module))
 
       @behaviour unquote(behaviour_module)
-
-      @spec maybe_add_id(map()) :: map()
-      unquote(ast)
 
       @spec maybe_handle_init(map()) :: map() | {:error, atom()}
       defp maybe_handle_init(map) do
@@ -54,7 +37,6 @@ defmodule BattleCity.StructCollect do
       @spec init(map()) :: unquote(behaviour_module).t
       def init(map \\ %{}) do
         map
-        |> maybe_add_id()
         |> maybe_handle_init()
         |> case do
           %{} = map ->
