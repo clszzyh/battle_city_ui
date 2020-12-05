@@ -4,13 +4,13 @@ defmodule BattleCity.ContextTest do
 
   alias BattleCity.Business.Generate
   alias BattleCity.Business.Location
-  alias BattleCity.Context
+  alias BattleCity.Game
   alias BattleCity.Position
   alias BattleCity.Utils
 
   setup_all do
     slug = Utils.random()
-    ctx = Context.init(slug)
+    ctx = Game.init(slug)
     player = ctx.tanks |> Map.values() |> Enum.find(&match?(%{enemy?: false}, &1))
     [slug: slug, ctx: ctx, player: player, map: ctx.stage.map]
   end

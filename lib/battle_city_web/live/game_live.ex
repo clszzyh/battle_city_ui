@@ -1,7 +1,6 @@
 defmodule BattleCityWeb.GameLive do
   use BattleCityWeb, :live_view
-  alias BattleCity.Context
-  alias BattleCity.Process.StageCache
+  alias BattleCity.Game
   require Logger
 
   @default_level "1"
@@ -19,7 +18,7 @@ defmodule BattleCityWeb.GameLive do
     Logger.debug("Mounting! #{level}")
     if connected?(socket), do: Logger.debug("Connected. #{level}")
 
-    ctx = level |> StageCache.fetch_stage() |> Context.init()
+    ctx = Game.init("123")
     {:ok, assign(socket, ctx: ctx)}
   end
 

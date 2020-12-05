@@ -4,7 +4,7 @@ defmodule BattleCity.Process.ProcessRegistry do
   ## Examples
 
       iex> defmodule DemoRegistry do
-      ...>   use GenStarter.ProcessRegistry
+      ...>   use #{__MODULE__}
       ...> end
       ...> match?({:via, Registry, {#{__MODULE__}, {DemoRegistry, :abc}}}, DemoRegistry.via_tuple(:abc))
       true
@@ -38,7 +38,7 @@ defmodule BattleCity.Process.ProcessRegistry do
     Registry.child_spec(keys: :unique, name: __MODULE__)
   end
 
-  # Registry.lookup(GenStarter.ProcessRegistry, {GenStarter.DatabaseWorker, 1})
+  # Registry.lookup(__MODULE__, {GenStarter.DatabaseWorker, 1})
 
   def via_tuple(key) do
     {:via, Registry, {__MODULE__, key}}

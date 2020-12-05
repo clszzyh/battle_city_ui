@@ -3,11 +3,9 @@ defmodule BattleCity.Context do
 
   alias BattleCity.Action
   alias BattleCity.Bullet
-  alias BattleCity.Business.Generate
   alias BattleCity.Config
   alias BattleCity.Position
   alias BattleCity.PowerUp
-  alias BattleCity.Process.StageCache
   alias BattleCity.Stage
   alias BattleCity.Tank
 
@@ -44,24 +42,6 @@ defmodule BattleCity.Context do
     state: :started,
     shovel?: false
   ]
-
-  @default_stage 1
-
-  @spec init(BattleCity.slug(), map()) :: __MODULE__.t()
-  def init(slug, opts \\ %{}) do
-    module = opts |> Map.get(:stage, @default_stage) |> StageCache.fetch_stage()
-    stage = module.init(opts)
-    tank = opts |> Map.get(:player_tank, Tank.Level1)
-
-    player =
-      opts
-      |> Map.merge(%{enemy?: false, x: :x_player_1, y: :y_player_1, direction: :up})
-      |> tank.new()
-
-    %__MODULE__{slug: slug, stage: stage, objects: Position.objects()}
-    |> put_object(player)
-    |> Generate.add_bot(opts)
-  end
 
   @spec put_object({__MODULE__.t(), object_struct}) :: __MODULE__.t()
   def put_object({ctx, obj}), do: put_object(ctx, obj)

@@ -3,8 +3,7 @@ defmodule BattleCity.Process.GameServer do
   use GenServer
   use BattleCity.Process.ProcessRegistry
 
-  alias BattleCity.Business.Game
-  alias BattleCity.Context
+  alias BattleCity.Game
 
   def start_link({slug, opts}) do
     GenServer.start_link(__MODULE__, {slug, opts}, name: via_tuple(slug))
@@ -15,7 +14,7 @@ defmodule BattleCity.Process.GameServer do
 
   @impl true
   def init({slug, opts}) do
-    ctx = Context.init(slug, opts)
+    ctx = Game.init(slug, opts)
     Process.send_after(self(), :loop, ctx.loop_interval)
     {:ok, ctx}
   end
