@@ -13,5 +13,6 @@ alias BattleCity.Business.Move
 alias BattleCity.Process.GameServer
 alias BattleCity.Process.GameSupervisor
 alias BattleCity.Process.ProcessRegistry
+alias BattleCity.Process.StageCache
 
 require Logger

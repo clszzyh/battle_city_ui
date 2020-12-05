@@ -24,8 +24,8 @@ defmodule BattleCity.Process.StageCache do
         name: n,
         module: s,
         difficulty: i.difficulty,
-        bots: inspect(i.bots),
-        raw: inspect(s.__raw__)
+        bots: i.bots |> Enum.map_join(", ", fn {m, c} -> "#{m.name()} -> #{c}" end),
+        raw: s.__raw__
       }
     end
   end

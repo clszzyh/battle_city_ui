@@ -42,6 +42,8 @@ defmodule BattleCity.Tank do
     @callback new() :: Tank.t()
     @callback new(map) :: Tank.t()
 
+    @callback name :: atom()
+
     defmacro __using__(opt \\ []) do
       obj = struct!(__MODULE__, opt)
       keys = Map.keys(Tank.__struct__())
@@ -54,6 +56,9 @@ defmodule BattleCity.Tank do
 
         @impl true
         def create_bullet(tank, event), do: Tank.default_create_bullet(tank, event)
+
+        @impl true
+        def name, do: Utils.module_name(__MODULE__)
 
         @impl true
         def new(map \\ %{}) do

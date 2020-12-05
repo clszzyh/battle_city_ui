@@ -26,4 +26,25 @@ defmodule BattleCity.Utils do
     end)
     |> Enum.join("")
   end
+
+  @doc """
+    iex> #{__MODULE__}.module_name(Foo.Bar.FooBar)
+    :foo_bar
+  """
+  @spec module_name(module()) :: atom()
+  def module_name(module) do
+    module
+    |> to_string
+    |> String.split(".")
+    |> List.last()
+    |> Macro.underscore()
+    |> String.to_atom()
+
+    # module
+    # |> to_string
+    # |> String.trim_leading("Elixir.")
+    # |> String.replace(".", "")
+    # |> Macro.underscore()
+    # |> String.to_atom()
+  end
 end

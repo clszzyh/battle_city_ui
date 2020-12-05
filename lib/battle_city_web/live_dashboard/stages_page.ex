@@ -34,7 +34,7 @@ defmodule BattleCityWeb.LiveDashboard.StagesPage do
       %{field: :module, sortable: :asc},
       %{field: :difficulty},
       %{field: :bots},
-      %{field: :raw}
+      %{field: :raw, format: &format_value(&1, nil)}
     ]
   end
 
