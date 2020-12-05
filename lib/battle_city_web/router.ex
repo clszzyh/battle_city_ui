@@ -44,6 +44,7 @@ defmodule BattleCityWeb.Router do
         metrics: BattleCityWeb.Telemetry,
         ecto_repos: [BattleCity.Repo],
         metrics_history: {BattleCity.Process.TelemetryStorage, :metrics_history, []},
+        allow_destructive_actions: true,
         additional_pages: [
           process_registry: BattleCityWeb.LiveDashboard.ProcessRegistryPage,
           game_servers: BattleCityWeb.LiveDashboard.GameServersPage,
