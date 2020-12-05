@@ -36,7 +36,7 @@ defmodule BattleCity.Stage do
 
     quote location: :keep do
       @impl true
-      def name, do: unquote(opt[:name])
+      def name, do: unquote(String.to_integer(opt[:name]))
 
       init_ast(unquote(__MODULE__), __MODULE__, unquote(Macro.escape(obj)))
 

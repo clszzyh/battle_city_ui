@@ -6,10 +6,9 @@ defmodule BattleCity.ContextTest do
   alias BattleCity.Business.Move
   alias BattleCity.Context
   alias BattleCity.Position
-  alias BattleCity.Stage
 
   setup_all do
-    ctx = Context.init(Stage.S1)
+    ctx = Context.init()
     player = ctx.tanks |> Map.values() |> Enum.find(&match?(%{enemy?: false}, &1))
     [ctx: ctx, player: player, map: ctx.stage.map]
   end

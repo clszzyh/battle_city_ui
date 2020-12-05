@@ -7,11 +7,13 @@ defmodule BattleCity.Context do
   alias BattleCity.Config
   alias BattleCity.Position
   alias BattleCity.PowerUp
+  alias BattleCity.Process.StageCache
   alias BattleCity.Stage
   alias BattleCity.Tank
 
   @typep state :: :started | :paused | :game_over | :complete
   @typep object_struct :: PowerUp.t() | Tank.t() | Bullet.t() | nil
+  @typep stage :: 1..35
 
   @object_struct_map %{PowerUp => :power_ups, Tank => :tanks, Bullet => :bullets}
   @object_values Map.values(@object_struct_map)
@@ -39,8 +41,11 @@ defmodule BattleCity.Context do
     shovel?: false
   ]
 
-  @spec init(module(), module(), map()) :: __MODULE__.t()
-  def init(module, tank \\ Tank.Level1, opts \\ %{}) when is_atom(module) do
+  @default_stage 1
+
+  @spec init(stage() | nil, module(), map()) :: __MODULE__.t()
+  def init(stage \\ nil, tank \\ Tank.Level1, opts \\ %{}) do
+    module = StageCache.fetch_stage(stage || @default_stage)
     stage = module.init(opts)
 
     player =
