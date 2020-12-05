@@ -21,7 +21,6 @@ defmodule BattleCityWeb.Components.ContextComponent do
             <%= for {k, v} <- @ctx do %>
               <tr><td><%= k %></td><td><pre><%= v %></pre></td></tr>
             <% end %>
-            <tr><td>stage</td><td><pre><%= @stage %></pre></td></tr>
           </tbody>
         </table>
 
@@ -38,11 +37,11 @@ defmodule BattleCityWeb.Components.ContextComponent do
   def update(%{id: @context_prefix <> pids, path: path, return_to: return_to, page: page}, socket) do
     pid = :erlang.list_to_pid(String.to_charlist(pids))
     ctx = GameServer.ctx(pid)
+    stage_fn = fn n -> live_patch(n, to: path.(node(pid), info: @stage_prefix <> pids)) end
 
     {:ok,
      assign(socket,
-       ctx: Display.columns(ctx),
-       stage: live_patch(ctx.stage.name, to: path.(node(pid), info: @stage_prefix <> pids)),
+       ctx: Display.columns(ctx, stage_fn: stage_fn),
        pid: pid,
        path: path,
        page: page,

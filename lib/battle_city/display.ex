@@ -34,7 +34,11 @@ defprotocol ComplexDisplay do
 end
 
 defimpl ComplexDisplay, for: BattleCity.Context do
-  def columns(%{} = o, _) do
+  def columns(%{} = o, stage_fn: stage_fn) when is_function(stage_fn) do
+    columns(o, []) ++ [stage: stage_fn.(o.stage.name)]
+  end
+
+  def columns(%{} = o, []) do
     [
       objects: o.objects |> Map.values() |> Enum.map(&MapSet.size/1) |> Enum.sum(),
       power_ups: Enum.count(o.power_ups),
