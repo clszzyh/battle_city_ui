@@ -1,9 +1,9 @@
 defmodule BattleCity.Display do
   @moduledoc false
 
-  @spec columns(ComplexDisplay.t()) :: keyword
-  def columns(o) do
-    SimpleDisplay.columns(o) ++ ComplexDisplay.columns(o)
+  @spec columns(ComplexDisplay.t(), keyword()) :: keyword
+  def columns(o, opts \\ []) do
+    SimpleDisplay.columns(o) ++ ComplexDisplay.columns(o, opts)
   end
 end
 
@@ -29,11 +29,12 @@ defimpl SimpleDisplay, for: Any do
 end
 
 defprotocol ComplexDisplay do
-  def columns(struct)
+  @spec columns(t, keyword) :: keyword
+  def columns(struct, opts)
 end
 
 defimpl ComplexDisplay, for: BattleCity.Context do
-  def columns(%{} = o) do
+  def columns(%{} = o, _) do
     [
       objects: o.objects |> Map.values() |> Enum.map(&MapSet.size/1) |> Enum.sum(),
       power_ups: Enum.count(o.power_ups),
@@ -44,7 +45,7 @@ defimpl ComplexDisplay, for: BattleCity.Context do
 end
 
 defimpl ComplexDisplay, for: BattleCity.Stage do
-  def columns(%{__module__: module} = o) do
+  def columns(%{__module__: module} = o, _) do
     [
       bots: o.bots |> Enum.map_join(", ", fn {m, c} -> "#{m.name()} -> #{c}" end),
       raw: module.__raw__() |> Enum.intersperse({:safe, "<br />"})
@@ -53,7 +54,7 @@ defimpl ComplexDisplay, for: BattleCity.Stage do
 end
 
 defimpl ComplexDisplay, for: BattleCity.Tank do
-  def columns(%{}) do
+  def columns(%{}, _) do
     []
   end
 end
