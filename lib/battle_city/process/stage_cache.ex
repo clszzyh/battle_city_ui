@@ -5,6 +5,8 @@ defmodule BattleCity.Process.StageCache do
 
   defstruct stages: %{}, names: MapSet.new()
 
+  alias BattleCity.Stage
+
   def start_link(_) do
     GenServer.start_link(__MODULE__, nil, name: __MODULE__)
   end
@@ -24,7 +26,8 @@ defmodule BattleCity.Process.StageCache do
         name: n,
         module: s,
         difficulty: i.difficulty,
-        bots: i.bots |> Enum.map_join(", ", fn {m, c} -> "#{m.name()} -> #{c}" end)
+        bots: Stage.format_bots(i),
+        map: Stage.format_map(i)
       }
     end
   end

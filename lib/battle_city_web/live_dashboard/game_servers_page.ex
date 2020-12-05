@@ -5,7 +5,8 @@ defmodule BattleCityWeb.LiveDashboard.GameServersPage do
   alias BattleCity.Process.GameSupervisor
 
   @title "Game Servers"
-  @prefix "GAME"
+  @context_prefix "CONTEXT"
+  @stage_prefix "STAGE"
 
   @impl true
   def menu_link(_, _) do
@@ -30,7 +31,8 @@ defmodule BattleCityWeb.LiveDashboard.GameServersPage do
     {Enum.take(processes, params[:limit]), length(processes)}
   end
 
-  def component(@prefix <> _), do: BattleCityWeb.Components.GameServerComponent
+  def component(@context_prefix <> _), do: BattleCityWeb.Components.ContextComponent
+  def component(@stage_prefix <> _), do: BattleCityWeb.Components.StageComponent
 
   defp columns do
     [
@@ -42,7 +44,7 @@ defmodule BattleCityWeb.LiveDashboard.GameServersPage do
   defp row_attrs(row) do
     [
       {"phx-click", "show_info"},
-      {"phx-value-info", "GAME#{:erlang.pid_to_list(row[:pid])}"},
+      {"phx-value-info", "#{@context_prefix}#{:erlang.pid_to_list(row[:pid])}"},
       {"phx-page-loading", true}
     ]
   end

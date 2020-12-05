@@ -49,4 +49,12 @@ defmodule BattleCity.Stage do
   def __after_compile__(env, _bytecode) do
     StageCache.put_stage(env.module)
   end
+
+  def format_bots(%{bots: bots}) do
+    bots |> Enum.map_join(", ", fn {m, c} -> "#{m.name()} -> #{c}" end)
+  end
+
+  def format_map(%{__module__: module}) do
+    module.__raw__() |> Enum.intersperse({:safe, "<br />"})
+  end
 end
