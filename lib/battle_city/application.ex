@@ -23,6 +23,8 @@ defmodule BattleCity.Application do
       {BattleCity.Process.TelemetryStorage, BattleCityWeb.Telemetry.metrics()}
     ]
 
+    :ok = BattleCity.Telemetry.attach_default_logger(:debug)
+
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: BattleCity.Supervisor]

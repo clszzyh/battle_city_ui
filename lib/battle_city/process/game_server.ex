@@ -24,7 +24,7 @@ defmodule BattleCity.Process.GameServer do
 
   @impl true
   def handle_cast({:event, event}, ctx) do
-    ctx = Game.handle_event(ctx, event)
+    ctx = Game.event(ctx, event)
     {:noreply, ctx}
   end
 
