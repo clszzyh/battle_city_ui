@@ -3,17 +3,20 @@ defmodule BattleCity.ContextTest do
   doctest BattleCity.Position
 
   alias BattleCity.Business.Generate
-  alias BattleCity.Business.Move
+  alias BattleCity.Business.Location
   alias BattleCity.Context
   alias BattleCity.Position
+  alias BattleCity.Utils
 
   setup_all do
-    ctx = Context.init()
+    slug = Utils.random()
+    ctx = Context.init(slug)
     player = ctx.tanks |> Map.values() |> Enum.find(&match?(%{enemy?: false}, &1))
-    [ctx: ctx, player: player, map: ctx.stage.map]
+    [slug: slug, ctx: ctx, player: player, map: ctx.stage.map]
   end
 
-  test "context init", %{ctx: ctx, player: player} do
+  test "context init", %{ctx: ctx, player: player, slug: slug} do
+    assert ctx.slug == slug
     assert Enum.count(ctx.objects) == (Position.size() + 1) * (Position.size() + 1)
     assert player.position.x == 8
     assert player.position.y == 24
@@ -38,7 +41,7 @@ defmodule BattleCity.ContextTest do
 
   test "move_slow", %{player: %{position: position} = player, map: map} do
     player = %{player | moving?: true, speed: 4}
-    new_player = Move.move(player, map)
+    new_player = Location.move(player, map)
 
     assert new_player.position.rt == position.ry - 4
     assert new_player.position.t == position.y
@@ -51,7 +54,7 @@ defmodule BattleCity.ContextTest do
 
   test "move_fast", %{player: %{position: position} = player, map: map} do
     player = %{player | moving?: true, speed: 14}
-    new_player = Move.move(player, map)
+    new_player = Location.move(player, map)
 
     assert new_player.position.rt == position.ry - 14
     assert new_player.position.t == position.y - 2

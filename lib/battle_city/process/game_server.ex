@@ -3,20 +3,36 @@ defmodule BattleCity.Process.GameServer do
   use GenServer
   use BattleCity.Process.ProcessRegistry
 
+  alias BattleCity.Business.Game
   alias BattleCity.Context
 
-  @type t :: %__MODULE__{
-          context: Context.t(),
-          name: binary
-        }
-  defstruct [:context, :name]
+  def start_link({slug, opts}) do
+    GenServer.start_link(__MODULE__, {slug, opts}, name: via_tuple(slug))
+  end
 
-  def start_link(name) do
-    GenServer.start_link(__MODULE__, name, name: via_tuple(name))
+  def ctx(srv), do: GenServer.call(srv, :ctx)
+  def event(srv, event), do: GenServer.cast(srv, {:event, event})
+
+  @impl true
+  def init({slug, opts}) do
+    ctx = Context.init(slug, opts)
+    Process.send_after(self(), :loop, ctx.loop_interval)
+    {:ok, ctx}
   end
 
   @impl true
-  def init(name) do
-    {:ok, %__MODULE__{context: Context.init(), name: name}}
+  def handle_call(:ctx, _from, ctx), do: {:reply, ctx, ctx}
+
+  @impl true
+  def handle_cast({:event, event}, ctx) do
+    ctx = Game.handle_event(ctx, event)
+    {:noreply, ctx}
+  end
+
+  @impl true
+  def handle_info(:loop, ctx) do
+    ctx = Game.loop(ctx)
+    Process.send_after(self(), :loop, ctx.loop_interval)
+    {:noreply, ctx}
   end
 end

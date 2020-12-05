@@ -14,14 +14,15 @@ defmodule BattleCity.Process.GameSupervisor do
     DynamicSupervisor.init(strategy: :one_for_one)
   end
 
-  def server_process(name) do
-    case start_child(name) do
+  @spec server_process(BattleCity.slug(), map()) :: pid()
+  def server_process(slug, opts \\ %{}) do
+    case start_child(slug, opts) do
       {:ok, pid} -> pid
       {:error, {:already_started, pid}} -> pid
     end
   end
 
-  defp start_child(name) do
-    DynamicSupervisor.start_child(__MODULE__, {GameServer, name})
+  defp start_child(slug, opts) do
+    DynamicSupervisor.start_child(__MODULE__, {GameServer, {slug, opts}})
   end
 end

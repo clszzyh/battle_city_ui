@@ -11,6 +11,7 @@ defmodule BattleCity do
   alias BattleCity.Context
   alias BattleCity.Tank
 
+  @type slug :: binary()
   @type id :: binary()
   @type reason :: atom()
   @type object_keys :: :power_ups | :tanks | :bullets

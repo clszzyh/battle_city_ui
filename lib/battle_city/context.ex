@@ -13,14 +13,16 @@ defmodule BattleCity.Context do
 
   @typep state :: :started | :paused | :game_over | :complete
   @typep object_struct :: PowerUp.t() | Tank.t() | Bullet.t() | nil
-  @typep stage :: 1..35
 
   @object_struct_map %{PowerUp => :power_ups, Tank => :tanks, Bullet => :bullets}
   @object_values Map.values(@object_struct_map)
 
+  @loop_interval 100
+
   @type t :: %__MODULE__{
           rest_enemies: integer,
           shovel?: boolean,
+          loop_interval: integer(),
           state: state(),
           objects: %{Position.coordinate() => MapSet.t(BattleCity.fingerprint())},
           stage: Stage.t(),
@@ -29,9 +31,11 @@ defmodule BattleCity.Context do
           bullets: %{BattleCity.id() => Bullet.t()}
         }
 
-  @enforce_keys [:stage, :objects]
+  @enforce_keys [:stage, :objects, :slug]
   defstruct [
     :stage,
+    :slug,
+    loop_interval: @loop_interval,
     tanks: %{},
     bullets: %{},
     power_ups: %{},
@@ -43,17 +47,18 @@ defmodule BattleCity.Context do
 
   @default_stage 1
 
-  @spec init(stage() | nil, module(), map()) :: __MODULE__.t()
-  def init(stage \\ nil, tank \\ Tank.Level1, opts \\ %{}) do
-    module = StageCache.fetch_stage(stage || @default_stage)
+  @spec init(BattleCity.slug(), map()) :: __MODULE__.t()
+  def init(slug, opts \\ %{}) do
+    module = opts |> Map.get(:stage, @default_stage) |> StageCache.fetch_stage()
     stage = module.init(opts)
+    tank = opts |> Map.get(:player_tank, Tank.Level1)
 
     player =
       opts
       |> Map.merge(%{enemy?: false, x: :x_player_1, y: :y_player_1, direction: :up})
       |> tank.new()
 
-    %__MODULE__{stage: stage, objects: Position.objects()}
+    %__MODULE__{slug: slug, stage: stage, objects: Position.objects()}
     |> put_object(player)
     |> Generate.add_bot(opts)
   end
