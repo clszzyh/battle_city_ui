@@ -5,6 +5,7 @@ defmodule BattleCityWeb.LiveDashboard.GameServersPage do
   alias BattleCity.Process.GameSupervisor
 
   @title "Game Servers"
+  @prefix "GAME"
 
   @impl true
   def menu_link(_, _) do
@@ -29,12 +30,7 @@ defmodule BattleCityWeb.LiveDashboard.GameServersPage do
     {Enum.take(processes, params[:limit]), length(processes)}
   end
 
-  @impl true
-  def handle_event("click_pid", %{"info" => "PID" <> pid_str}, socket) do
-    pid = :erlang.list_to_pid(String.to_charlist(pid_str))
-    IO.puts("click pid: #{inspect(:sys.get_state(pid))}")
-    {:noreply, socket}
-  end
+  def component(@prefix <> _), do: BattleCityWeb.Components.GameServerComponent
 
   defp columns do
     [
@@ -46,7 +42,7 @@ defmodule BattleCityWeb.LiveDashboard.GameServersPage do
   defp row_attrs(row) do
     [
       {"phx-click", "show_info"},
-      {"phx-value-info", "CUSTOM_#{encode_pid(row[:pid])}"},
+      {"phx-value-info", "GAME#{:erlang.pid_to_list(row[:pid])}"},
       {"phx-page-loading", true}
     ]
   end
