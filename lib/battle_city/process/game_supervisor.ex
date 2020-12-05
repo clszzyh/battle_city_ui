@@ -25,4 +25,9 @@ defmodule BattleCity.Process.GameSupervisor do
   defp start_child(slug, opts) do
     DynamicSupervisor.start_child(__MODULE__, {GameServer, {slug, opts}})
   end
+
+  def children do
+    childs = DynamicSupervisor.which_children(__MODULE__)
+    for {_, pid, :worker, [module]} <- childs, do: %{pid: pid, module: module}
+  end
 end

@@ -15,6 +15,14 @@ defmodule BattleCity.Process.StageCache do
   end
 
   def stages, do: GenServer.call(__MODULE__, :stages)
+
+  def stages_show do
+    for {n, s} <- stages() do
+      i = s.init
+      %{name: n, module: s, difficulty: i.difficulty, bots: inspect(i.bots)}
+    end
+  end
+
   def names, do: GenServer.call(__MODULE__, :names)
   def fetch_stage(name), do: GenServer.call(__MODULE__, {:fetch_stage, name})
   def put_stage(module), do: GenServer.cast(__MODULE__, {:put_stage, module})
