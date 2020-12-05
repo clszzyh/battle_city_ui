@@ -32,7 +32,7 @@ defmodule BattleCityWeb.LiveDashboard.GameServersPage do
   @impl true
   def handle_event("click_pid", %{"info" => "PID" <> pid_str}, socket) do
     pid = :erlang.list_to_pid(String.to_charlist(pid_str))
-    IO.puts("click pid: #{inspect(pid)}")
+    IO.puts("click pid: #{inspect(:sys.get_state(pid))}")
     {:noreply, socket}
   end
 
@@ -45,8 +45,8 @@ defmodule BattleCityWeb.LiveDashboard.GameServersPage do
 
   defp row_attrs(row) do
     [
-      {"phx-click", "click_pid"},
-      {"phx-value-info", encode_pid(row[:pid])},
+      {"phx-click", "show_info"},
+      {"phx-value-info", "CUSTOM_#{encode_pid(row[:pid])}"},
       {"phx-page-loading", true}
     ]
   end

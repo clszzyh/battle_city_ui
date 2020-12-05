@@ -25,7 +25,8 @@ defmodule BattleCityWeb.LiveDashboard.StagesPage do
 
   @impl true
   def handle_event("click_module", %{"info" => "MODULE_" <> module}, socket) do
-    IO.puts("click module: #{module}")
+    module = String.to_atom(module)
+    IO.puts("click module: #{module.__raw__}")
     {:noreply, socket}
   end
 
@@ -40,8 +41,7 @@ defmodule BattleCityWeb.LiveDashboard.StagesPage do
       %{field: :name},
       %{field: :module, sortable: :asc},
       %{field: :difficulty},
-      %{field: :bots},
-      %{field: :raw, format: &format_value(&1, nil)}
+      %{field: :bots}
     ]
   end
 
