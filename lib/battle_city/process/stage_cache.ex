@@ -5,7 +5,7 @@ defmodule BattleCity.Process.StageCache do
 
   defstruct stages: %{}, names: MapSet.new()
 
-  alias BattleCity.Stage
+  alias BattleCity.Display
 
   def start_link(_) do
     GenServer.start_link(__MODULE__, nil, name: __MODULE__)
@@ -19,17 +19,7 @@ defmodule BattleCity.Process.StageCache do
   def stages, do: GenServer.call(__MODULE__, :stages)
 
   def stages_show do
-    for {n, s} <- stages() do
-      i = s.init
-
-      %{
-        name: n,
-        module: s,
-        difficulty: i.difficulty,
-        bots: Stage.format_bots(i),
-        map: Stage.format_map(i)
-      }
-    end
+    for {_, s} <- stages(), do: Display.columns(s.init)
   end
 
   def names, do: GenServer.call(__MODULE__, :names)

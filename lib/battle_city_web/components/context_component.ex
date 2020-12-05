@@ -1,6 +1,7 @@
 defmodule BattleCityWeb.Components.ContextComponent do
   use Phoenix.LiveDashboard.Web, :live_component
 
+  alias BattleCity.Display
   alias BattleCity.Process.GameServer
 
   @context_prefix "CONTEXT"
@@ -8,7 +9,7 @@ defmodule BattleCityWeb.Components.ContextComponent do
 
   @impl true
   def mount(socket) do
-    {:ok, assign(socket, :ctx, nil)}
+    {:ok, assign(socket, ctx: nil, stage: nil)}
   end
 
   @impl true
@@ -17,15 +18,10 @@ defmodule BattleCityWeb.Components.ContextComponent do
     <div class="tabular-info">
         <table class="table table-hover tabular-info-table">
           <tbody>
-            <tr><td class="border-top-0">rest_enemies</td><td class="border-top-0"><pre><%= @ctx.rest_enemies %></pre></td></tr>
-            <tr><td>shovel?</td><td><pre><%= @ctx.shovel? %></pre></td></tr>
-            <tr><td>state</td><td><pre><%= @ctx.state %></pre></td></tr>
-            <tr><td>loop_interval</td><td><pre><%= @ctx.loop_interval %></pre></td></tr>
-            <tr><td>stage</td><td><pre><%= @stage_key %></pre></td></tr>
-            <tr><td>objects</td><td><pre><%= @ctx.objects |> Map.values() |> Enum.map(&MapSet.size/1) |> Enum.sum %></pre></td></tr>
-            <tr><td>power_ups</td><td><pre><%= Enum.count @ctx.power_ups %></pre></td></tr>
-            <tr><td>tanks</td><td><pre><%= Enum.count @ctx.tanks %></pre></td></tr>
-            <tr><td>bullets</td><td><pre><%= Enum.count @ctx.bullets %></pre></td></tr>
+            <%= for {k, v} <- @ctx do %>
+              <tr><td><%= k %></td><td><pre><%= v %></pre></td></tr>
+            <% end %>
+            <tr><td>stage</td><td><pre><%= @stage %></pre></td></tr>
           </tbody>
         </table>
 
@@ -45,8 +41,8 @@ defmodule BattleCityWeb.Components.ContextComponent do
 
     {:ok,
      assign(socket,
-       ctx: ctx,
-       stage_key: live_patch(ctx.stage.name, to: path.(node(pid), info: @stage_prefix <> pids)),
+       ctx: Display.columns(ctx),
+       stage: live_patch(ctx.stage.name, to: path.(node(pid), info: @stage_prefix <> pids)),
        pid: pid,
        path: path,
        page: page,

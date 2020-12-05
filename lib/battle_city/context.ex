@@ -31,6 +31,7 @@ defmodule BattleCity.Context do
         }
 
   @enforce_keys [:stage, :objects, :slug]
+  @derive {SimpleDisplay, only: [:rest_enemies, :shovel?, :state, :loop_interval]}
   defstruct [
     :stage,
     :slug,

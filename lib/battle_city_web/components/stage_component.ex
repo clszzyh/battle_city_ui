@@ -1,8 +1,8 @@
 defmodule BattleCityWeb.Components.StageComponent do
   use Phoenix.LiveDashboard.Web, :live_component
 
+  alias BattleCity.Display
   alias BattleCity.Process.GameServer
-  alias BattleCity.Stage
 
   @stage_prefix "STAGE"
 
@@ -17,11 +17,9 @@ defmodule BattleCityWeb.Components.StageComponent do
     <div class="tabular-info">
         <table class="table table-hover tabular-info-table">
           <tbody>
-            <tr><td class="border-top-0">module</td><td class="border-top-0"><pre><%= @stage.__module__ %></pre></td></tr>
-            <tr><td>name</td><td><pre><%= @stage.name %></pre></td></tr>
-            <tr><td>difficulty</td><td><pre><%= @stage.difficulty %></pre></td></tr>
-            <tr><td>bots</td><td><pre><%= Stage.format_bots(@stage) %></pre></td></tr>
-            <tr><td>map</td><td><pre><%= Stage.format_map(@stage) %></pre></td></tr>
+            <%= for {k, v} <- @stage do %>
+              <tr><td><%= k %></td><td><pre><%= v %></pre></td></tr>
+            <% end %>
           </tbody>
         </table>
     </div>
@@ -34,7 +32,7 @@ defmodule BattleCityWeb.Components.StageComponent do
 
     {:ok,
      assign(socket,
-       stage: GameServer.ctx(pid).stage,
+       stage: Display.columns(GameServer.ctx(pid).stage),
        pid: pid,
        path: path,
        page: page,

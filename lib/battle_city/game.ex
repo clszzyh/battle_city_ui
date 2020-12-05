@@ -15,9 +15,9 @@ defmodule BattleCity.Game do
 
   @default_stage 1
 
-  @mock_range 0..10
+  @mock_range 0..2
   def mock do
-    for i <- @mock_range, do: GameSupervisor.server_process("mock - #{i}")
+    for i <- @mock_range, do: GameSupervisor.server_process("mock-#{i}")
   end
 
   @spec init(BattleCity.slug(), map()) :: Context.t()

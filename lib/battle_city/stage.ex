@@ -18,6 +18,7 @@ defmodule BattleCity.Stage do
         }
 
   @derive {Inspect, except: [:map]}
+  @derive {SimpleDisplay, only: [:name, :difficulty, :__module__]}
   @enforce_keys [:name, :difficulty, :map, :bots]
   defstruct [
     :__module__,
@@ -48,13 +49,5 @@ defmodule BattleCity.Stage do
 
   def __after_compile__(env, _bytecode) do
     StageCache.put_stage(env.module)
-  end
-
-  def format_bots(%{bots: bots}) do
-    bots |> Enum.map_join(", ", fn {m, c} -> "#{m.name()} -> #{c}" end)
-  end
-
-  def format_map(%{__module__: module}) do
-    module.__raw__() |> Enum.intersperse({:safe, "<br />"})
   end
 end
