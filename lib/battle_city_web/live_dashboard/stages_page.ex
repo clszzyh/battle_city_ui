@@ -4,9 +4,11 @@ defmodule BattleCityWeb.LiveDashboard.StagesPage do
 
   alias BattleCity.Process.StageCache
 
+  @title "Stages"
+
   @impl true
   def menu_link(_, _) do
-    {:ok, "Stages"}
+    {:ok, @title}
   end
 
   @impl true
@@ -17,15 +19,20 @@ defmodule BattleCityWeb.LiveDashboard.StagesPage do
       row_attrs: &row_attrs/1,
       row_fetcher: &fetch_processes/2,
       rows_name: "stages",
-      title: "Stages"
+      title: @title
     )
   end
 
-  defp fetch_processes(params, _node) do
-    # sessions = node |> :rpc.call(ProcessRegistry, :processes, [])
-    processes = StageCache.stages_show()
+  @impl true
+  def handle_event("click_module", %{"info" => "MODULE_" <> module}, socket) do
+    IO.puts("click module: #{module}")
+    {:noreply, socket}
+  end
 
-    {Enum.take(processes, params[:limit]), length(processes)}
+  defp fetch_processes(params, _node) do
+    stages = StageCache.stages_show()
+
+    {Enum.take(stages, params[:limit]), length(stages)}
   end
 
   defp columns do
@@ -38,7 +45,11 @@ defmodule BattleCityWeb.LiveDashboard.StagesPage do
     ]
   end
 
-  defp row_attrs(_row) do
-    []
+  defp row_attrs(row) do
+    [
+      {"phx-click", "click_module"},
+      {"phx-value-info", "MODULE_#{row[:module]}"},
+      {"phx-page-loading", true}
+    ]
   end
 end

@@ -4,9 +4,11 @@ defmodule BattleCityWeb.LiveDashboard.ProcessRegistryPage do
 
   alias BattleCity.Process.ProcessRegistry
 
+  @title "Process Registry"
+
   @impl true
   def menu_link(_, _) do
-    {:ok, "Process Registry"}
+    {:ok, @title}
   end
 
   @impl true
@@ -17,7 +19,7 @@ defmodule BattleCityWeb.LiveDashboard.ProcessRegistryPage do
       row_attrs: &row_attrs/1,
       row_fetcher: &fetch_processes/2,
       rows_name: "process",
-      title: "Process Registry"
+      title: @title
     )
   end
 
@@ -30,13 +32,9 @@ defmodule BattleCityWeb.LiveDashboard.ProcessRegistryPage do
 
   defp columns do
     [
-      %{field: :name, header: "name", sortable: :asc},
-      %{
-        field: :pid,
-        header: "Worker PID",
-        format: &(&1 |> encode_pid() |> String.replace_prefix("PID", ""))
-      },
-      %{field: :module, header: "module", sortable: :asc}
+      %{field: :name, sortable: :asc},
+      %{field: :pid, format: &encode_pid/1},
+      %{field: :module, sortable: :asc}
     ]
   end
 
