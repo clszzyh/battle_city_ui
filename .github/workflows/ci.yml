@@ -107,15 +107,6 @@ jobs:
         run: |
           VERSION=$(cat VERSION | tr -s '\n' ' ')
           echo ::set-output name=VERSION::$VERSION
-      - name: Hex build
-        run: mix hex.build -o build-$VERSION.tar
-        env:
-          VERSION: ${{ steps.get_version.outputs.VERSION }}
-      - uses: actions/upload-artifact@v2
-        with:
-          name: build-${{ steps.get_version.outputs.VERSION }}-${{github.sha}}
-          path: build-${{ steps.get_version.outputs.VERSION }}.tar
-          if-no-files-found: error
       - name: CI failed
         if: failure() && contains(github.ref, 'refs/heads')
         uses: clszzyh/github-script@main
@@ -360,10 +351,6 @@ jobs:
         uses: dev-drprasad/delete-older-releases@v0.1.0
         with:
           keep_latest: 3
-      - name: Publish on hex.pm
-        run: mix hex.publish --yes
-        env:
-          HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
       - name: Release failed
         if: failure()
         uses: actions/github-script@v2
