@@ -33,13 +33,16 @@ defmodule BattleCity.Stage do
   @callback name :: binary()
 
   defmacro __using__(opt) do
-    raw = Keyword.fetch!(opt, :map)
+    # raw = Keyword.fetch!(opt, :map)
     obj = struct!(__MODULE__, Compile.validate_stage!(Map.new(opt)))
+
+    raw = for i <- 0..12, do: for(j <- 0..12, do: obj.map[{i * 2, j * 2}])
 
     quote location: :keep do
       @impl true
       def name, do: unquote(String.to_integer(opt[:name]))
-      def __raw__, do: unquote(raw)
+      def __map__, do: unquote(Macro.escape(obj.map))
+      def __raw__, do: unquote(Macro.escape(raw))
 
       init_ast(unquote(__MODULE__), __MODULE__, unquote(Macro.escape(obj)))
 

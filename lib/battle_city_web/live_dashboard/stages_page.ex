@@ -39,7 +39,7 @@ defmodule BattleCityWeb.LiveDashboard.StagesPage do
   defp columns do
     [
       %{field: :name},
-      %{field: :module, sortable: :asc},
+      %{field: :__module__, sortable: :asc},
       %{field: :difficulty},
       %{field: :bots},
       %{field: :raw}

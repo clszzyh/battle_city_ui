@@ -61,10 +61,26 @@ defimpl ComplexDisplay, for: BattleCity.Context do
 end
 
 defimpl ComplexDisplay, for: BattleCity.Stage do
-  def columns(%{__module__: module} = o, _) do
+  ## TODO environment_fn click
+  def columns(%{__module__: module} = o, %{environment_fn: environment_fn} = m)
+      when is_function(environment_fn) do
+    raw =
+      module.__raw__()
+      |> Enum.map(fn x ->
+        Enum.map_join(x, " ", fn a ->
+          String.pad_leading(a.raw, 2)
+        end)
+      end)
+      |> Enum.intersperse({:safe, "<br />"})
+
+    columns(o, %{m | environment_fn: nil}) |> Keyword.put(:raw, raw)
+  end
+
+  ## TODO display from module
+  def columns(%{} = o, _) do
     [
       bots: o.bots |> Enum.map_join(", ", fn {m, c} -> "#{m.name()} -> #{c}" end),
-      raw: module.__raw__() |> Enum.intersperse({:safe, "<br />"})
+      raw: "raw"
     ]
   end
 end

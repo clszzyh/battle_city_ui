@@ -5,6 +5,7 @@ defmodule BattleCityWeb.Components.StageComponent do
   alias BattleCity.Process.GameServer
 
   @stage_prefix "STAGE"
+  @environment_prefix "ENVIRONMENT"
 
   @impl true
   def mount(socket) do
@@ -27,12 +28,16 @@ defmodule BattleCityWeb.Components.StageComponent do
   end
 
   @impl true
-  def update(%{id: @stage_prefix <> pid, path: path, return_to: return_to, page: page}, socket) do
-    pid = :erlang.list_to_pid(String.to_charlist(pid))
+  def update(%{id: @stage_prefix <> pids, path: path, return_to: return_to, page: page}, socket) do
+    pid = :erlang.list_to_pid(String.to_charlist(pids))
+
+    environment_fn = fn n, id ->
+      live_patch(n, to: path.(node(pid), info: "#{@environment_prefix}#{pids};#{id}"))
+    end
 
     {:ok,
      assign(socket,
-       stage: Display.columns(GameServer.ctx(pid).stage),
+       stage: Display.columns(GameServer.ctx(pid).stage, environment_fn: environment_fn),
        pid: pid,
        path: path,
        page: page,
