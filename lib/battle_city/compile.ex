@@ -68,9 +68,10 @@ defmodule BattleCity.Compile do
     %{o | map: map, bots: Enum.map(bots, &parse_bot/1)}
   end
 
-  defp parse_map({o, y}) when is_binary(o) do
-    result = o |> String.split(" ", trim: true)
-    unless Enum.count(result) == Position.size() + 1, do: raise("#{o}'s length should be 13.")
+  defp parse_map({raw, y}) when is_binary(raw) do
+    result = raw |> String.split(" ", trim: true)
+    size = Position.size() + 1
+    unless Enum.count(result) == size, do: raise("#{raw}'s length should be #{size}")
 
     result |> Enum.with_index() |> Enum.map(fn {o, x} -> parse_map_1(o, {x, y}) end)
   end
@@ -81,6 +82,7 @@ defmodule BattleCity.Compile do
     Map.fetch!(@environment_map, prefix).init(%{
       x: x * Position.atom(),
       y: y * Position.atom(),
+      raw: o,
       rx: x * Position.atom() * Position.width(),
       ry: y * Position.atom() * Position.width(),
       shape: Map.fetch!(@suffix_map, suffix)

@@ -102,7 +102,7 @@ defmodule BattleCity.Tank do
         }
 
   @enforce_keys [:meta, :__module__, :position]
-  @derive {SimpleDisplay, only: [:id, :__module__]}
+  @derive {SimpleDisplay, only: [:id, :__module__, :speed, :health, :score, :lifes]}
   defstruct [
     :__module__,
     :meta,

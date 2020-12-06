@@ -17,6 +17,7 @@ defmodule BattleCity.Environment do
           enter?: boolean(),
           health: health,
           shape: shape,
+          raw: binary(),
           x: Position.x(),
           y: Position.y(),
           rx: Position.rx(),
@@ -32,6 +33,7 @@ defmodule BattleCity.Environment do
     :rx,
     :ry,
     :shape,
+    :raw,
     enter?: false,
     health: 0
   ]

@@ -41,10 +41,10 @@ defimpl ComplexDisplay, for: BattleCity.Context do
   def columns(%{} = o, %{tank_fn: tank_fn} = m) when is_function(tank_fn) do
     tanks =
       o.tanks
-      |> Enum.map(fn {id, %{position: p}} ->
+      |> Enum.map(fn {id, %{position: p, __module__: module}} ->
         x = String.pad_leading(to_string(p.x), 2)
         y = String.pad_leading(to_string(p.y), 2)
-        tank_fn.("{#{x} , #{y}} -> #{id}", id)
+        tank_fn.("{#{x} , #{y}} -> #{id} / [#{module.name()}]", id)
       end)
       |> Enum.intersperse({:safe, "<br />"})
 
