@@ -1,33 +1,20 @@
 defmodule BattleCity.Process.GameSupervisor do
   @moduledoc false
 
-  alias BattleCity.Process.GameServer
+  use Supervisor
+  use BattleCity.Process.ProcessRegistry
 
-  use DynamicSupervisor
-
-  def start_link(init_arg) do
-    DynamicSupervisor.start_link(__MODULE__, init_arg, name: __MODULE__)
+  def start_link({slug, opts}) do
+    Supervisor.start_link(__MODULE__, {slug, opts}, name: via_tuple(slug))
   end
 
   @impl true
-  def init(_args) do
-    DynamicSupervisor.init(strategy: :one_for_one)
-  end
+  def init(args) do
+    children = [
+      {BattleCity.Process.GameServer, args},
+      {BattleCity.Process.TankDynamicSupervisor, args}
+    ]
 
-  @spec server_process(BattleCity.slug(), map()) :: pid()
-  def server_process(slug, opts \\ %{}) do
-    case start_child(slug, opts) do
-      {:ok, pid} -> pid
-      {:error, {:already_started, pid}} -> pid
-    end
-  end
-
-  defp start_child(slug, opts) do
-    DynamicSupervisor.start_child(__MODULE__, {GameServer, {slug, opts}})
-  end
-
-  def children do
-    childs = DynamicSupervisor.which_children(__MODULE__)
-    for {_, pid, :worker, [module]} <- childs, do: %{pid: pid, module: module}
+    Supervisor.init(children, strategy: :one_for_one)
   end
 end

@@ -58,6 +58,6 @@ defmodule BattleCity.Process.ProcessRegistry do
 
   def list do
     ary = Registry.select(__MODULE__, [{{:"$1", :"$2", :_}, [], [{{:"$1", :"$2"}}]}])
-    for {{module, name}, pid} <- ary, do: %{module: module, name: name, pid: pid}
+    for {{module, name}, pid} <- ary, do: %{module: module, name: inspect(name), pid: pid}
   end
 end

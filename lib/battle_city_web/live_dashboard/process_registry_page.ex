@@ -32,9 +32,9 @@ defmodule BattleCityWeb.LiveDashboard.ProcessRegistryPage do
 
   defp columns do
     [
-      %{field: :name, sortable: :asc},
-      %{field: :pid, format: &encode_pid/1},
-      %{field: :module, sortable: :asc}
+      %{field: :module, sortable: :asc},
+      %{field: :name},
+      %{field: :pid, format: &encode_pid/1}
     ]
   end
 

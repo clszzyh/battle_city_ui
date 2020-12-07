@@ -7,9 +7,9 @@ defmodule BattleCity.Application do
 
   def start(_type, _args) do
     children = [
-      BattleCity.Process.ProcessRegistry,
-      BattleCity.Process.GameSupervisor,
       BattleCity.Process.StageCache,
+      BattleCity.Process.ProcessRegistry,
+      BattleCity.Process.GameDynamicSupervisor,
       # Start the Ecto repository
       BattleCity.Repo,
       # Start the Telemetry supervisor

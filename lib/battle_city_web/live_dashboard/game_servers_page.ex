@@ -2,7 +2,7 @@ defmodule BattleCityWeb.LiveDashboard.GameServersPage do
   @moduledoc false
   use Phoenix.LiveDashboard.PageBuilder
 
-  alias BattleCity.Process.GameSupervisor
+  alias BattleCity.Process.GameDynamicSupervisor
 
   @title "Game Servers"
   @context_prefix "CONTEXT"
@@ -27,7 +27,7 @@ defmodule BattleCityWeb.LiveDashboard.GameServersPage do
   end
 
   defp fetch_processes(params, _node) do
-    processes = GameSupervisor.children()
+    processes = GameDynamicSupervisor.children()
 
     {Enum.take(processes, params[:limit]), length(processes)}
   end
