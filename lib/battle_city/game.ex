@@ -17,6 +17,7 @@ defmodule BattleCity.Game do
 
   @mock_range 0..2
   def mock do
+    _ = BattleCity.Process.StageCache.start_link([])
     for i <- @mock_range, do: GameDynamicSupervisor.server_process("mock-#{i}")
   end
 

@@ -60,7 +60,7 @@ defmodule BattleCity.MixProject do
   def application do
     [
       mod: {BattleCity.Application, []},
-      extra_applications: [:logger, :runtime_tools, :os_mon]
+      extra_applications: [:logger, :runtime_tools, :os_mon, :mix]
     ]
   end
 

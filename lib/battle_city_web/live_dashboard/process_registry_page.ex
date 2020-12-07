@@ -3,6 +3,7 @@ defmodule BattleCityWeb.LiveDashboard.ProcessRegistryPage do
   use Phoenix.LiveDashboard.PageBuilder
 
   alias BattleCity.Process.ProcessRegistry
+  alias BattleCity.Utils
 
   @title "Process Registry"
 
@@ -33,7 +34,7 @@ defmodule BattleCityWeb.LiveDashboard.ProcessRegistryPage do
   defp columns do
     [
       %{field: :module, sortable: :asc},
-      %{field: :name},
+      %{field: :name, format: &Utils.inspect_wrapper/1},
       %{field: :pid, format: &encode_pid/1}
     ]
   end

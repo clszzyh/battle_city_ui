@@ -28,6 +28,6 @@ defmodule BattleCity.Process.GameDynamicSupervisor do
 
   def children do
     childs = DynamicSupervisor.which_children(__MODULE__)
-    for {_, pid, :worker, [module]} <- childs, do: %{pid: pid, module: module}
+    for {_, pid, kind, [module]} <- childs, do: %{pid: pid, kind: kind, module: module}
   end
 end

@@ -56,8 +56,12 @@ defmodule BattleCity.Process.ProcessRegistry do
     end
   end
 
-  def list do
-    ary = Registry.select(__MODULE__, [{{:"$1", :"$2", :_}, [], [{{:"$1", :"$2"}}]}])
-    for {{module, name}, pid} <- ary, do: %{module: module, name: inspect(name), pid: pid}
-  end
+  @list_query [{{{:"$1", :"$2"}, :"$3", :_}, [], [%{module: :"$1", name: :"$2", pid: :"$3"}]}]
+  @game_query [
+    {{{:"$1", :"$2"}, :"$3", :_}, [{:==, :"$1", BattleCity.Process.GameServer}],
+     [%{module: :"$1", name: :"$2", pid: :"$3"}]}
+  ]
+
+  def list, do: Registry.select(__MODULE__, @list_query)
+  def games, do: Registry.select(__MODULE__, @game_query)
 end

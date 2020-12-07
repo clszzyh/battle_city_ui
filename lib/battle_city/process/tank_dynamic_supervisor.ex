@@ -10,14 +10,7 @@ defmodule BattleCity.Process.TankDynamicSupervisor do
   def start_link({slug, args}) do
     {:ok, srv} = DynamicSupervisor.start_link(__MODULE__, {slug, args}, name: via_tuple(slug))
 
-    slug
-    |> GameServer.pid()
-    |> GameServer.ctx()
-    |> Map.fetch!(:tanks)
-    |> Map.keys()
-    |> Enum.each(fn id ->
-      server_process(srv, id)
-    end)
+    :ok = ensure_tank_process_started(srv, slug)
 
     {:ok, srv}
   end
@@ -27,9 +20,15 @@ defmodule BattleCity.Process.TankDynamicSupervisor do
     DynamicSupervisor.init(strategy: :one_for_one, extra_arguments: [slug])
   end
 
-  def start_tank_process(slug, id) do
-    srv = pid(slug)
-    server_process(srv, id)
+  def ensure_tank_process_started(srv, slug) do
+    slug
+    |> GameServer.pid()
+    |> GameServer.ctx()
+    |> Map.fetch!(:tanks)
+    |> Map.keys()
+    |> Enum.each(fn id ->
+      server_process(srv, id)
+    end)
   end
 
   def server_process(srv, args) do

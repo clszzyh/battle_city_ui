@@ -2,7 +2,7 @@ defmodule BattleCityWeb.LiveDashboard.GameServersPage do
   @moduledoc false
   use Phoenix.LiveDashboard.PageBuilder
 
-  alias BattleCity.Process.GameDynamicSupervisor
+  alias BattleCity.Process.ProcessRegistry
 
   @title "Game Servers"
   @context_prefix "CONTEXT"
@@ -27,7 +27,7 @@ defmodule BattleCityWeb.LiveDashboard.GameServersPage do
   end
 
   defp fetch_processes(params, _node) do
-    processes = GameDynamicSupervisor.children()
+    processes = ProcessRegistry.games()
 
     {Enum.take(processes, params[:limit]), length(processes)}
   end
@@ -38,8 +38,8 @@ defmodule BattleCityWeb.LiveDashboard.GameServersPage do
 
   defp columns do
     [
-      %{field: :pid, format: &encode_pid/1},
-      %{field: :module, sortable: :asc}
+      %{field: :name, sortable: :asc},
+      %{field: :pid, format: &encode_pid/1}
     ]
   end
 

@@ -103,7 +103,7 @@ defmodule BattleCity.Compile do
     path
     |> Kernel.||(@stage_path)
     |> Path.wildcard()
-    |> Enum.each(fn f ->
+    |> Enum.map(fn f ->
       f |> File.read!() |> Jason.decode!() |> compile_stage_1()
     end)
   end

@@ -4,7 +4,6 @@ defmodule BattleCity.Stage do
   alias BattleCity.Compile
   alias BattleCity.Environment
   alias BattleCity.Position
-  alias BattleCity.Process.StageCache
 
   @type bots :: [{atom(), integer()}]
   @type map_data :: %{Position.coordinate() => Environment.t()}
@@ -50,7 +49,7 @@ defmodule BattleCity.Stage do
     end
   end
 
-  def __after_compile__(env, _bytecode) do
-    StageCache.put_stage(env.module)
+  def __after_compile__(_env, _bytecode) do
+    # StageCache.put_stage(env.module)
   end
 end

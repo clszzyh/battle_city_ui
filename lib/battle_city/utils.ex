@@ -47,4 +47,7 @@ defmodule BattleCity.Utils do
     # |> Macro.underscore()
     # |> String.to_atom()
   end
+
+  def inspect_wrapper(o) when is_binary(o), do: o
+  def inspect_wrapper(o), do: inspect(o)
 end

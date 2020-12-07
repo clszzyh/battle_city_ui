@@ -13,7 +13,11 @@ defmodule BattleCity.Process.StageCache do
 
   @impl true
   def init(_) do
-    {:ok, %__MODULE__{}, {:continue, :init_stage}}
+    modules = BattleCity.Compile.compile_stage!()
+    names = for m <- modules, into: MapSet.new(), do: m.name()
+    stages = for m <- modules, into: %{}, do: {m.name(), m}
+
+    {:ok, %__MODULE__{names: names, stages: stages}}
   end
 
   def stages, do: GenServer.call(__MODULE__, :stages)
@@ -26,11 +30,11 @@ defmodule BattleCity.Process.StageCache do
   def fetch_stage(name), do: GenServer.call(__MODULE__, {:fetch_stage, name})
   def put_stage(module), do: GenServer.cast(__MODULE__, {:put_stage, module})
 
-  @impl true
-  def handle_continue(:init_stage, state) do
-    BattleCity.Compile.compile_stage!()
-    {:noreply, state}
-  end
+  # @impl true
+  # def handle_continue(:init_stage, state) do
+  #   BattleCity.Compile.compile_stage!()
+  #   {:noreply, state}
+  # end
 
   @impl true
   def handle_call(:stages, _from, state) do
