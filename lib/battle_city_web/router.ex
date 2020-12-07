@@ -19,7 +19,7 @@ defmodule BattleCityWeb.Router do
 
     live "/page", PageLive, :index
     live "/", GameLive, :index
-    live "/stages/:level", GameLive, :index
+    live "/game/:slug", GameLive, :index
   end
 
   # Other scopes may use custom stacks.
@@ -48,7 +48,8 @@ defmodule BattleCityWeb.Router do
         additional_pages: [
           process_registry: BattleCityWeb.LiveDashboard.ProcessRegistryPage,
           game_servers: BattleCityWeb.LiveDashboard.GameServersPage,
-          stages: BattleCityWeb.LiveDashboard.StagesPage
+          stages: BattleCityWeb.LiveDashboard.StagesPage,
+          presence: BattleCityWeb.LiveDashboard.PresencePage
         ]
     end
   end

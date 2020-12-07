@@ -3,22 +3,27 @@ defmodule BattleCityWeb.GameLive do
   alias BattleCity.Game
   require Logger
 
-  @default_level "1"
-
   @impl true
-  def mount(%{"level" => level}, _session, socket) do
-    inner_mount(level, socket)
+  def mount(%{"slug" => slug}, _session, socket) do
+    inner_mount(slug, socket)
   end
 
   def mount(_params, _session, socket) do
-    inner_mount(@default_level, socket)
+    inner_mount("unknown", socket)
   end
 
-  defp inner_mount(level, socket) do
-    Logger.debug("Mounting! #{level}")
-    if connected?(socket), do: Logger.debug("Connected. #{level}")
+  defp inner_mount(slug, socket) do
+    Logger.debug("Mounting! #{slug}")
 
-    ctx = Game.init("123")
+    topic = "slug:#{slug}"
+
+    if connected?(socket) do
+      {:ok, _} = BattleCity.Presence.track(self(), topic, socket.id, %{pid: self()})
+      {:ok, _} = BattleCity.Presence.track_liveview(socket.id, slug)
+      Logger.debug("Connected. #{slug}")
+    end
+
+    ctx = Game.init(slug)
     {:ok, assign(socket, ctx: ctx)}
   end
 

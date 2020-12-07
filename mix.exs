@@ -28,7 +28,7 @@ defmodule BattleCity.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
-      preferred_cli_env: [ci: :test, dialyzer: :test],
+      preferred_cli_env: [ci: :test, dialyzer: :test, d: :test],
       dialyzer: [
         plt_core_path: "priv/plts",
         plt_add_deps: :transitive,
@@ -108,6 +108,7 @@ defmodule BattleCity.MixProject do
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
+      d: "dialyzer",
       ci: [
         "compile --warnings-as-errors --force --verbose",
         "format --check-formatted",

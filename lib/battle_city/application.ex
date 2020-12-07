@@ -16,6 +16,7 @@ defmodule BattleCity.Application do
       BattleCityWeb.Telemetry,
       # Start the PubSub system
       {Phoenix.PubSub, name: BattleCity.PubSub},
+      BattleCity.Presence,
       # Start the Endpoint (http/https)
       BattleCityWeb.Endpoint,
       # Start a worker by calling: BattleCity.Worker.start_link(arg)
