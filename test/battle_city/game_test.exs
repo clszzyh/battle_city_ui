@@ -28,6 +28,10 @@ defmodule BattleCity.ProcessTest do
     assert Enum.count(tank_children) == 5
   end
 
+  # test "kill server", %{} do
+  #   bob_pid = GameDynamicSupervisor.server_process("bob")
+  # end
+
   # test "operations", %{} do
   #   foo_pid = GameSupervisor.server_process("foo")
   #   Process.exit(foo_pid, :kill)

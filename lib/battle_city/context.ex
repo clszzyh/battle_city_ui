@@ -17,11 +17,13 @@ defmodule BattleCity.Context do
   @object_values Map.values(@object_struct_map)
 
   @loop_interval 100
+  @timeout_interval 1000 * 60 * 60 * 24
 
   @type t :: %__MODULE__{
           rest_enemies: integer,
           shovel?: boolean,
           loop_interval: integer(),
+          timeout_interval: integer(),
           __counters__: map(),
           state: state(),
           objects: %{Position.coordinate() => MapSet.t(BattleCity.fingerprint())},
@@ -32,11 +34,13 @@ defmodule BattleCity.Context do
         }
 
   @enforce_keys [:stage, :objects, :slug]
-  @derive {SimpleDisplay, only: [:rest_enemies, :shovel?, :state, :loop_interval]}
+  @derive {SimpleDisplay,
+           only: [:rest_enemies, :shovel?, :state, :loop_interval, :timeout_interval]}
   defstruct [
     :stage,
     :slug,
     loop_interval: @loop_interval,
+    timeout_interval: @timeout_interval,
     tanks: %{},
     bullets: %{},
     power_ups: %{},
