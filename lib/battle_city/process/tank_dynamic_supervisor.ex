@@ -3,16 +3,10 @@ defmodule BattleCity.Process.TankDynamicSupervisor do
 
   use DynamicSupervisor
   use BattleCity.Process.ProcessRegistry
-  # alias BattleCity.Context
-  alias BattleCity.Process.GameServer
   alias BattleCity.Process.TankServer
 
   def start_link({slug, args}) do
-    {:ok, srv} = DynamicSupervisor.start_link(__MODULE__, {slug, args}, name: via_tuple(slug))
-
-    :ok = ensure_tank_process_started(srv, slug)
-
-    {:ok, srv}
+    DynamicSupervisor.start_link(__MODULE__, {slug, args}, name: via_tuple(slug))
   end
 
   @impl true
@@ -20,21 +14,20 @@ defmodule BattleCity.Process.TankDynamicSupervisor do
     DynamicSupervisor.init(strategy: :one_for_one, extra_arguments: [slug])
   end
 
-  def ensure_tank_process_started(srv, slug) do
-    slug
-    |> GameServer.pid()
-    |> GameServer.ctx()
-    |> Map.fetch!(:tanks)
-    |> Map.keys()
-    |> Enum.each(fn id ->
-      server_process(srv, id)
-    end)
-  end
-
   def server_process(srv, args) do
     case start_child(srv, args) do
       {:ok, pid} -> pid
       {:error, {:already_started, pid}} -> pid
+    end
+  end
+
+  def terminate_child(srv, key) do
+    pid = TankServer.pid(key)
+
+    if pid do
+      DynamicSupervisor.terminate_child(srv, pid)
+    else
+      {:error, "Not found #{inspect(key)}"}
     end
   end
 

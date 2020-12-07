@@ -10,6 +10,10 @@ defmodule BattleCity.Process.ProcessRegistry do
       true
 
   """
+
+  alias BattleCity.Process.GameServer
+  alias BattleCity.Process.TankDynamicSupervisor
+
   defmacro __using__(_) do
     quote do
       def via_tuple(worker_id) do
@@ -58,10 +62,21 @@ defmodule BattleCity.Process.ProcessRegistry do
 
   @list_query [{{{:"$1", :"$2"}, :"$3", :_}, [], [%{module: :"$1", name: :"$2", pid: :"$3"}]}]
   @game_query [
-    {{{:"$1", :"$2"}, :"$3", :_}, [{:==, :"$1", BattleCity.Process.GameServer}],
+    {{{:"$1", :"$2"}, :"$3", :_}, [{:==, :"$1", GameServer}],
      [%{module: :"$1", name: :"$2", pid: :"$3"}]}
   ]
 
   def list, do: Registry.select(__MODULE__, @list_query)
-  def games, do: Registry.select(__MODULE__, @game_query)
+
+  def games do
+    games = Registry.select(__MODULE__, @game_query)
+
+    for %{name: slug} = i <- games do
+      tank_sup = TankDynamicSupervisor.pid(slug)
+
+      i
+      |> Map.merge(%{tank_sup: tank_sup})
+      |> Map.merge(DynamicSupervisor.count_children(tank_sup))
+    end
+  end
 end

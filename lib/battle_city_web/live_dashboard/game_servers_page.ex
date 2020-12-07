@@ -39,7 +39,10 @@ defmodule BattleCityWeb.LiveDashboard.GameServersPage do
   defp columns do
     [
       %{field: :name, sortable: :asc},
-      %{field: :pid, format: &encode_pid/1}
+      %{field: :pid, format: &encode_pid/1},
+      %{field: :tank_sup, format: &encode_pid/1},
+      %{field: :active},
+      %{field: :workers}
     ]
   end
 

@@ -5,6 +5,7 @@ defmodule BattleCity.ProcessTest do
   alias BattleCity.Process.GameDynamicSupervisor
   alias BattleCity.Process.GameServer
   alias BattleCity.Process.ProcessRegistry
+  alias BattleCity.Process.TankDynamicSupervisor
 
   setup_all do
     _ = BattleCity.Process.StageCache.start_link([])
@@ -21,6 +22,10 @@ defmodule BattleCity.ProcessTest do
     assert ProcessRegistry.pid({GameServer, "bob"}) == bob_srv
     assert ctx.slug == "bob"
     assert bob_pid == GameDynamicSupervisor.server_process("bob")
+
+    tank_srv = ProcessRegistry.pid({TankDynamicSupervisor, "bob"})
+    tank_children = TankDynamicSupervisor.children(tank_srv)
+    assert Enum.count(tank_children) == 5
   end
 
   # test "operations", %{} do

@@ -6,6 +6,7 @@ defmodule BattleCity.Context do
   alias BattleCity.Config
   alias BattleCity.Position
   alias BattleCity.PowerUp
+  alias BattleCity.Process.GameSupervisor
   alias BattleCity.Stage
   alias BattleCity.Tank
 
@@ -63,11 +64,15 @@ defmodule BattleCity.Context do
   end
 
   def put_object(%{__counters__: %{enemy: i} = c} = ctx, %Tank{id: nil, enemy?: true} = o) do
-    put_object(%{ctx | __counters__: %{c | enemy: i + 1}}, %{o | id: "e#{i}"})
+    id = "e#{i}"
+    _res = GameSupervisor.start_tank(ctx.slug, id)
+    put_object(%{ctx | __counters__: %{c | enemy: i + 1}}, %{o | id: id})
   end
 
   def put_object(%{__counters__: %{player: i} = c} = ctx, %Tank{id: nil, enemy?: false} = o) do
-    put_object(%{ctx | __counters__: %{c | player: i + 1}}, %{o | id: "t#{i}"})
+    id = "t#{i}"
+    _res = GameSupervisor.start_tank(ctx.slug, id)
+    put_object(%{ctx | __counters__: %{c | player: i + 1}}, %{o | id: id})
   end
 
   def put_object(ctx, o) do
@@ -143,6 +148,7 @@ defmodule BattleCity.Context do
         ctx
 
       o ->
+        _ = if key == :tanks, do: GameSupervisor.stop_tank(ctx.slug, id)
         xy = {o.position.x, o.position.y}
         o = objects |> Map.fetch!(xy) |> MapSet.delete(Object.fingerprint(o))
         ctx |> Map.merge(%{key => Map.delete(data, id), :objects => Map.put(objects, xy, o)})
