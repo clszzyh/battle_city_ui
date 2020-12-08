@@ -26,10 +26,10 @@ defmodule BattleCityWeb.LiveDashboard.GameServersPage do
     )
   end
 
-  defp fetch_processes(params, _node) do
-    processes = ProcessRegistry.games()
+  defp fetch_processes(%{sort_by: sort_by, sort_dir: sort_dir, limit: limit}, _node) do
+    processes = ProcessRegistry.games() |> Enum.sort_by(fn x -> x[sort_by] end, sort_dir)
 
-    {Enum.take(processes, params[:limit]), length(processes)}
+    {Enum.take(processes, limit), length(processes)}
   end
 
   def component(@context_prefix <> _), do: BattleCityWeb.Components.ContextComponent

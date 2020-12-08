@@ -23,10 +23,11 @@ defmodule BattleCityWeb.LiveDashboard.PresencePage do
     )
   end
 
-  defp fetch_processes(params, _node) do
-    data = BattleCityWeb.Presence.list_liveview()
+  defp fetch_processes(%{sort_by: sort_by, sort_dir: sort_dir, limit: limit}, _node) do
+    data =
+      BattleCityWeb.Presence.list_liveview() |> Enum.sort_by(fn x -> x[sort_by] end, sort_dir)
 
-    {Enum.take(data, params[:limit]), length(data)}
+    {Enum.take(data, limit), length(data)}
   end
 
   defp columns do

@@ -24,17 +24,25 @@ defmodule BattleCityWeb.LiveDashboard.ProcessRegistryPage do
     )
   end
 
-  defp fetch_processes(params, _node) do
+  defp fetch_processes(
+         %{sort_by: sort_by, sort_dir: sort_dir, limit: limit, search: search},
+         _node
+       ) do
     # sessions = node |> :rpc.call(ProcessRegistry, :processes, [])
-    processes = ProcessRegistry.search(params[:search])
+    processes =
+      ProcessRegistry.search(search)
+      |> Enum.sort_by(fn x -> x[sort_by] |> maybe_fetch_tuple end, sort_dir)
 
-    {Enum.take(processes, params[:limit]), length(processes)}
+    {Enum.take(processes, limit), length(processes)}
   end
+
+  defp maybe_fetch_tuple({o, _}), do: o
+  defp maybe_fetch_tuple(o), do: o
 
   defp columns do
     [
       %{field: :module, sortable: :asc},
-      %{field: :name, format: &Utils.inspect_wrapper/1},
+      %{field: :name, sortable: :asc, format: &Utils.inspect_wrapper/1},
       %{field: :pid, format: &encode_pid/1}
     ]
   end
