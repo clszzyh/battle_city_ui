@@ -5,24 +5,20 @@ defmodule BattleCityWeb.GameLive do
   require Logger
 
   @impl true
-  def mount(%{"slug" => slug}, session, socket) do
-    inner_mount(slug, session, socket)
-  end
-
-  def mount(_params, session, socket) do
-    inner_mount("unknown", session, socket)
-  end
-
-  defp inner_mount(_slug, %{"username" => username, "slug" => slug}, socket) do
+  def mount(_params, %{"username" => username, "slug" => slug}, socket) do
     Logger.debug("Mounting! #{slug}")
 
-    if connected?(socket) do
-      {:ok, _} = Presence.track(self(), "slug:#{slug}", socket.id, %{pid: self(), name: username})
-      {:ok, _} = Presence.track_liveview(socket, %{slug: slug, pid: self(), name: username})
-      Logger.debug("Connected. #{slug}")
-    end
+    _ =
+      if connected?(socket) do
+        {:ok, _} =
+          Presence.track(self(), "slug:#{slug}", socket.id, %{pid: self(), name: username})
 
-    ctx = Game.init(slug, %{player_name: username})
+        Presence.track_liveview(socket, %{slug: slug, pid: self(), name: username})
+      else
+        Logger.debug("Mount without connected. #{slug}")
+      end
+
+    {_pid, ctx} = Game.start_server(slug, %{player_name: username})
     {:ok, assign(socket, ctx: ctx)}
   end
 

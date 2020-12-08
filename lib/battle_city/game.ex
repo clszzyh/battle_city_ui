@@ -8,6 +8,7 @@ defmodule BattleCity.Game do
   alias BattleCity.Event
   alias BattleCity.Position
   alias BattleCity.Process.GameDynamicSupervisor
+  alias BattleCity.Process.GameServer
   alias BattleCity.Process.StageCache
   alias BattleCity.Tank
   alias BattleCity.Telemetry
@@ -19,9 +20,13 @@ defmodule BattleCity.Game do
   def mock do
     _ = BattleCity.Process.StageCache.start_link([])
 
-    for i <- @mock_range do
-      GameDynamicSupervisor.server_process("mock-#{i}", %{player_name: "player-#{i}"})
-    end
+    for i <- @mock_range, do: start_server("mock-#{i}", %{player_name: "player-#{i}"})
+  end
+
+  def start_server(slug, opts) do
+    _pid = GameDynamicSupervisor.server_process(slug, opts)
+    srv = GameServer.pid(slug)
+    {srv, GameServer.ctx(srv)}
   end
 
   @spec init(BattleCity.slug(), map()) :: Context.t()

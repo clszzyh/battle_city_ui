@@ -37,7 +37,11 @@ defmodule BattleCityWeb.LiveDashboard.PresencePage do
     ]
   end
 
-  defp row_attrs(_row) do
-    []
+  defp row_attrs(row) do
+    [
+      {"phx-click", "show_info"},
+      {"phx-value-info", encode_pid(row[:pid])},
+      {"phx-page-loading", true}
+    ]
   end
 end

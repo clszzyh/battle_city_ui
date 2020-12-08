@@ -43,6 +43,18 @@ defmodule BattleCityWeb.Telemetry do
       summary("vm.total_run_queue_lengths.cpu"),
       summary("vm.total_run_queue_lengths.io"),
 
+      ## LiveView
+      summary("phoenix.live_view.mount.stop.duration", unit: {:native, :millisecond}),
+      summary("phoenix.live_view.mount.exception.duration", unit: {:native, :millisecond}),
+      summary("phoenix.live_view.handle_params.stop.duration", unit: {:native, :millisecond}),
+      summary("phoenix.live_view.handle_params.exception.duration", unit: {:native, :millisecond}),
+      summary("phoenix.live_view.handle_event.stop.duration", unit: {:native, :millisecond}),
+      summary("phoenix.live_view.handle_event.exception.duration", unit: {:native, :millisecond}),
+      summary("phoenix.live_component.handle_event.stop.duration", unit: {:native, :millisecond}),
+      summary("phoenix.live_component.handle_event.exception.duration",
+        unit: {:native, :millisecond}
+      ),
+
       ## game
       summary("battle_city.game_init.stop.duration", unit: {:native, :millisecond}),
       summary("battle_city.game_event.stop.duration", unit: {:native, :millisecond}),
