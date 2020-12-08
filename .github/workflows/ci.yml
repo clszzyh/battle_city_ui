@@ -215,6 +215,20 @@ jobs:
             })
             console.log(dispatch_result)
 
+      - name: Notify failed
+        if: failure() && contains(github.ref, 'refs/heads')
+        uses: satak/webrequest-action@master
+        with:
+          url: ${{ secrets.DINGDING_URL }}
+          method: POST
+          payload: '{"msgtype": "text", "text": {"content": "ping failed"}}'
+      - name: Notify success
+        if: success() && contains(github.ref, 'refs/heads')
+        uses: satak/webrequest-action@master
+        with:
+          url: ${{ secrets.DINGDING_URL }}
+          method: POST
+          payload: '{"msgtype": "text", "text": {"content": "ping success"}}'
       - name: CI Success
         if: success() && contains(github.ref, 'refs/heads')
         uses: actions/github-script@v2
