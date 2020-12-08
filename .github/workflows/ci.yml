@@ -47,6 +47,8 @@ jobs:
           echo ::set-output name=JOB::${{ github.job }}
           echo ::set-output name=RUN_ID::${{ github.run_id }}
           echo ::set-output name=RUN_NUMBER::${{ github.run_number }}
+          START_TIME=$(date +%s)
+          echo ::set-output name=START_TIME::$START_TIME
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
@@ -215,20 +217,35 @@ jobs:
             })
             console.log(dispatch_result)
 
+      - name: Complete time
+        id: cost
+        if: always() && contains(github.ref, 'refs/heads')
+        run: |
+          END_TIME=$(date +%s)
+          ELAPSE=$(( $END_TIME - $START_TIME ))
+          echo "$(($ELAPSE/60))m$(($ELAPSE%60))s"
+          COST="$(($ELAPSE/60))m$(($ELAPSE%60))s"
+          echo ::set-output name=COST::$COST
+        env:
+          START_TIME: ${{ steps.get_run_id.outputs.START_TIME }}
       - name: Notify failed
         if: failure() && contains(github.ref, 'refs/heads')
         uses: satak/webrequest-action@master
         with:
           url: ${{ secrets.DINGDING_URL }}
           method: POST
-          payload: '{"msgtype": "text", "text": {"content": "ping failed"}}'
+          payload: '{"msgtype": "text", "text": {"content": "ping failed ${{ github.sha }}, ${{ env.COST }}"}}'
+        env:
+          COST: ${{ steps.cost.outputs.COST }}
       - name: Notify success
         if: success() && contains(github.ref, 'refs/heads')
         uses: satak/webrequest-action@master
         with:
           url: ${{ secrets.DINGDING_URL }}
           method: POST
-          payload: '{"msgtype": "text", "text": {"content": "ping success"}}'
+          payload: '{"msgtype": "text", "text": {"content": "ping success ${{ github.sha }}, ${{ env.COST }}"}}'
+        env:
+          COST: ${{ steps.cost.outputs.COST }}
       - name: CI Success
         if: success() && contains(github.ref, 'refs/heads')
         uses: actions/github-script@v2
