@@ -30,6 +30,7 @@ defmodule BattleCityWeb.LiveDashboard.PresencePage do
   defp columns do
     [
       %{field: :slug, sortable: :asc},
+      %{field: :name, sortable: :asc},
       %{field: :pid, format: &encode_pid/1},
       %{field: :key},
       %{field: :ref}

@@ -14,12 +14,12 @@ defmodule BattleCityWeb.Router do
     plug :accepts, ["json"]
   end
 
-  pipeline :random_username do
-    # plug BattleCityWeb.LoadPlayer
+  pipeline :set_name do
+    plug BattleCityWeb.SetName
   end
 
   scope "/", BattleCityWeb do
-    pipe_through :browser
+    pipe_through [:browser, :set_name]
 
     live "/page", PageLive, :index
     live "/", GameLive, :index
