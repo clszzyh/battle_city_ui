@@ -39,7 +39,7 @@ jobs:
     strategy:
       matrix:
         elixir: ["1.11.2"]
-        otp: [23.1.4]
+        otp: [23.1.5]
     steps:
       - name: Run id
         id: get_run_id
