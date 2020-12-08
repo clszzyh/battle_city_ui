@@ -2,6 +2,8 @@ defmodule BattleCityWeb.LiveDashboard.PresencePage do
   @moduledoc false
   use Phoenix.LiveDashboard.PageBuilder
 
+  alias BattleCity.Utils
+
   @title "Presence"
 
   @impl true
@@ -33,7 +35,10 @@ defmodule BattleCityWeb.LiveDashboard.PresencePage do
       %{field: :name, sortable: :asc},
       %{field: :pid, format: &encode_pid/1},
       %{field: :key},
-      %{field: :ref}
+      %{field: :phx_ref},
+      %{field: :address, format: &Utils.inspect_wrapper/1},
+      %{field: :port},
+      %{field: "_mounts"}
     ]
   end
 
