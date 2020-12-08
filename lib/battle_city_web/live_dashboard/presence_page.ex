@@ -22,7 +22,7 @@ defmodule BattleCityWeb.LiveDashboard.PresencePage do
   end
 
   defp fetch_processes(params, _node) do
-    data = BattleCity.Presence.list_liveview()
+    data = BattleCityWeb.Presence.list_liveview()
 
     {Enum.take(data, params[:limit]), length(data)}
   end

@@ -31,5 +31,7 @@ defmodule BattleCityWeb.UserSocket do
   #
   # Returning `nil` makes this socket anonymous.
   @impl true
-  def id(_socket), do: nil
+  def id(_socket), do: "liveview"
+
+  channel "liveview", BattleCityWeb.GamesChannel
 end

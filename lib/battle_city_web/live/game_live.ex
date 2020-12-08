@@ -1,6 +1,7 @@
 defmodule BattleCityWeb.GameLive do
   use BattleCityWeb, :live_view
   alias BattleCity.Game
+  alias BattleCityWeb.Presence
   require Logger
 
   @impl true
@@ -18,8 +19,8 @@ defmodule BattleCityWeb.GameLive do
     topic = "slug:#{slug}"
 
     if connected?(socket) do
-      {:ok, _} = BattleCity.Presence.track(self(), topic, socket.id, %{pid: self()})
-      {:ok, _} = BattleCity.Presence.track_liveview(socket.id, slug)
+      {:ok, _} = Presence.track(self(), topic, socket.id, %{pid: self()})
+      {:ok, _} = Presence.track_liveview(socket, slug)
       Logger.debug("Connected. #{slug}")
     end
 

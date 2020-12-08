@@ -14,6 +14,10 @@ defmodule BattleCityWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :random_username do
+    # plug BattleCityWeb.LoadPlayer
+  end
+
   scope "/", BattleCityWeb do
     pipe_through :browser
 

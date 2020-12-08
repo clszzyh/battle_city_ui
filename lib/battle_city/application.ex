@@ -12,11 +12,12 @@ defmodule BattleCity.Application do
       BattleCity.Process.GameDynamicSupervisor,
       # Start the Ecto repository
       BattleCity.Repo,
+      BattleCity.Process.RandomWord,
       # Start the Telemetry supervisor
       BattleCityWeb.Telemetry,
       # Start the PubSub system
       {Phoenix.PubSub, name: BattleCity.PubSub},
-      BattleCity.Presence,
+      BattleCityWeb.Presence,
       # Start the Endpoint (http/https)
       BattleCityWeb.Endpoint,
       # Start a worker by calling: BattleCity.Worker.start_link(arg)

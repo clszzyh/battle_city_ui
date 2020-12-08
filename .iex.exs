@@ -17,5 +17,6 @@ alias BattleCity.Process.TankDynamicSupervisor
 alias BattleCity.Process.ProcessRegistry
 alias BattleCity.Process.StageCache
 alias BattleCity.Process.TankServer
+alias BattleCity.Process.RandomWord
 
 require Logger

@@ -1,12 +1,12 @@
-defmodule BattleCity.Presence do
+defmodule BattleCityWeb.Presence do
   use Phoenix.Presence,
     otp_app: :battle_city,
     pubsub_server: BattleCity.PubSub
 
   @liveview "liveview"
 
-  def track_liveview(id, slug) do
-    track(self(), @liveview, id, %{slug: slug, pid: self()})
+  def track_liveview(socket, slug) do
+    track(self(), @liveview, socket.id, %{slug: slug, pid: self()})
   end
 
   def list_liveview do
