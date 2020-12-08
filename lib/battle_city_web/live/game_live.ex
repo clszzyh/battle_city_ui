@@ -26,7 +26,7 @@ defmodule BattleCityWeb.GameLive do
 
         Presence.track_liveview(
           socket,
-          %{slug: slug, pid: self(), name: username}
+          %{slug: slug, pid: self(), name: username, id: socket.id}
           |> Map.merge(peer_data)
           |> Map.merge(connect_params)
         )
@@ -36,6 +36,11 @@ defmodule BattleCityWeb.GameLive do
 
     {_pid, ctx} = Game.start_server(slug, %{player_name: username})
     {:ok, assign(socket, ctx: ctx)}
+  end
+
+  @impl true
+  def terminate(reason, _socket) do
+    Logger.debug("terminate: #{inspect(self())} #{inspect(reason)}")
   end
 
   # @impl true

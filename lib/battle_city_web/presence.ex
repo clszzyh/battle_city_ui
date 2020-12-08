@@ -10,8 +10,8 @@ defmodule BattleCityWeb.Presence do
   end
 
   def list_liveview do
-    for {key, %{metas: [meta]}} <- list(@liveview) do
-      Map.put(meta, :key, key)
+    for {id, %{metas: [meta]}} <- list(@liveview) do
+      Map.put(meta, :id, id)
     end
   end
 end

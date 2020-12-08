@@ -35,7 +35,7 @@ defmodule BattleCityWeb.LiveDashboard.PresencePage do
       %{field: :slug, sortable: :asc},
       %{field: :name, sortable: :asc},
       %{field: :pid, format: &encode_pid/1},
-      %{field: :key},
+      %{field: :id},
       %{field: :phx_ref},
       %{field: :address, format: &Utils.inspect_wrapper/1},
       %{field: :port},
