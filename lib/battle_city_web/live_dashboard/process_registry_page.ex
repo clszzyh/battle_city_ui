@@ -26,7 +26,7 @@ defmodule BattleCityWeb.LiveDashboard.ProcessRegistryPage do
 
   defp fetch_processes(params, _node) do
     # sessions = node |> :rpc.call(ProcessRegistry, :processes, [])
-    processes = ProcessRegistry.list()
+    processes = ProcessRegistry.search(params[:search])
 
     {Enum.take(processes, params[:limit]), length(processes)}
   end

@@ -68,15 +68,11 @@ defmodule BattleCity.Context do
   end
 
   def put_object(%{__counters__: %{enemy: i} = c} = ctx, %Tank{id: nil, enemy?: true} = o) do
-    id = "e#{i}"
-    _res = GameSupervisor.start_tank(ctx.slug, id)
-    put_object(%{ctx | __counters__: %{c | enemy: i + 1}}, %{o | id: id})
+    put_object(%{ctx | __counters__: %{c | enemy: i + 1}}, %{o | id: "e#{i}"})
   end
 
   def put_object(%{__counters__: %{player: i} = c} = ctx, %Tank{id: nil, enemy?: false} = o) do
-    id = "t#{i}"
-    _res = GameSupervisor.start_tank(ctx.slug, id)
-    put_object(%{ctx | __counters__: %{c | player: i + 1}}, %{o | id: id})
+    put_object(%{ctx | __counters__: %{c | player: i + 1}}, %{o | id: "t#{i}"})
   end
 
   def put_object(ctx, o) do
@@ -113,7 +109,14 @@ defmodule BattleCity.Context do
         } = o
       ) do
     key = Map.fetch!(@object_struct_map, struct)
-    map = ctx |> Map.fetch!(key) |> Map.put(id, o)
+    data = ctx |> Map.fetch!(key)
+
+    _res =
+      if struct == Tank and !Map.has_key?(data, id) do
+        GameSupervisor.start_tank(ctx.slug, {o.enemy?, id})
+      end
+
+    map = data |> Map.put(id, o)
 
     %{x: x, y: y} = Position.normalize(position)
     o = objects |> Map.fetch!({x, y}) |> MapSet.put(Object.fingerprint(o))

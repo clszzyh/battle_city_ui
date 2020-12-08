@@ -24,7 +24,7 @@ defmodule BattleCityWeb.GameLive do
       Logger.debug("Connected. #{slug}")
     end
 
-    ctx = Game.init(slug)
+    ctx = Game.init(slug, %{player_name: username})
     {:ok, assign(socket, ctx: ctx)}
   end
 

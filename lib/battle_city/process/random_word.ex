@@ -12,6 +12,7 @@ defmodule BattleCity.Process.RandomWord do
   end
 
   def random, do: GenServer.call(__MODULE__, :random)
+  # def random, do: Enum.random(@words)
 
   @impl true
   def init(_) do

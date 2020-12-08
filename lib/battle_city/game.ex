@@ -18,7 +18,10 @@ defmodule BattleCity.Game do
   @mock_range 0..2
   def mock do
     _ = BattleCity.Process.StageCache.start_link([])
-    for i <- @mock_range, do: GameDynamicSupervisor.server_process("mock-#{i}")
+
+    for i <- @mock_range do
+      GameDynamicSupervisor.server_process("mock-#{i}", %{player_name: "player-#{i}"})
+    end
   end
 
   @spec init(BattleCity.slug(), map()) :: Context.t()
@@ -41,7 +44,13 @@ defmodule BattleCity.Game do
 
     player =
       opts
-      |> Map.merge(%{enemy?: false, x: :x_player_1, y: :y_player_1, direction: :up})
+      |> Map.merge(%{
+        enemy?: false,
+        x: :x_player_1,
+        y: :y_player_1,
+        direction: :up,
+        id: opts[:player_name]
+      })
       |> tank.new()
 
     %Context{slug: slug, stage: stage, objects: Position.objects()}

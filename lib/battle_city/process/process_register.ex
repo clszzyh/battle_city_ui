@@ -13,6 +13,7 @@ defmodule BattleCity.Process.ProcessRegistry do
 
   alias BattleCity.Process.GameServer
   alias BattleCity.Process.TankDynamicSupervisor
+  alias BattleCity.Utils
 
   defmacro __using__(_) do
     quote do
@@ -61,15 +62,41 @@ defmodule BattleCity.Process.ProcessRegistry do
   end
 
   @list_query [{{{:"$1", :"$2"}, :"$3", :_}, [], [%{module: :"$1", name: :"$2", pid: :"$3"}]}]
-  @game_query [
-    {{{:"$1", :"$2"}, :"$3", :_}, [{:==, :"$1", GameServer}],
-     [%{module: :"$1", name: :"$2", pid: :"$3"}]}
-  ]
 
   def list, do: Registry.select(__MODULE__, @list_query)
 
+  def search(nil), do: list()
+
+  def search(o) when is_atom(o), do: search_1(o)
+
+  def search(o) do
+    [o, "Elixir." <> o, "Elixir.BattleCity.Process." <> o]
+    |> Enum.map(&String.to_atom/1)
+    |> Enum.find(&Utils.defined?/1)
+    |> case do
+      nil -> search_1(o)
+      module -> search_1(module)
+    end
+  end
+
+  defp search_1(module) when is_atom(module) do
+    Registry.select(__MODULE__, [
+      {{{:"$1", :"$2"}, :"$3", :_}, [{:==, :"$1", module}],
+       [%{module: :"$1", name: :"$2", pid: :"$3"}]}
+    ])
+  end
+
+  defp search_1(slug) when is_binary(slug) do
+    Enum.filter(list(), &match_slug(&1.name, slug))
+  end
+
+  defp match_slug({slug, _}, slug), do: true
+  defp match_slug(slug, slug), do: true
+  defp match_slug({name, _}, slug) when is_binary(name), do: String.starts_with?(name, slug)
+  defp match_slug(name, slug) when is_binary(name), do: String.starts_with?(name, slug)
+
   def games do
-    games = Registry.select(__MODULE__, @game_query)
+    games = search(GameServer)
 
     for %{name: slug} = i <- games do
       tank_sup = TankDynamicSupervisor.pid(slug)

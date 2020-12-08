@@ -44,7 +44,8 @@ defimpl ComplexDisplay, for: BattleCity.Context do
       |> Enum.map(fn {id, %{position: p, __module__: module}} ->
         x = String.pad_leading(to_string(p.x), 2)
         y = String.pad_leading(to_string(p.y), 2)
-        tank_fn.("{#{x} , #{y}} -> #{id} / [#{module.name()}]", id)
+        name = String.pad_leading(to_string(module.name()), 6)
+        tank_fn.("{#{x} , #{y}} [#{name}] -> #{id}", id)
       end)
       |> Enum.intersperse({:safe, "<br />"})
 
