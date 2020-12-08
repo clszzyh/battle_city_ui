@@ -13,13 +13,11 @@ defmodule BattleCityWeb.GameLive do
     inner_mount("unknown", session, socket)
   end
 
-  defp inner_mount(slug, %{"username" => username}, socket) do
+  defp inner_mount(_slug, %{"username" => username, "slug" => slug}, socket) do
     Logger.debug("Mounting! #{slug}")
 
-    topic = "slug:#{slug}"
-
     if connected?(socket) do
-      {:ok, _} = Presence.track(self(), topic, socket.id, %{pid: self(), name: username})
+      {:ok, _} = Presence.track(self(), "slug:#{slug}", socket.id, %{pid: self(), name: username})
       {:ok, _} = Presence.track_liveview(socket, %{slug: slug, pid: self(), name: username})
       Logger.debug("Connected. #{slug}")
     end

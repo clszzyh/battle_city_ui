@@ -12,7 +12,7 @@ defmodule BattleCity.Application do
       BattleCity.Process.GameDynamicSupervisor,
       # Start the Ecto repository
       BattleCity.Repo,
-      BattleCity.Process.RandomWord,
+      # BattleCity.Process.RandomWord,
       # Start the Telemetry supervisor
       BattleCityWeb.Telemetry,
       # Start the PubSub system
