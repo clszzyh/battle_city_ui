@@ -19,8 +19,9 @@ defmodule BattleCity.Process.RandomWord do
   end
 
   @impl true
-  def handle_call(:random, _, %{words: words} = state) do
-    {:reply, Enum.random(words) <> to_string(Enum.random(10..99)), state}
+  def handle_call(:random, _, %{count: count, words: words} = state) do
+    word = Enum.random(words)
+    {:reply, word, %{state | count: count - 1, words: List.delete(words, word)}}
   end
 
   # @impl true
