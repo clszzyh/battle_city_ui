@@ -39,6 +39,7 @@ defmodule BattleCityWeb.LiveDashboard.PresencePage do
       %{field: :phx_ref},
       %{field: :address, format: &Utils.inspect_wrapper/1},
       %{field: :port},
+      %{field: :user_agent},
       %{field: "_mounts"}
     ]
   end

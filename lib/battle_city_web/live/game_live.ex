@@ -10,9 +10,9 @@ defmodule BattleCityWeb.GameLive do
       if connected?(socket) do
         peer_data =
           if info = get_connect_info(socket) do
-            info.peer_data
+            info.peer_data |> Map.merge(%{user_agent: info.user_agent})
           else
-            %{address: nil, port: nil, ssl_cert: nil}
+            %{address: nil, port: nil, ssl_cert: nil, user_agent: nil}
           end
 
         connect_params = get_connect_params(socket)
@@ -38,6 +38,16 @@ defmodule BattleCityWeb.GameLive do
   end
 
   @impl true
+  def handle_event("keydown", %{"key" => key}, socket) do
+    Logger.debug("keydown unknown #{key}")
+    {:noreply, socket}
+  end
+
+  def handle_event("keyup", %{"key" => key}, socket) do
+    Logger.debug("keyup unknown #{key}")
+    {:noreply, socket}
+  end
+
   def handle_event(event, name, socket) do
     Logger.debug("event #{inspect(self())} #{inspect(event)} #{inspect(name)}")
     {:noreply, put_flash(socket, :info, inspect({event, name}))}
