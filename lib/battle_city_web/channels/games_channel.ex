@@ -1,10 +1,17 @@
 defmodule BattleCityWeb.GamesChannel do
   use BattleCityWeb, :channel
 
+  require Logger
+
   # alias BattleCityWeb.Presence
 
   def join("liveview", _params, socket) do
     send(self(), :after_join)
+    {:ok, socket}
+  end
+
+  def join(room, params, socket) do
+    Logger.info("join room #{room} -> #{inspect(params)}")
     {:ok, socket}
   end
 

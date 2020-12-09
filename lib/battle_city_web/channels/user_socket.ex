@@ -1,6 +1,8 @@
 defmodule BattleCityWeb.UserSocket do
   use Phoenix.Socket
 
+  require Logger
+
   ## Channels
   # channel "room:*", BattleCityWeb.RoomChannel
 
@@ -16,7 +18,8 @@ defmodule BattleCityWeb.UserSocket do
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
   @impl true
-  def connect(_params, socket, _connect_info) do
+  def connect(params, socket, connect_info) do
+    Logger.info("Socket #{inspect(params)} -> #{connect_info}")
     {:ok, socket}
   end
 
@@ -31,7 +34,7 @@ defmodule BattleCityWeb.UserSocket do
   #
   # Returning `nil` makes this socket anonymous.
   @impl true
-  def id(_socket), do: "liveview"
+  def id(_socket), do: nil
 
-  channel "liveview", BattleCityWeb.GamesChannel
+  channel "*", BattleCityWeb.GamesChannel
 end

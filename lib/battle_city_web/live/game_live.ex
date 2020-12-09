@@ -8,9 +8,6 @@ defmodule BattleCityWeb.GameLive do
   def mount(_params, %{"username" => username, "slug" => slug}, socket) do
     _ =
       if connected?(socket) do
-        {:ok, _} =
-          Presence.track(self(), "slug:#{slug}", socket.id, %{pid: self(), name: username})
-
         peer_data =
           if info = get_connect_info(socket) do
             info.peer_data
@@ -24,6 +21,8 @@ defmodule BattleCityWeb.GameLive do
           "Mount and connected. #{slug} #{inspect(peer_data)}, #{inspect(connect_params)}"
         )
 
+        Presence.track_slug(socket, slug, %{pid: self(), name: username})
+
         Presence.track_liveview(
           socket,
           %{slug: slug, pid: self(), name: username, id: socket.id}
@@ -36,6 +35,23 @@ defmodule BattleCityWeb.GameLive do
 
     {_pid, ctx} = Game.start_server(slug, %{player_name: username})
     {:ok, assign(socket, ctx: ctx)}
+  end
+
+  @impl true
+  def handle_event(event, name, socket) do
+    Logger.debug("event #{inspect(self())} #{inspect(event)} #{inspect(name)}")
+    {:noreply, put_flash(socket, :info, inspect({event, name}))}
+  end
+
+  @impl true
+  def handle_info(%Phoenix.Socket.Broadcast{event: "presence_diff", payload: diff}, socket) do
+    Logger.debug("presence_diff #{inspect(self())} #{inspect(diff)}")
+    {:noreply, socket}
+  end
+
+  def handle_info(name, socket) do
+    Logger.debug("info #{inspect(self())} #{inspect(name)}")
+    {:noreply, put_flash(socket, :info, inspect(name))}
   end
 
   @impl true

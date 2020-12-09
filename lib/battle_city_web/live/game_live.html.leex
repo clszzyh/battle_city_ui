@@ -1,8 +1,6 @@
 <div class="container" phx-keyup="window_key_event" phx-target="window">
     <div class="row">
      <div class="column">
-     </div>
-     <div class="column">
          <div class="stats">
              <div>
                 Generation: <span class="number_value"><%= 1 %></span>
@@ -41,23 +39,9 @@
     </div>
     <div class="row">
        <nav>
-          <%= if nil  do %>
-             <button phx-click="stop_auto">Stop</button>
-           <% else %>
-             <button phx-click="start_auto">Start</button>
-             <button phx-click="next_gen">Next Generation</button>
-             <button phx-click="start_editing">Edit</button>
-           <% end %>
+         <button phx-click="start_auto">Start</button>
+         <button phx-click="next_gen">Next Generation</button>
+         <button phx-click="start_editing">Edit</button>
        </nav>
-    </div>
-
-    <div class="row">
-        <div>
-            Arrow keys move the grid around. Keys <code>w s a d</code> scroll a little faster. <br>
-            <code>Space</code> starts and stops the automaton. <br>
-            Key events seem to get dropped or delayed from time to time.
-        </div>
-    </div>
-
     </div>
 </div>
