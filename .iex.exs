@@ -19,5 +19,6 @@ alias BattleCity.Process.StageCache
 alias BattleCity.Process.TankServer
 alias BattleCity.Process.RandomWord
 alias BattleCityWeb.Presence
+alias BattleCityWeb.Endpoint
 
 require Logger

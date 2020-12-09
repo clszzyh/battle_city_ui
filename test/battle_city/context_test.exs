@@ -18,7 +18,7 @@ defmodule BattleCity.ContextTest do
 
   test "context init", %{ctx: ctx, player: player, slug: slug} do
     assert ctx.slug == slug
-    assert Enum.count(ctx.objects) == (Position.size() + 1) * (Position.size() + 1)
+    assert Enum.count(ctx.objects) == Position.quadrant() * Position.quadrant()
     assert player.position.x == 8
     assert player.position.y == 24
     assert player.position.rx == 9 * 8

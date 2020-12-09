@@ -12,11 +12,13 @@ defmodule BattleCityWeb.Presence do
   @endpoint "endpoint"
 
   def broadcast_endpoint(message, payload) do
-    Endpoint.broadcast_from(self(), @endpoint, message, payload)
+    # Endpoint.broadcast_from(self(), @endpoint, message, payload)
+    Endpoint.broadcast(@endpoint, message, payload)
   end
 
   def broadcast_slug(slug, message, payload) do
-    Endpoint.broadcast_from(self(), @endpoint_slug_prefix <> slug, message, payload)
+    # Endpoint.broadcast_from(self(), @endpoint_slug_prefix <> slug, message, payload)
+    Endpoint.broadcast(@endpoint_slug_prefix <> slug, message, payload)
   end
 
   def track_liveview(socket, meta) do

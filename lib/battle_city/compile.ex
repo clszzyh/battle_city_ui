@@ -70,7 +70,7 @@ defmodule BattleCity.Compile do
 
   defp parse_map({raw, y}) when is_binary(raw) do
     result = raw |> String.split(" ", trim: true)
-    size = Position.size() + 1
+    size = Position.quadrant()
     unless Enum.count(result) == size, do: raise("#{raw}'s length should be #{size}")
 
     result |> Enum.with_index() |> Enum.map(fn {o, x} -> parse_map_1(o, {x, y}) end)

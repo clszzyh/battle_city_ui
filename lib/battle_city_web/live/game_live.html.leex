@@ -1,47 +1,12 @@
 <div class="container" phx-window-keydown="keydown" phx-window-keyup="keyup">
-    <div class="row">
-     <div class="column">
-         <div class="stats">
-             <div>
-                Generation: <span class="number_value"><%= 1 %></span>
-             </div>
-             <div>
-               Alive Cells: <span class="number_value"><%= 2 %></span>
-             </div>
-             <div>
-               Largest Population Seen: <span class="number_value"><%= 3 %></span>
-             </div>
-         </div>
-         <div class="row stats" >
-             <div class="column" >
-
-               <div class="row">
-                 <div class="column column-40"></div>
-                 <div class="column column-20"><button phx-click="↑">↑</button></div>
-                 <div class="column column-40"></div>
-               </div>
-
-               <div class="row">
-                 <div class="column column-30"></div>
-                 <div class="column column-20"><button phx-click="←">←</button></div>
-                 <div class="column column-20"><button phx-click="→">→</button></div>
-                 <div class="column column-30"></div>
-               </div>
-
-               <div class="row">
-                  <div class="column column-40"></div>
-                  <div class="column column-20"><button phx-click="↓">↓</button></div>
-                  <div class="column column-40"></div>
-               </div>
-             </div>
-          </div>
-      </div>
+  <div class="row">
+    <div class="column">
+      <svg viewbox="0 0 <%= @quadrant_size %>  <%= @quadrant_size %>">
+        <rect x="0" y="0" width="100%" height="100%" fill="#F1F5F8"/>
+        <%= for {x, y, w, h, fill} <- @grid do %>
+          <rect x="<%= x %>" y="<%= y %>" width="<%= w %>" height="<%= h %>" fill="<%= fill %>" />
+        <% end %>
+      </svg>
     </div>
-    <div class="row">
-       <nav>
-         <button phx-click="start_auto">Start</button>
-         <button phx-click="next_gen">Next Generation</button>
-         <button phx-click="start_editing">Edit</button>
-       </nav>
-    </div>
+  </div>
 </div>

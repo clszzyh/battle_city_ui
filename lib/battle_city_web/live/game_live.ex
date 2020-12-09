@@ -1,6 +1,7 @@
 defmodule BattleCityWeb.GameLive do
   use BattleCityWeb, :live_view
   alias BattleCity.Game
+  alias BattleCity.Position
   alias BattleCityWeb.Presence
   require Logger
 
@@ -34,7 +35,18 @@ defmodule BattleCityWeb.GameLive do
       end
 
     {_pid, ctx} = Game.start_server(slug, %{player_name: username})
-    {:ok, assign(socket, ctx: ctx)}
+
+    {:ok,
+     assign(socket,
+       ctx: ctx,
+       quadrant_size: Position.real_quadrant(),
+       grid: [
+         {0, 0, 1.9, 1.9, "#FFFFFF"},
+         {1, 2, 1.9, 1.9, "#EEEEEE"},
+         {0, 12, 1.9, 1.9, "#111111"},
+         {24, 24, 1.9, 1.9, "#222222"}
+       ]
+     )}
   end
 
   @impl true

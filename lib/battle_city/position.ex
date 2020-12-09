@@ -71,6 +71,8 @@ defmodule BattleCity.Position do
   def size, do: @size
   def atom, do: @atom
   def width, do: @width
+  def quadrant, do: @size + 1
+  def real_quadrant, do: quadrant() * @atom
 
   @spec init(map) :: __MODULE__.t()
   def init(map \\ %{})
