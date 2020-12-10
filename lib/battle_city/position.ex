@@ -41,6 +41,7 @@ defmodule BattleCity.Position do
   @typep path :: [coordinate]
 
   @type t :: %__MODULE__{
+          __module__: module(),
           direction: direction(),
           x: x(),
           y: y(),
@@ -51,9 +52,9 @@ defmodule BattleCity.Position do
           path: path()
         }
 
-  @keys [:direction, :x, :y, :rx, :ry]
-  @enforce_keys [:direction, :x, :y, :rx, :ry]
-  defstruct [:x, :y, :direction, :rx, :ry, :rt, :t, path: []]
+  @keys [:direction, :x, :y, :rx, :ry, :__module__]
+  @enforce_keys [:direction, :__module__, :x, :y, :rx, :ry]
+  defstruct [:x, :y, :direction, :__module__, :rx, :ry, :rt, :t, path: []]
 
   @objects for x <- @x_range,
                rem(x, 2) == 0,

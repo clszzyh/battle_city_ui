@@ -63,7 +63,7 @@ defmodule BattleCity.Compile do
       map
       |> Enum.with_index()
       |> Enum.flat_map(&parse_map/1)
-      |> Enum.into(%{}, fn o -> {{o.x, o.y}, o} end)
+      |> Enum.into(%{}, fn o -> {{o.position.x, o.position.y}, o} end)
 
     %{o | map: map, bots: Enum.map(bots, &parse_bot/1)}
   end
@@ -78,13 +78,17 @@ defmodule BattleCity.Compile do
 
   def parse_map_1(o, {x, y}) when is_binary(o) do
     {prefix, suffix} = parse_map_2(o)
+    module = Map.fetch!(@environment_map, prefix)
 
-    Map.fetch!(@environment_map, prefix).init(%{
-      x: x * Position.atom(),
-      y: y * Position.atom(),
+    module.init(%{
       raw: o,
-      rx: x * Position.atom() * Position.width(),
-      ry: y * Position.atom() * Position.width(),
+      position:
+        Position.init(%{
+          direction: :up,
+          __module__: module,
+          x: x * Position.atom(),
+          y: y * Position.atom()
+        }),
       shape: Map.fetch!(@suffix_map, suffix)
     })
   end

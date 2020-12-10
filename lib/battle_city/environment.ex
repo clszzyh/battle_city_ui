@@ -18,22 +18,16 @@ defmodule BattleCity.Environment do
           health: health,
           shape: shape,
           raw: binary(),
-          x: Position.x(),
-          y: Position.y(),
-          rx: Position.rx(),
-          ry: Position.ry()
+          position: Position.t()
         }
 
   @enforce_keys [:enter?, :health]
   defstruct [
     :__module__,
     :id,
-    :x,
-    :y,
-    :rx,
-    :ry,
     :shape,
     :raw,
+    :position,
     enter?: false,
     health: 0
   ]
@@ -57,12 +51,12 @@ defmodule BattleCity.Environment do
   end
 
   @spec copy_rxy(__MODULE__.t(), object) :: object
-  def copy_rxy(%{rx: rx, ry: ry}, %{position: position} = o) do
+  def copy_rxy(%{position: %{rx: rx, ry: ry}}, %{position: position} = o) do
     %{o | position: %{position | rx: rx, ry: ry, path: []}}
   end
 
   @spec copy_xy(__MODULE__.t(), object) :: object
-  def copy_xy(%{x: x, y: y}, %{position: %{path: [_ | rest]} = position} = o) do
+  def copy_xy(%{position: %{x: x, y: y}}, %{position: %{path: [_ | rest]} = position} = o) do
     %{o | position: %{position | x: x, y: y, path: rest}}
   end
 
@@ -71,7 +65,7 @@ defmodule BattleCity.Environment do
   def enter(%__MODULE__{enter?: false, health: :infinite}, %Bullet{}), do: {:error, :forbidden}
 
   def enter(
-        %__MODULE__{enter?: false, health: health, x: x, y: y, id: env_id},
+        %__MODULE__{enter?: false, health: health, position: %{x: x, y: y}, id: env_id},
         %Bullet{__actions__: actions, power: power, id: bullet_id} = bullet
       )
       when health > 0 do

@@ -44,7 +44,7 @@ defmodule BattleCity.PowerUp do
 
       @impl true
       def handle_init(%{} = map) do
-        Map.put(map, :position, Position.init(map))
+        Map.put(map, :position, Position.init(map |> Map.put(:__module__, __MODULE__)))
       end
     end
   end

@@ -67,7 +67,7 @@ defmodule BattleCity.Tank do
           data = %{
             __module__: __MODULE__,
             meta: meta,
-            position: Position.init(map),
+            position: Position.init(map |> Map.put(:__module__, __MODULE__)),
             speed: meta.move_speed,
             health: meta.health
           }
