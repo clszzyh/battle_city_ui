@@ -62,11 +62,11 @@ defmodule BattleCityWeb.GameLive do
   def handle_event(
         key_type,
         %{"key" => key},
-        %{assigns: %{ctx: ctx, slug: slug, name: name}} = socket
+        %{assigns: %{slug: slug, name: name}} = socket
       )
       when {key_type, key} in @handle_down_keys do
     {event_name, value} = Map.fetch!(@handle_down_map, {key_type, key})
-    _ = Game.start_event(slug, %Event{name: event_name, value: value, id: name})
+    ctx = Game.start_event(slug, %Event{name: event_name, value: value, id: name})
     {:noreply, assign(socket, :ctx, ctx)}
   end
 

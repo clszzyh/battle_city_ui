@@ -30,11 +30,11 @@ defmodule BattleCity.Game do
     {srv, GameServer.ctx(srv)}
   end
 
-  @spec start_event(BattleCity.slug(), Event.t()) :: :ok
+  @spec start_event(BattleCity.slug(), Event.t()) :: Context.t()
   def start_event(slug, event) do
     srv = GameServer.pid(slug)
-    Logger.info("[Event] #{slug} -> #{inspect(event)}")
-    :ok = GameServer.event(srv, event)
+    # Logger.info("[Event] #{slug} -> #{inspect(event)}")
+    GameServer.event(srv, event)
   end
 
   @spec init(BattleCity.slug(), map()) :: Context.t()
@@ -112,22 +112,18 @@ defmodule BattleCity.Game do
 
   @spec do_event(Context.t(), Event.t()) :: Context.t()
   def do_event(%Context{} = ctx, %Event{name: :move, value: direction, id: id}) do
-    Logger.info("#{id} move #{direction}")
     ctx |> Context.update_object_raw(:tanks, id, &move(&1, direction))
   end
 
-  defp move(%Tank{position: %{direction: direction}} = tank, direction) do
-    Logger.info("moving: #{tank.id} -> #{direction}")
-    {tank, %{tank | moving?: true}}
+  defp move(%Tank{position: p} = tank, direction) do
+    {tank, %{tank | moving?: true, position: %{p | direction: direction}}}
   end
 
-  defp move(%Tank{position: %{direction: _} = p, moving?: false} = tank, direction) do
-    Logger.info("moving2: #{tank.id} -> #{direction}")
-    {tank, %{tank | position: %{p | direction: direction}}}
-  end
+  # defp move(%Tank{position: %{direction: _} = p, moving?: false} = tank, direction) do
+  #   {tank, %{tank | position: %{p | direction: direction}}}
+  # end
 
-  defp move(%Tank{position: %{direction: _} = p, moving?: true} = tank, direction) do
-    Logger.info("moving3: #{tank.id} -> #{direction}")
-    {tank, %{tank | position: %{p | direction: direction}, moving?: false}}
-  end
+  # defp move(%Tank{position: %{direction: _} = p, moving?: true} = tank, direction) do
+  #   {tank, %{tank | position: %{p | direction: direction}, moving?: false}}
+  # end
 end

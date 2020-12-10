@@ -12,7 +12,7 @@ defmodule BattleCity.Process.GameServer do
   def ctx(srv), do: GenServer.call(srv, :ctx)
   def pause(srv), do: GenServer.cast(srv, :pause)
   def resume(srv), do: GenServer.cast(srv, :resume)
-  def event(srv, event), do: GenServer.cast(srv, {:event, event})
+  def event(srv, event), do: GenServer.call(srv, {:event, event})
 
   @impl true
   def init({slug, opts}) do
@@ -24,18 +24,24 @@ defmodule BattleCity.Process.GameServer do
   @impl true
   def handle_call(:ctx, _from, ctx), do: {:reply, ctx, ctx, ctx.timeout_interval}
 
-  @impl true
-  def handle_cast(:pause, %{state: :started} = ctx), do: do_pause(ctx)
-  def handle_cast(:pause, ctx), do: {:noreply, ctx, ctx.timeout_interval}
-  def handle_cast(:resume, %{state: :paused} = ctx), do: do_resume(ctx)
-  def handle_cast(:resume, ctx), do: {:noreply, ctx}
-  def handle_cast({:event, %{name: :toggle_pause}}, %{state: :started} = ctx), do: do_pause(ctx)
-  def handle_cast({:event, %{name: :toggle_pause}}, %{state: :paused} = ctx), do: do_resume(ctx)
-
-  def handle_cast({:event, event}, ctx) do
-    ctx = Game.event(ctx, event)
-    {:noreply, ctx, ctx.timeout_interval}
+  def handle_call({:event, %{name: :toggle_pause}}, _, %{state: :started} = ctx) do
+    do_pause(ctx, :reply)
   end
+
+  def handle_call({:event, %{name: :toggle_pause}}, _, %{state: :paused} = ctx) do
+    do_resume(ctx, :reply)
+  end
+
+  def handle_call({:event, event}, _, ctx) do
+    ctx = Game.event(ctx, event)
+    {:reply, ctx, ctx, ctx.timeout_interval}
+  end
+
+  @impl true
+  def handle_cast(:pause, %{state: :started} = ctx), do: do_pause(ctx, :noreply)
+  def handle_cast(:pause, ctx), do: {:noreply, ctx, ctx.timeout_interval}
+  def handle_cast(:resume, %{state: :paused} = ctx), do: do_resume(ctx, :noreply)
+  def handle_cast(:resume, ctx), do: {:noreply, ctx}
 
   @impl true
   def handle_info(:loop, %{state: :started} = ctx) do
@@ -56,13 +62,24 @@ defmodule BattleCity.Process.GameServer do
     {:ok, reason}
   end
 
-  defp do_pause(ctx) do
+  defp do_pause(ctx, :noreply) do
     {:noreply, %{ctx | state: :paused}, ctx.timeout_interval}
   end
 
-  defp do_resume(ctx) do
+  defp do_pause(ctx, :reply) do
+    ctx = %{ctx | state: :paused}
+    {:reply, ctx, ctx, ctx.timeout_interval}
+  end
+
+  defp do_resume(ctx, :noreply) do
     _ = loop(ctx)
     {:noreply, %{ctx | state: :started}, ctx.timeout_interval}
+  end
+
+  defp do_resume(ctx, :reply) do
+    ctx = %{ctx | state: :started}
+    _ = loop(ctx)
+    {:reply, ctx, ctx, ctx.timeout_interval}
   end
 
   defp loop(ctx) do
