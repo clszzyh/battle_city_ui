@@ -22,9 +22,9 @@ defmodule BattleCity.Context do
   @typep width :: Position.width()
   @typep height :: Position.height()
   @typep color :: Position.color()
-  @typep x :: Position.x()
-  @typep y :: Position.y()
-  @typep grid :: {x(), y(), width(), height(), color()}
+  @typep rx :: Position.rx()
+  @typep ry :: Position.ry()
+  @typep grid :: {rx(), ry(), width(), height(), color()}
 
   @type t :: %__MODULE__{
           rest_enemies: integer,
@@ -61,26 +61,31 @@ defmodule BattleCity.Context do
   ]
 
   @spec grids(__MODULE__.t()) :: [grid()]
-  def grids(%__MODULE__{grids: grids, objects: objects} = ctx) do
-    map = for {{x, y}, {width, height, color}} <- grids, do: {x, y, width, height, color}
+  def grids(%__MODULE__{} = ctx) do
+    map_grids(ctx) ++ object_grids(ctx)
+  end
 
-    objects =
-      for {{x, y}, mapset} <- objects, MapSet.size(mapset) > 0, reduce: [] do
-        ary ->
-          o =
-            for {t, id, _} <- mapset do
-              %{position: p} = fetch_object!(ctx, t, id)
-              {x, y, p.width, p.height, p.color}
-            end
+  def map_grids(%__MODULE__{grids: grids}) do
+    for {_, {rx, ry, width, height, color}} <- grids, do: {rx, ry, width, height, color}
+  end
 
-          ary ++ o
-      end
+  def object_grids(%__MODULE__{objects: objects} = ctx) do
+    for {_, mapset} <- objects, MapSet.size(mapset) > 0, reduce: [] do
+      ary ->
+        o =
+          for {t, id, _} <- mapset do
+            %{position: p} = fetch_object!(ctx, t, id)
+            {p.rx, p.ry, p.width, p.height, p.color}
+          end
 
-    map ++ objects
+        ary ++ o
+    end
   end
 
   def initial_objects(%__MODULE__{stage: %{map: map}} = ctx) do
-    grids = for {k, %{position: p}} <- map, into: %{}, do: {k, {p.width, p.height, p.color}}
+    grids =
+      for {k, %{position: p}} <- map, into: %{}, do: {k, {p.rx, p.ry, p.width, p.height, p.color}}
+
     %{ctx | objects: Position.objects(), grids: grids}
   end
 

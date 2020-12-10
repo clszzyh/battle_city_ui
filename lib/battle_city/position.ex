@@ -77,7 +77,7 @@ defmodule BattleCity.Position do
   def atom, do: @atom
   def width, do: @width
   def quadrant, do: @size + 1
-  def real_quadrant, do: quadrant() * @atom
+  def real_quadrant, do: quadrant() * @atom * @width
 
   @spec init(map) :: __MODULE__.t()
   def init(map \\ %{})
@@ -89,15 +89,15 @@ defmodule BattleCity.Position do
   def init(%{y: y} = map) when is_atom(y), do: init(%{map | y: fetch_y(y)})
 
   @width_map %{
-    BattleCity.Tank.Base => 0.75 * @atom,
-    BattleCity.Environment => 0.9 * @atom,
-    BattleCity.PowerUp => 0.75 * @atom
+    BattleCity.Tank.Base => 0.90 * @atom * @width,
+    BattleCity.Environment => 0.99 * @atom * @width,
+    BattleCity.PowerUp => 0.90 * @atom * @width
   }
 
   @height_map %{
-    BattleCity.Tank.Base => 0.75 * @atom,
-    BattleCity.Environment => 0.9 * @atom,
-    BattleCity.PowerUp => 0.75 * @atom
+    BattleCity.Tank.Base => 0.90 * @atom * @width,
+    BattleCity.Environment => 0.99 * @atom * @width,
+    BattleCity.PowerUp => 0.90 * @atom * @width
   }
 
   def init(%{__module__: module, x: x, y: y, __parent__: parent} = map) do

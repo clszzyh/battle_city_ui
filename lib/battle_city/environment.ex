@@ -37,7 +37,7 @@ defmodule BattleCity.Environment do
   @callback handle_enter(__MODULE__.t(), object) :: enter_result
   @callback handle_leave(__MODULE__.t(), object) :: enter_result
 
-  def __color__, do: "#999999"
+  def __color__, do: "#eee7d7"
 
   defmacro __using__(opt \\ []) do
     obj = struct(__MODULE__, opt)

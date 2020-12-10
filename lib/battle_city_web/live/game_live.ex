@@ -67,7 +67,8 @@ defmodule BattleCityWeb.GameLive do
 
   def handle_event(event, name, socket) do
     Logger.debug("event #{inspect(self())} #{inspect(event)} #{inspect(name)} #{inspect(socket)}")
-    {:noreply, put_flash(socket, :info, inspect({event, name}))}
+    # {:noreply, put_flash(socket, :info, inspect({event, name}))}
+    {:noreply, socket}
   end
 
   @impl true
@@ -77,7 +78,7 @@ defmodule BattleCityWeb.GameLive do
   end
 
   def handle_info(%Phoenix.Socket.Broadcast{event: "ctx", payload: ctx}, socket) do
-    Logger.debug("ping")
+    # Logger.debug("ping")
     {:noreply, assign(socket, :ctx, ctx)}
   end
 

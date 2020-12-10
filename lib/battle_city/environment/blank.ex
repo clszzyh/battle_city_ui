@@ -4,5 +4,5 @@ defmodule BattleCity.Environment.Blank do
   use BattleCity.Environment,
     enter?: true,
     health: 0,
-    color: "#000000"
+    color: "#EEEEEE"
 end
