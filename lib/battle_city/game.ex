@@ -6,7 +6,6 @@ defmodule BattleCity.Game do
   alias BattleCity.Business.Overlap
   alias BattleCity.Context
   alias BattleCity.Event
-  alias BattleCity.Position
   alias BattleCity.Process.GameDynamicSupervisor
   alias BattleCity.Process.GameServer
   alias BattleCity.Process.StageCache
@@ -58,7 +57,8 @@ defmodule BattleCity.Game do
       })
       |> tank.new()
 
-    %Context{slug: slug, stage: stage, objects: Position.objects()}
+    %Context{slug: slug, stage: stage}
+    |> Context.initial_objects()
     |> Context.put_object(player)
     |> Generate.add_bot(opts)
   end

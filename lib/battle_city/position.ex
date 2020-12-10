@@ -34,6 +34,7 @@ defmodule BattleCity.Position do
   @type coordinate :: {x, y}
   @type width :: 0..unquote(@atom)
   @type height :: 0..unquote(@atom)
+  @type color :: binary
 
   @typep x_or_y :: x | y
   @typep rx_or_ry :: rx | ry
@@ -49,7 +50,7 @@ defmodule BattleCity.Position do
           ry: ry(),
           rt: rx_or_ry(),
           t: x_or_y(),
-          color: binary(),
+          color: color(),
           path: path()
         }
 
@@ -88,15 +89,15 @@ defmodule BattleCity.Position do
   def init(%{y: y} = map) when is_atom(y), do: init(%{map | y: fetch_y(y)})
 
   @width_map %{
-    BattleCity.Tank.Base => 0.8 * @atom,
+    BattleCity.Tank.Base => 0.75 * @atom,
     BattleCity.Environment => 0.9 * @atom,
-    BattleCity.PowerUp => 0.8 * @atom
+    BattleCity.PowerUp => 0.75 * @atom
   }
 
   @height_map %{
-    BattleCity.Tank.Base => 0.8 * @atom,
+    BattleCity.Tank.Base => 0.75 * @atom,
     BattleCity.Environment => 0.9 * @atom,
-    BattleCity.PowerUp => 0.8 * @atom
+    BattleCity.PowerUp => 0.75 * @atom
   }
 
   def init(%{__module__: module, x: x, y: y, __parent__: parent} = map) do

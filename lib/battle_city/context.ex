@@ -19,7 +19,12 @@ defmodule BattleCity.Context do
   @loop_interval 100
   @timeout_interval 1000 * 60 * 60 * 24
 
-  @typep grid :: {Position.x(), Position.y(), Position.width(), Position.height(), atom()}
+  @typep width :: Position.width()
+  @typep height :: Position.height()
+  @typep color :: Position.color()
+  @typep x :: Position.x()
+  @typep y :: Position.y()
+  @typep grid :: {x(), y(), width(), height(), color()}
 
   @type t :: %__MODULE__{
           rest_enemies: integer,
@@ -28,6 +33,7 @@ defmodule BattleCity.Context do
           timeout_interval: integer(),
           __counters__: map(),
           state: state(),
+          grids: %{Position.coordinate() => {width(), height(), color()}},
           objects: %{Position.coordinate() => MapSet.t(BattleCity.fingerprint())},
           stage: Stage.t(),
           power_ups: %{BattleCity.id() => PowerUp.t()},
@@ -35,7 +41,7 @@ defmodule BattleCity.Context do
           bullets: %{BattleCity.id() => Bullet.t()}
         }
 
-  @enforce_keys [:stage, :objects, :slug]
+  @enforce_keys [:stage, :slug]
   @derive {SimpleDisplay,
            only: [:rest_enemies, :shovel?, :state, :loop_interval, :timeout_interval]}
   defstruct [
@@ -43,6 +49,7 @@ defmodule BattleCity.Context do
     :slug,
     loop_interval: @loop_interval,
     timeout_interval: @timeout_interval,
+    grids: %{},
     tanks: %{},
     bullets: %{},
     power_ups: %{},
@@ -54,8 +61,27 @@ defmodule BattleCity.Context do
   ]
 
   @spec grids(__MODULE__.t()) :: [grid()]
-  def grids(%__MODULE__{stage: %{map: map}}) do
-    for {_, %{position: p}} <- map, do: {p.x, p.y, p.width, p.height, p.color}
+  def grids(%__MODULE__{grids: grids, objects: objects} = ctx) do
+    map = for {{x, y}, {width, height, color}} <- grids, do: {x, y, width, height, color}
+
+    objects =
+      for {{x, y}, mapset} <- objects, MapSet.size(mapset) > 0, reduce: [] do
+        ary ->
+          o =
+            for {t, id, _} <- mapset do
+              %{position: p} = fetch_object!(ctx, t, id)
+              {x, y, p.width, p.height, p.color}
+            end
+
+          ary ++ o
+      end
+
+    map ++ objects
+  end
+
+  def initial_objects(%__MODULE__{stage: %{map: map}} = ctx) do
+    grids = for {k, %{position: p}} <- map, into: %{}, do: {k, {p.width, p.height, p.color}}
+    %{ctx | objects: Position.objects(), grids: grids}
   end
 
   @spec put_object({__MODULE__.t(), object_struct}) :: __MODULE__.t()
@@ -129,6 +155,10 @@ defmodule BattleCity.Context do
     o = objects |> Map.fetch!({x, y}) |> MapSet.put(Object.fingerprint(o))
     Map.merge(ctx, %{key => map, :objects => Map.put(objects, {x, y}, o)})
   end
+
+  def fetch_object!(ctx, :t, id), do: fetch_object!(ctx, :tanks, id)
+  def fetch_object!(ctx, :p, id), do: fetch_object!(ctx, :power_ups, id)
+  def fetch_object!(ctx, :b, id), do: fetch_object!(ctx, :bullets, id)
 
   def fetch_object!(ctx, key, id) do
     ctx |> Map.fetch!(key) |> Map.fetch!(id)
