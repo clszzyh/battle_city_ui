@@ -30,6 +30,26 @@ end
 #   def grid(_), do: nil
 # end
 
+# defprotocol Size do
+#   @spec width(t) :: BattleCity.Position.width()
+#   def width(struct)
+
+#   @spec height(t) :: BattleCity.Position.height()
+#   def height(struct)
+# end
+# defimpl Size, for: Any do
+#   defmacro __deriving__(module, _, width: width, height: height) do
+#     quote do
+#       defimpl Size, for: unquote(module) do
+#         def width(_), do: unquote(width)
+#         def height(_), do: unquote(height)
+#       end
+#     end
+#   end
+#   def width(_), do: nil
+#   def height(_), do: nil
+# end
+
 defprotocol SimpleDisplay do
   @fallback_to_any true
 

@@ -69,7 +69,11 @@ defmodule BattleCity.Tank do
           data = %{
             __module__: __MODULE__,
             meta: meta,
-            position: Position.init(map |> Map.put(:__module__, __MODULE__)),
+            position:
+              Position.init(
+                map
+                |> Map.merge(%{__parent__: unquote(__MODULE__), __module__: __MODULE__})
+              ),
             speed: meta.move_speed,
             health: meta.health
           }

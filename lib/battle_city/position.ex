@@ -53,9 +53,9 @@ defmodule BattleCity.Position do
           path: path()
         }
 
-  @keys [:direction, :x, :y, :rx, :ry, :__module__, :color]
-  @enforce_keys [:direction, :__module__, :x, :y, :rx, :ry, :color]
-  defstruct [:x, :y, :direction, :__module__, :rx, :ry, :rt, :t, :color, path: []]
+  @keys [:direction, :x, :y, :rx, :ry, :__module__, :__parent__, :color, :width, :height]
+  @enforce_keys [:direction, :__module__, :__parent__, :x, :y, :rx, :ry, :color, :width, :height]
+  defstruct @keys ++ [:rt, :t, path: []]
 
   @objects for x <- @x_range,
                rem(x, 2) == 0,
@@ -87,10 +87,28 @@ defmodule BattleCity.Position do
   def init(%{x: x} = map) when is_atom(x), do: init(%{map | x: fetch_x(x)})
   def init(%{y: y} = map) when is_atom(y), do: init(%{map | y: fetch_y(y)})
 
-  def init(%{__module__: module, x: x, y: y} = map) do
+  @width_map %{
+    BattleCity.Tank.Base => 0.8 * @atom,
+    BattleCity.Environment => 0.9 * @atom,
+    BattleCity.PowerUp => 0.8 * @atom
+  }
+
+  @height_map %{
+    BattleCity.Tank.Base => 0.8 * @atom,
+    BattleCity.Environment => 0.9 * @atom,
+    BattleCity.PowerUp => 0.8 * @atom
+  }
+
+  def init(%{__module__: module, x: x, y: y, __parent__: parent} = map) do
     map =
       map
-      |> Map.merge(%{rx: x * @width, ry: y * @width, color: module.__color__()})
+      |> Map.merge(%{
+        rx: x * @width,
+        ry: y * @width,
+        width: Map.fetch!(@width_map, parent),
+        height: Map.fetch!(@height_map, parent),
+        color: module.__color__()
+      })
       |> Map.take(@keys)
 
     struct!(__MODULE__, map) |> normalize()
