@@ -16,7 +16,7 @@ defmodule BattleCity.Context do
   @object_struct_map %{PowerUp => :power_ups, Tank => :tanks, Bullet => :bullets}
   @object_values Map.values(@object_struct_map)
 
-  @loop_interval 500
+  @loop_interval 100
   @timeout_interval 1000 * 60 * 60 * 24
 
   @typep width :: Position.width()
@@ -126,7 +126,7 @@ defmodule BattleCity.Context do
 
   def handle_object(ctx, %Bullet{dead?: true, id: id, tank_id: tank_id}) do
     ctx
-    |> update_object_raw(:tanks, tank_id, fn x -> %{x | shootable?: true} end)
+    |> update_object_raw(:tanks, tank_id, fn x -> {x, %{x | shootable?: true}} end)
     |> delete_object(:bullets, id)
   end
 
@@ -173,17 +173,13 @@ defmodule BattleCity.Context do
           __MODULE__.t(),
           BattleCity.object_keys(),
           BattleCity.id(),
-          (object_struct -> object_struct)
+          (object_struct -> {object_struct, object_struct})
         ) :: __MODULE__.t()
   def update_object_raw(ctx, key, id, f) do
     data = ctx |> Map.fetch!(key)
 
-    data
-    |> Map.get(id)
-    |> case do
-      nil -> ctx
-      o -> Map.put(ctx, key, Map.put(data, id, f.(o)))
-    end
+    {_, data} = data |> Map.get_and_update!(id, f)
+    Map.put(ctx, key, data)
   end
 
   @spec delete_object(__MODULE__.t(), BattleCity.object_keys(), BattleCity.id()) :: __MODULE__.t()

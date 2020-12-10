@@ -72,9 +72,14 @@ defmodule BattleCity.Position do
                      (p.ry == @rymin and p.direction == :up) or
                      (p.ry == @rymax and p.direction == :down))
 
+  # defguard is_reverse({d1, d2})
+  #          when (d1 == :up and d2 == :down) or (d1 == :down and d2 == :up) or
+  #                 (d1 == :left and d2 == :right) or (d1 == :right and d2 == :left)
+
   def objects, do: @objects
   def size, do: @size
   def atom, do: @atom
+  def speed, do: @atom
   def width, do: @width
   def quadrant, do: @size + 1
   def real_quadrant, do: quadrant() * @atom * @width

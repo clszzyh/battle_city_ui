@@ -8,6 +8,7 @@ defmodule BattleCity.Business.Location do
   alias BattleCity.Stage
   alias BattleCity.Tank
   import BattleCity.Position, only: [is_on_border: 1]
+  require Logger
 
   @typep move_struct :: Environment.object()
 
@@ -22,21 +23,28 @@ defmodule BattleCity.Business.Location do
   def move(%Bullet{position: position} = bullet, _) when is_on_border(position),
     do: %{bullet | dead?: true}
 
-  def move(%Tank{position: position} = tank, _) when is_on_border(position), do: tank
+  def move(%Tank{position: position} = tank, _) when is_on_border(position) do
+    Logger.debug("on border: #{tank.id}")
+    tank
+  end
+
   def move(%Tank{dead?: true} = tank, _), do: tank
   def move(%Tank{moving?: false} = tank, _), do: tank
-  def move(%Tank{freezed?: true} = tank, _), do: tank
+  def move(%Tank{freezed?: true} = tank, _), do: %{tank | moving?: false}
 
   def move(%{position: position, speed: speed} = original, map) do
     %Position{path: [_one | rest] = path} = position = Position.destination(position, speed)
     o = %{original | position: %{position | path: rest}}
     path_map = for p <- path, do: Map.fetch!(map, p)
 
-    path_map
-    |> tl
-    |> Enum.zip(path_map)
-    |> Enum.reduce_while(o, &do_move/2)
-    |> maybe_changed(original)
+    result =
+      path_map
+      |> tl
+      |> Enum.zip(path_map)
+      |> Enum.reduce_while(o, &do_move/2)
+      |> maybe_changed(original)
+
+    %{result | moving?: false}
   end
 
   @spec do_move({Environment.t(), Environment.t()}, move_struct) ::

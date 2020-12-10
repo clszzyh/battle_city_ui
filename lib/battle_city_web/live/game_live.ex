@@ -42,6 +42,7 @@ defmodule BattleCityWeb.GameLive do
      assign(socket,
        ctx: ctx,
        slug: slug,
+       name: username,
        quadrant_size: Position.real_quadrant()
      )}
   end
@@ -58,10 +59,14 @@ defmodule BattleCityWeb.GameLive do
   @handle_down_keys Map.keys(@handle_down_map)
 
   @impl true
-  def handle_event(key_type, %{"key" => key}, %{assigns: %{ctx: ctx, slug: slug}} = socket)
+  def handle_event(
+        key_type,
+        %{"key" => key},
+        %{assigns: %{ctx: ctx, slug: slug, name: name}} = socket
+      )
       when {key_type, key} in @handle_down_keys do
-    {name, value} = Map.fetch!(@handle_down_map, {key_type, key})
-    _ = Game.start_event(slug, %Event{name: name, value: value})
+    {event_name, value} = Map.fetch!(@handle_down_map, {key_type, key})
+    _ = Game.start_event(slug, %Event{name: event_name, value: value, id: name})
     {:noreply, assign(socket, :ctx, ctx)}
   end
 

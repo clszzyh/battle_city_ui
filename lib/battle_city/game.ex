@@ -111,7 +111,23 @@ defmodule BattleCity.Game do
   end
 
   @spec do_event(Context.t(), Event.t()) :: Context.t()
-  def do_event(%Context{} = ctx, %Event{}) do
-    ctx
+  def do_event(%Context{} = ctx, %Event{name: :move, value: direction, id: id}) do
+    Logger.info("#{id} move #{direction}")
+    ctx |> Context.update_object_raw(:tanks, id, &move(&1, direction))
+  end
+
+  defp move(%Tank{position: %{direction: direction}} = tank, direction) do
+    Logger.info("moving: #{tank.id} -> #{direction}")
+    {tank, %{tank | moving?: true}}
+  end
+
+  defp move(%Tank{position: %{direction: _} = p, moving?: false} = tank, direction) do
+    Logger.info("moving2: #{tank.id} -> #{direction}")
+    {tank, %{tank | position: %{p | direction: direction}}}
+  end
+
+  defp move(%Tank{position: %{direction: _} = p, moving?: true} = tank, direction) do
+    Logger.info("moving3: #{tank.id} -> #{direction}")
+    {tank, %{tank | position: %{p | direction: direction}, moving?: false}}
   end
 end

@@ -24,7 +24,7 @@ defmodule BattleCity.ContextTest do
     assert player.position.rx == 9 * 8
     assert player.position.ry == 24 * 8
     assert player.position.direction == :up
-    assert player.speed == 2
+    assert player.speed == 2 * Position.speed()
     assert player.health == 1
     assert player.changed? == false
     assert map_size(ctx.tanks) > 1

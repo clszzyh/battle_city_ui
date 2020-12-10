@@ -74,7 +74,7 @@ defmodule BattleCity.Tank do
                 map
                 |> Map.merge(%{__parent__: unquote(__MODULE__), __module__: __MODULE__})
               ),
-            speed: meta.move_speed,
+            speed: meta.move_speed * Position.speed(),
             health: meta.health
           }
 
