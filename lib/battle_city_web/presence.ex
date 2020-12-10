@@ -11,6 +11,12 @@ defmodule BattleCityWeb.Presence do
   @endpoint_slug_prefix "endpoint:"
   @endpoint "endpoint"
 
+  @ctx_event "ctx"
+
+  def broadcast_ctx(ctx) do
+    broadcast_slug(ctx.slug, @ctx_event, ctx)
+  end
+
   def broadcast_endpoint(message, payload) do
     # Endpoint.broadcast_from(self(), @endpoint, message, payload)
     Endpoint.broadcast(@endpoint, message, payload)

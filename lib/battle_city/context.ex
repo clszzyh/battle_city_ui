@@ -16,7 +16,7 @@ defmodule BattleCity.Context do
   @object_struct_map %{PowerUp => :power_ups, Tank => :tanks, Bullet => :bullets}
   @object_values Map.values(@object_struct_map)
 
-  @loop_interval 100
+  @loop_interval 500
   @timeout_interval 1000 * 60 * 60 * 24
 
   @typep width :: Position.width()

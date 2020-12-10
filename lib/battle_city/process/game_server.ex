@@ -25,22 +25,17 @@ defmodule BattleCity.Process.GameServer do
   def handle_call(:ctx, _from, ctx), do: {:reply, ctx, ctx, ctx.timeout_interval}
 
   @impl true
+  def handle_cast(:pause, %{state: :started} = ctx), do: handle_pause(ctx)
+  def handle_cast(:pause, ctx), do: {:noreply, ctx, ctx.timeout_interval}
+  def handle_cast(:resume, %{state: :paused} = ctx), do: handle_resume(ctx)
+  def handle_cast(:resume, ctx), do: {:noreply, ctx}
+  def handle_cast({:event, {:toggle_pause, nil}}, %{state: :started} = ctx), do: handle_pause(ctx)
+  def handle_cast({:event, {:toggle_pause, nil}}, %{state: :paused} = ctx), do: handle_resume(ctx)
+
   def handle_cast({:event, event}, ctx) do
     ctx = Game.event(ctx, event)
     {:noreply, ctx, ctx.timeout_interval}
   end
-
-  def handle_cast(:pause, %{state: :started} = ctx),
-    do: {:noreply, %{ctx | state: :paused}, ctx.timeout_interval}
-
-  def handle_cast(:pause, ctx), do: {:noreply, ctx, ctx.timeout_interval}
-
-  def handle_cast(:resume, %{state: :paused} = ctx) do
-    _ = loop(ctx)
-    {:noreply, %{ctx | state: :started}, ctx.timeout_interval}
-  end
-
-  def handle_cast(:resume, ctx), do: {:noreply, ctx}
 
   @impl true
   def handle_info(:loop, %{state: :started} = ctx) do
@@ -59,6 +54,15 @@ defmodule BattleCity.Process.GameServer do
   @impl true
   def terminate(reason, _state) do
     {:ok, reason}
+  end
+
+  defp handle_pause(ctx) do
+    {:noreply, %{ctx | state: :paused}, ctx.timeout_interval}
+  end
+
+  defp handle_resume(ctx) do
+    _ = loop(ctx)
+    {:noreply, %{ctx | state: :started}, ctx.timeout_interval}
   end
 
   defp loop(ctx) do

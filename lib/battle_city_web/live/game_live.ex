@@ -40,25 +40,32 @@ defmodule BattleCityWeb.GameLive do
     {:ok,
      assign(socket,
        ctx: ctx,
+       slug: slug,
        quadrant_size: Position.real_quadrant()
      )}
   end
 
   defp grids(ctx), do: Context.grids(ctx)
 
-  @impl true
-  def handle_event("keydown", %{"key" => key}, socket) do
-    Logger.debug("keydown unknown #{key}")
-    {:noreply, socket}
-  end
+  @handle_down_map %{
+    {"keydown", "ArrowUp"} => {:move, :up},
+    {"keydown", "ArrowDown"} => {:move, :down},
+    {"keydown", "ArrowLeft"} => {:move, :left},
+    {"keydown", "ArrowRight"} => {:move, :right},
+    {"keydown", "Enter"} => {:toggle_pause, nil}
+  }
+  @handle_down_keys Map.keys(@handle_down_map)
 
-  def handle_event("keyup", %{"key" => key}, socket) do
-    Logger.debug("keyup unknown #{key}")
-    {:noreply, socket}
+  @impl true
+  def handle_event(key_type, %{"key" => key}, %{assigns: %{ctx: ctx, slug: slug}} = socket)
+      when {key_type, key} in @handle_down_keys do
+    {name, value} = Map.fetch!(@handle_down_map, {key_type, key})
+    _ = Game.handle_event(slug, {name, value})
+    {:noreply, assign(socket, :ctx, ctx)}
   end
 
   def handle_event(event, name, socket) do
-    Logger.debug("event #{inspect(self())} #{inspect(event)} #{inspect(name)}")
+    Logger.debug("event #{inspect(self())} #{inspect(event)} #{inspect(name)} #{inspect(socket)}")
     {:noreply, put_flash(socket, :info, inspect({event, name}))}
   end
 
@@ -66,6 +73,11 @@ defmodule BattleCityWeb.GameLive do
   def handle_info(%Phoenix.Socket.Broadcast{event: "presence_diff", payload: diff}, socket) do
     Logger.debug("presence_diff #{inspect(self())} #{inspect(diff)}")
     {:noreply, socket}
+  end
+
+  def handle_info(%Phoenix.Socket.Broadcast{event: "ctx", payload: ctx}, socket) do
+    Logger.debug("ping")
+    {:noreply, assign(socket, :ctx, ctx)}
   end
 
   def handle_info(name, socket) do

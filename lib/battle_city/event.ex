@@ -10,7 +10,7 @@ defmodule BattleCity.Event do
           args: map()
         }
 
-  @enforce_keys [:id, :name, :keyboard, :args]
+  # @enforce_keys []
   defstruct [
     :id,
     :name,

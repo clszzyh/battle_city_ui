@@ -11,6 +11,7 @@ defmodule BattleCity.Game do
   alias BattleCity.Process.StageCache
   alias BattleCity.Tank
   alias BattleCity.Telemetry
+  alias BattleCityWeb.Presence
   require Logger
 
   @default_stage 1
@@ -26,6 +27,12 @@ defmodule BattleCity.Game do
     _pid = GameDynamicSupervisor.server_process(slug, opts)
     srv = GameServer.pid(slug)
     {srv, GameServer.ctx(srv)}
+  end
+
+  def handle_event(slug, event) do
+    srv = GameServer.pid(slug)
+    Logger.info("[Event] #{slug} -> #{inspect(event)}")
+    :ok = GameServer.event(srv, event)
   end
 
   @spec init(BattleCity.slug(), map()) :: Context.t()
@@ -77,7 +84,13 @@ defmodule BattleCity.Game do
 
   @spec do_loop(Context.t()) :: Context.t()
   defp do_loop(%Context{} = ctx) do
-    ctx |> Location.move_all() |> Overlap.resolve()
+    ctx |> Location.move_all() |> Overlap.resolve() |> broadcast()
+  end
+
+  @spec broadcast(Context.t()) :: Context.t()
+  defp broadcast(%Context{} = ctx) do
+    _ = Presence.broadcast_ctx(ctx)
+    ctx
   end
 
   @spec event(Context.t(), Event.t()) :: Context.t()
