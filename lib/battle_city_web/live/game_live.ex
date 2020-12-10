@@ -1,6 +1,7 @@
 defmodule BattleCityWeb.GameLive do
   use BattleCityWeb, :live_view
   alias BattleCity.Context
+  alias BattleCity.Event
   alias BattleCity.Game
   alias BattleCity.Position
   alias BattleCityWeb.Presence
@@ -60,7 +61,7 @@ defmodule BattleCityWeb.GameLive do
   def handle_event(key_type, %{"key" => key}, %{assigns: %{ctx: ctx, slug: slug}} = socket)
       when {key_type, key} in @handle_down_keys do
     {name, value} = Map.fetch!(@handle_down_map, {key_type, key})
-    _ = Game.handle_event(slug, {name, value})
+    _ = Game.start_event(slug, %Event{name: name, value: value})
     {:noreply, assign(socket, :ctx, ctx)}
   end
 

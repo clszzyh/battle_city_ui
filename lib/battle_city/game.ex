@@ -23,13 +23,15 @@ defmodule BattleCity.Game do
     for i <- @mock_range, do: start_server("mock-#{i}", %{player_name: "player-#{i}"})
   end
 
+  @spec start_server(BattleCity.slug(), map()) :: {pid, Context.t()}
   def start_server(slug, opts) do
     _pid = GameDynamicSupervisor.server_process(slug, opts)
     srv = GameServer.pid(slug)
     {srv, GameServer.ctx(srv)}
   end
 
-  def handle_event(slug, event) do
+  @spec start_event(BattleCity.slug(), Event.t()) :: :ok
+  def start_event(slug, event) do
     srv = GameServer.pid(slug)
     Logger.info("[Event] #{slug} -> #{inspect(event)}")
     :ok = GameServer.event(srv, event)
