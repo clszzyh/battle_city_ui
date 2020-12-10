@@ -7,6 +7,29 @@ defmodule BattleCity.Display do
   end
 end
 
+# defprotocol Grid do
+#   @spec grid(t) :: BattleCity.Context.grid()
+#   def grid(struct)
+# end
+
+# defimpl Grid, for: Any do
+#   defmacro __deriving__(module, _, color: color) do
+#     quote do
+#       defimpl Grid, for: unquote(module) do
+#         def grid(%{position: %{x: x, y: y}}) do
+#           {x, y, 1.9, 1.9, unquote(color)}
+#         end
+
+#         def grid(%{x: x, y: y}) do
+#           {x, y, 1.9, 1.9, unquote(color)}
+#         end
+#       end
+#     end
+#   end
+
+#   def grid(_), do: nil
+# end
+
 defprotocol SimpleDisplay do
   @fallback_to_any true
 

@@ -1,5 +1,6 @@
 defmodule BattleCityWeb.GameLive do
   use BattleCityWeb, :live_view
+  alias BattleCity.Context
   alias BattleCity.Game
   alias BattleCity.Position
   alias BattleCityWeb.Presence
@@ -39,15 +40,11 @@ defmodule BattleCityWeb.GameLive do
     {:ok,
      assign(socket,
        ctx: ctx,
-       quadrant_size: Position.real_quadrant(),
-       grid: [
-         {0, 0, 1.9, 1.9, "#FFFFFF"},
-         {1, 2, 1.9, 1.9, "#EEEEEE"},
-         {0, 12, 1.9, 1.9, "#111111"},
-         {24, 24, 1.9, 1.9, "#222222"}
-       ]
+       quadrant_size: Position.real_quadrant()
      )}
   end
+
+  defp grids(ctx), do: Context.grids(ctx)
 
   @impl true
   def handle_event("keydown", %{"key" => key}, socket) do

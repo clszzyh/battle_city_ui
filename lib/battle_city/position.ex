@@ -32,6 +32,8 @@ defmodule BattleCity.Position do
   @type rx :: unquote(@rxmin)..unquote(@rxmax)
   @type ry :: unquote(@rymin)..unquote(@rymax)
   @type coordinate :: {x, y}
+  @type width :: 0..unquote(@atom)
+  @type height :: 0..unquote(@atom)
 
   @typep x_or_y :: x | y
   @typep rx_or_ry :: rx | ry

@@ -19,6 +19,8 @@ defmodule BattleCity.Context do
   @loop_interval 100
   @timeout_interval 1000 * 60 * 60 * 24
 
+  @typep grid :: {Position.x(), Position.y(), Position.width(), Position.height(), atom()}
+
   @type t :: %__MODULE__{
           rest_enemies: integer,
           shovel?: boolean,
@@ -50,6 +52,11 @@ defmodule BattleCity.Context do
     state: :started,
     shovel?: false
   ]
+
+  @spec grids(__MODULE__.t()) :: [grid()]
+  def grids(%__MODULE__{stage: %{map: map}}) do
+    for {_, _} <- map, do: {0, 0, 1.9, 1.9, "#999999"}
+  end
 
   @spec put_object({__MODULE__.t(), object_struct}) :: __MODULE__.t()
   def put_object({ctx, obj}), do: put_object(ctx, obj)
