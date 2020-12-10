@@ -6,5 +6,6 @@ defmodule BattleCity.Tank.Armor do
     health: 4,
     move_speed: 2,
     bullet_speed: 2,
-    level: 4
+    level: 4,
+    color: "#333333"
 end

@@ -3,5 +3,6 @@ defmodule BattleCity.Environment.BrickWall do
 
   use BattleCity.Environment,
     enter?: false,
-    health: :infinite
+    health: :infinite,
+    color: "#FC5C94"
 end

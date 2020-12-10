@@ -55,7 +55,7 @@ defmodule BattleCity.Context do
 
   @spec grids(__MODULE__.t()) :: [grid()]
   def grids(%__MODULE__{stage: %{map: map}}) do
-    for {_, _} <- map, do: {0, 0, 1.9, 1.9, "#999999"}
+    for {_, %{position: p}} <- map, do: {p.x, p.y, 1.9, 1.9, p.color}
   end
 
   @spec put_object({__MODULE__.t(), object_struct}) :: __MODULE__.t()

@@ -43,7 +43,7 @@ defmodule BattleCity.Stage do
       def __map__, do: unquote(Macro.escape(obj.map))
       def __raw__, do: unquote(Macro.escape(raw))
 
-      init_ast(unquote(__MODULE__), __MODULE__, unquote(Macro.escape(obj)))
+      init_ast(unquote(__MODULE__), __MODULE__, unquote(Macro.escape(obj)), unquote(opt))
 
       @after_compile unquote(__MODULE__)
     end

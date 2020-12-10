@@ -3,7 +3,8 @@ defmodule BattleCity.Environment.SteelWall do
 
   use BattleCity.Environment,
     health: 4,
-    enter?: false
+    enter?: false,
+    color: "#968B26"
 
   # @shape_map %{
   #   "f" => 1,

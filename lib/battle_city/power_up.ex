@@ -32,15 +32,17 @@ defmodule BattleCity.PowerUp do
   @callback handle_off(Context.t(), Tank.t()) :: BattleCity.invoke_tank_result()
   @optional_callbacks handle_off: 2
 
+  def __color__, do: "#222222"
+
   defmacro __using__(opt \\ []) do
-    obj = struct!(__MODULE__, opt)
+    obj = struct(__MODULE__, opt)
 
     quote location: :keep do
       alias BattleCity.Business
       alias BattleCity.Context
       alias BattleCity.Tank
 
-      init_ast(unquote(__MODULE__), __MODULE__, unquote(Macro.escape(obj)))
+      init_ast(unquote(__MODULE__), __MODULE__, unquote(Macro.escape(obj)), unquote(opt))
 
       @impl true
       def handle_init(%{} = map) do

@@ -44,8 +44,10 @@ defmodule BattleCity.Tank do
 
     @callback name :: atom()
 
+    def __color__, do: "#111111"
+
     defmacro __using__(opt \\ []) do
-      obj = struct!(__MODULE__, opt)
+      obj = struct(__MODULE__, opt)
       keys = Map.keys(Tank.__struct__())
 
       quote location: :keep do
@@ -75,7 +77,7 @@ defmodule BattleCity.Tank do
           struct!(Tank, map |> Map.take(unquote(keys)) |> Map.merge(data))
         end
 
-        init_ast(unquote(__MODULE__), __MODULE__, unquote(Macro.escape(obj)))
+        init_ast(unquote(__MODULE__), __MODULE__, unquote(Macro.escape(obj)), unquote(opt))
       end
     end
   end

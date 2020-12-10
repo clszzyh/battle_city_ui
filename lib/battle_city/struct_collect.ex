@@ -17,8 +17,21 @@ defmodule BattleCity.StructCollect do
     end
   end
 
-  defmacro init_ast(behaviour_module, current_module, keyword) when is_atom(behaviour_module) do
+  defmacro init_ast(behaviour_module, current_module, keyword, opt)
+           when is_atom(behaviour_module) do
     keys = Map.keys(behaviour_module.__struct__())
+
+    color_ast =
+      quote do
+        def __color__ do
+          unquote(
+            opt[:color] ||
+              if(function_exported?(behaviour_module, :__color__, 0),
+                do: behaviour_module.__color__()
+              )
+          )
+        end
+      end
 
     quote do
       @obj Map.put(unquote(keyword), :__module__, unquote(current_module))
@@ -33,6 +46,8 @@ defmodule BattleCity.StructCollect do
           map
         end
       end
+
+      unquote(color_ast)
 
       @spec init(map()) :: unquote(behaviour_module).t
       def init(map \\ %{}) do

@@ -3,7 +3,8 @@ defmodule BattleCity.Environment.Ice do
 
   use BattleCity.Environment,
     health: 0,
-    enter?: false
+    enter?: false,
+    color: "#8DE6F7"
 
   @impl true
   def handle_enter(_, %{speed: speed} = t) do

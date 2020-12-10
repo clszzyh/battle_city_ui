@@ -37,8 +37,10 @@ defmodule BattleCity.Environment do
   @callback handle_enter(__MODULE__.t(), object) :: enter_result
   @callback handle_leave(__MODULE__.t(), object) :: enter_result
 
+  def __color__, do: "#999999"
+
   defmacro __using__(opt \\ []) do
-    obj = struct!(__MODULE__, opt)
+    obj = struct(__MODULE__, opt)
 
     quote location: :keep do
       alias BattleCity.Tank
@@ -46,7 +48,7 @@ defmodule BattleCity.Environment do
       def handle_enter(_, o), do: {:ok, o}
       @impl true
       def handle_leave(_, o), do: {:ok, o}
-      init_ast(unquote(__MODULE__), __MODULE__, unquote(Macro.escape(obj)))
+      init_ast(unquote(__MODULE__), __MODULE__, unquote(Macro.escape(obj)), unquote(opt))
     end
   end
 

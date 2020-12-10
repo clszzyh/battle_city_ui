@@ -49,12 +49,13 @@ defmodule BattleCity.Position do
           ry: ry(),
           rt: rx_or_ry(),
           t: x_or_y(),
+          color: binary(),
           path: path()
         }
 
-  @keys [:direction, :x, :y, :rx, :ry, :__module__]
-  @enforce_keys [:direction, :__module__, :x, :y, :rx, :ry]
-  defstruct [:x, :y, :direction, :__module__, :rx, :ry, :rt, :t, path: []]
+  @keys [:direction, :x, :y, :rx, :ry, :__module__, :color]
+  @enforce_keys [:direction, :__module__, :x, :y, :rx, :ry, :color]
+  defstruct [:x, :y, :direction, :__module__, :rx, :ry, :rt, :t, :color, path: []]
 
   @objects for x <- @x_range,
                rem(x, 2) == 0,
@@ -86,8 +87,12 @@ defmodule BattleCity.Position do
   def init(%{x: x} = map) when is_atom(x), do: init(%{map | x: fetch_x(x)})
   def init(%{y: y} = map) when is_atom(y), do: init(%{map | y: fetch_y(y)})
 
-  def init(%{x: x, y: y} = map) do
-    map = map |> Map.merge(%{rx: x * @width, ry: y * @width}) |> Map.take(@keys)
+  def init(%{__module__: module, x: x, y: y} = map) do
+    map =
+      map
+      |> Map.merge(%{rx: x * @width, ry: y * @width, color: module.__color__()})
+      |> Map.take(@keys)
+
     struct!(__MODULE__, map) |> normalize()
   end
 

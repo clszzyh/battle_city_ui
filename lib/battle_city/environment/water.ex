@@ -3,5 +3,6 @@ defmodule BattleCity.Environment.Water do
 
   use BattleCity.Environment,
     health: 0,
-    enter?: false
+    enter?: false,
+    color: "#555555"
 end

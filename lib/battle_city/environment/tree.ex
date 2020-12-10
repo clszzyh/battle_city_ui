@@ -3,7 +3,8 @@ defmodule BattleCity.Environment.Tree do
 
   use BattleCity.Environment,
     health: 0,
-    enter?: true
+    enter?: true,
+    color: "#21889B"
 
   @impl true
   def handle_enter(_, %{} = t) do
