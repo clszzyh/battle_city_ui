@@ -1,11 +1,13 @@
 defmodule BattleCity.Game do
   @moduledoc false
 
+  alias BattleCity.Bullet
   alias BattleCity.Business.Generate
   alias BattleCity.Business.Location
   alias BattleCity.Business.Overlap
   alias BattleCity.Context
   alias BattleCity.Event
+  alias BattleCity.Position
   alias BattleCity.Process.GameDynamicSupervisor
   alias BattleCity.Process.GameServer
   alias BattleCity.Process.StageCache
@@ -126,23 +128,39 @@ defmodule BattleCity.Game do
   end
 
   @spec do_event(Context.t(), Event.t()) :: Context.t()
-  def do_event(%Context{} = ctx, %Event{name: :move, value: direction, id: id}) do
+  defp do_event(%Context{} = ctx, %Event{name: :move, value: direction, id: id}) do
     ctx |> Context.update_object_raw(:tanks, id, &move(&1, direction))
   end
 
-  def do_event(%Context{} = ctx, %Event{name: :shoot, id: _id}) do
-    ctx
+  defp do_event(%Context{} = ctx, %Event{name: :shoot, id: id}) do
+    tank = ctx |> Context.fetch_object!(:tanks, id)
+
+    shoot(tank)
+    |> case do
+      :ignored ->
+        ctx
+
+      bullet ->
+        ctx
+        |> Context.update_object_raw(:tanks, id, fn t -> {t, %{t | shootable?: false}} end)
+        |> Context.put_object(bullet)
+    end
   end
 
   defp move(%Tank{position: p} = tank, direction) do
     {tank, %{tank | moving?: true, position: %{p | direction: direction}}}
   end
 
-  # defp move(%Tank{position: %{direction: _} = p, moving?: false} = tank, direction) do
-  #   {tank, %{tank | position: %{p | direction: direction}}}
-  # end
+  @spec shoot(Tank.t()) :: :ignored | Bullet.t()
+  defp shoot(%Tank{dead?: true}), do: :ignored
+  defp shoot(%Tank{shootable?: false}), do: :ignored
 
-  # defp move(%Tank{position: %{direction: _} = p, moving?: true} = tank, direction) do
-  #   {tank, %{tank | position: %{p | direction: direction}, moving?: false}}
-  # end
+  defp shoot(%Tank{id: tank_id, enemy?: enemy?, meta: %{bullet_speed: speed}, position: position}) do
+    %Bullet{
+      enemy?: enemy?,
+      position: Position.bullet(position),
+      tank_id: tank_id,
+      speed: speed * Position.speed()
+    }
+  end
 end

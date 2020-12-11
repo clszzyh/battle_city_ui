@@ -4,7 +4,6 @@ defmodule BattleCity.Tank do
   alias BattleCity.Action
   alias BattleCity.Bullet
   alias BattleCity.Config
-  alias BattleCity.Event
   alias BattleCity.Position
   alias BattleCity.Utils
   alias __MODULE__
@@ -37,7 +36,6 @@ defmodule BattleCity.Tank do
     use BattleCity.StructCollect
 
     @callback handle_level_up(Tank.t()) :: module()
-    @callback create_bullet(Tank.t(), Event.t()) :: Bullet.t()
 
     @callback new() :: Tank.t()
     @callback new(map) :: Tank.t()
@@ -55,9 +53,6 @@ defmodule BattleCity.Tank do
 
         @impl true
         def handle_level_up(_), do: nil
-
-        @impl true
-        def create_bullet(tank, event), do: Tank.default_create_bullet(tank, event)
 
         @impl true
         def name, do: Utils.module_name(__MODULE__)
@@ -129,25 +124,6 @@ defmodule BattleCity.Tank do
     __actions__: [],
     lifes: Config.life_count()
   ]
-
-  @spec default_create_bullet(__MODULE__.t(), Event.t()) :: Bullet.t()
-  def default_create_bullet(
-        %__MODULE__{
-          id: tank_id,
-          enemy?: enemy?,
-          meta: %{bullet_speed: speed},
-          position: position
-        },
-        %Event{id: event_id}
-      ) do
-    %Bullet{
-      enemy?: enemy?,
-      position: position,
-      tank_id: tank_id,
-      event_id: event_id,
-      speed: speed
-    }
-  end
 
   @spec hit(__MODULE__.t(), Bullet.t()) :: __MODULE__.t()
   def hit(%__MODULE__{health: health} = tank, %Bullet{power: power}) when power < health do

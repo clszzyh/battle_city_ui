@@ -37,14 +37,12 @@ defmodule BattleCity.Business.Location do
     o = %{original | position: %{position | path: rest}}
     path_map = for p <- path, do: Map.fetch!(map, p)
 
-    result =
-      path_map
-      |> tl
-      |> Enum.zip(path_map)
-      |> Enum.reduce_while(o, &do_move/2)
-      |> maybe_changed(original)
-
-    %{result | moving?: false}
+    path_map
+    |> tl
+    |> Enum.zip(path_map)
+    |> Enum.reduce_while(o, &do_move/2)
+    |> maybe_changed(original)
+    |> maybe_stop_moving
   end
 
   @spec do_move({Environment.t(), Environment.t()}, move_struct) ::
@@ -59,6 +57,9 @@ defmodule BattleCity.Business.Location do
         {:halt, Environment.copy_rxy(source, %{o | reason: reason})}
     end
   end
+
+  defp maybe_stop_moving(%Tank{} = tank), do: %{tank | moving?: false}
+  defp maybe_stop_moving(o), do: o
 
   @spec maybe_changed(move_struct, move_struct) :: move_struct
   defp maybe_changed(%Tank{position: %{rx: rx, ry: ry}} = o, %Tank{position: %{rx: rx, ry: ry}}),

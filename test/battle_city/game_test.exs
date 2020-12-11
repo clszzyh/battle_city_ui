@@ -5,6 +5,7 @@ defmodule BattleCity.GameTest do
   alias BattleCity.Context
   alias BattleCity.Event
   alias BattleCity.Game
+  alias BattleCity.Position
   # alias BattleCity.Process.GameServer
   # alias BattleCity.Process.ProcessRegistry
   # alias BattleCity.Process.TankDynamicSupervisor
@@ -13,12 +14,10 @@ defmodule BattleCity.GameTest do
 
   setup_all do
     _ = BattleCity.Process.StageCache.start_link([])
-    []
+    [slug: "foo", name: "bar"]
   end
 
-  test "pause", %{} do
-    slug = "foo"
-    name = "bar"
+  test "pause and move", %{slug: slug, name: name} do
     {_pid, ctx} = Game.start_server(slug, %{player_name: name, loop_interval: 100})
     assert ctx.slug == slug
     assert ctx.state == :started
@@ -46,6 +45,28 @@ defmodule BattleCity.GameTest do
     assert ctx3.state == :started
     assert ctx3.counter == ctx2.counter + 1
     # ctx = Game.start_event(slug, %Event{name: :toggle_pause, value: nil, id: name})
+  end
+
+  test "shoot", %{slug: slug, name: name} do
+    {_pid, ctx} = Game.start_server(slug, %{player_name: name, loop_interval: 100})
+    tank = ctx |> Context.fetch_object!(:tanks, name)
+    position = tank.position
+    x = position.x
+    y = position.y
+    assert Map.fetch!(ctx.objects, {x, y}) == MapSet.new([{:t, "bar", false}])
+    ctx = Game.start_event(slug, %Event{name: :shoot, id: name, value: nil})
+    assert Map.fetch!(ctx.objects, {x, y}) == MapSet.new([{:t, "bar", false}, {:b, "b0", false}])
+    assert Enum.count(ctx.bullets) == 1
+    bullet = Map.fetch!(ctx.bullets, "b0")
+    assert bullet.position.ry == position.ry
+    assert position.direction == :up
+    Process.sleep(ctx.loop_interval)
+    {_pid, ctx1} = Game.ctx(slug)
+    assert ctx1.counter == ctx.counter + 1
+    new_bullet = Map.fetch!(ctx1.bullets, "b0")
+    new_position = new_bullet.position
+    assert new_position.ry == position.ry - new_bullet.speed
+    assert new_position.width == 0.1 * Position.atom() * Position.width()
   end
 
   # test "kill server", %{} do

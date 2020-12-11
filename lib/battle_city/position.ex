@@ -96,13 +96,15 @@ defmodule BattleCity.Position do
   @width_map %{
     BattleCity.Tank.Base => 0.90 * @atom * @width,
     BattleCity.Environment => 0.99 * @atom * @width,
-    BattleCity.PowerUp => 0.90 * @atom * @width
+    BattleCity.PowerUp => 0.90 * @atom * @width,
+    BattleCity.Bullet => 0.1 * @atom * @width
   }
 
   @height_map %{
     BattleCity.Tank.Base => 0.90 * @atom * @width,
     BattleCity.Environment => 0.99 * @atom * @width,
-    BattleCity.PowerUp => 0.90 * @atom * @width
+    BattleCity.PowerUp => 0.90 * @atom * @width,
+    BattleCity.Bullet => 0.1 * @atom * @width
   }
 
   def init(%{__module__: module, x: x, y: y, __parent__: parent} = map) do
@@ -118,6 +120,11 @@ defmodule BattleCity.Position do
       |> Map.take(@keys)
 
     struct!(__MODULE__, map) |> normalize()
+  end
+
+  def bullet(%__MODULE__{} = position) do
+    module = BattleCity.Bullet
+    %{position | width: Map.fetch!(@width_map, module), height: Map.fetch!(@height_map, module)}
   end
 
   defp fetch_diretion(:random), do: Enum.random(@diretions)
