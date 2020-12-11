@@ -3,5 +3,5 @@ defmodule BattleCity.Environment.Home do
 
   use BattleCity.Environment,
     enter?: false,
-    health: "#A20C41"
+    health: "#7F7F7F"
 end

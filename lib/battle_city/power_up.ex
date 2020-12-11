@@ -32,7 +32,7 @@ defmodule BattleCity.PowerUp do
   @callback handle_off(Context.t(), Tank.t()) :: BattleCity.invoke_tank_result()
   @optional_callbacks handle_off: 2
 
-  def __color__, do: "#222222"
+  def __color__, do: "#325185"
 
   defmacro __using__(opt \\ []) do
     obj = struct(__MODULE__, opt)
