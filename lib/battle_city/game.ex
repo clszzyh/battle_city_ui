@@ -86,7 +86,7 @@ defmodule BattleCity.Game do
 
   @spec do_loop(Context.t()) :: Context.t()
   defp do_loop(%Context{} = ctx) do
-    ctx |> Location.move_all() |> Overlap.resolve() |> broadcast()
+    ctx |> Location.move_all() |> Overlap.resolve() |> Generate.add_power_up() |> broadcast()
   end
 
   @spec broadcast(Context.t()) :: Context.t()
@@ -113,6 +113,10 @@ defmodule BattleCity.Game do
   @spec do_event(Context.t(), Event.t()) :: Context.t()
   def do_event(%Context{} = ctx, %Event{name: :move, value: direction, id: id}) do
     ctx |> Context.update_object_raw(:tanks, id, &move(&1, direction))
+  end
+
+  def do_event(%Context{} = ctx, %Event{name: :shoot, id: _id}) do
+    ctx
   end
 
   defp move(%Tank{position: p} = tank, direction) do

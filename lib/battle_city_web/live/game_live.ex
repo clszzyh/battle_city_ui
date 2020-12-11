@@ -54,7 +54,8 @@ defmodule BattleCityWeb.GameLive do
     {"keydown", "ArrowDown"} => {:move, :down},
     {"keydown", "ArrowLeft"} => {:move, :left},
     {"keydown", "ArrowRight"} => {:move, :right},
-    {"keydown", "Enter"} => {:toggle_pause, nil}
+    {"keydown", "Enter"} => {:toggle_pause, nil},
+    {"keydown", " "} => {:shoot, nil}
   }
   @handle_down_keys Map.keys(@handle_down_map)
 
@@ -71,14 +72,14 @@ defmodule BattleCityWeb.GameLive do
   end
 
   def handle_event(event, name, socket) do
-    Logger.debug("event #{inspect(self())} #{inspect(event)} #{inspect(name)} #{inspect(socket)}")
-    # {:noreply, put_flash(socket, :info, inspect({event, name}))}
+    Logger.debug("event #{inspect(self())} #{event} #{inspect(name)} #{socket.assigns.slug}")
+
     {:noreply, socket}
   end
 
   @impl true
-  def handle_info(%Phoenix.Socket.Broadcast{event: "presence_diff", payload: diff}, socket) do
-    Logger.debug("presence_diff #{inspect(self())} #{inspect(diff)}")
+  def handle_info(%Phoenix.Socket.Broadcast{event: "presence_diff", payload: _diff}, socket) do
+    Logger.debug("presence_diff #{inspect(self())} #{socket.assigns.slug}")
     {:noreply, socket}
   end
 

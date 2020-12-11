@@ -25,7 +25,7 @@ defmodule BattleCity.ProcessTest do
 
     tank_srv = ProcessRegistry.pid({TankDynamicSupervisor, "bob"})
     tank_children = TankDynamicSupervisor.children(tank_srv)
-    assert Enum.count(tank_children) == 5
+    assert Enum.count(tank_children) == 4
   end
 
   # test "kill server", %{} do

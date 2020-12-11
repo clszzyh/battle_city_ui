@@ -3,20 +3,20 @@ defmodule BattleCity.Context do
 
   alias BattleCity.Action
   alias BattleCity.Bullet
+  alias BattleCity.Callback
   alias BattleCity.Config
   alias BattleCity.Position
   alias BattleCity.PowerUp
-  alias BattleCity.Process.GameSupervisor
   alias BattleCity.Stage
   alias BattleCity.Tank
 
   @typep state :: :started | :paused | :game_over | :complete
-  @typep object_struct :: PowerUp.t() | Tank.t() | Bullet.t() | nil
+  @type object_struct :: PowerUp.t() | Tank.t() | Bullet.t() | nil
 
   @object_struct_map %{PowerUp => :power_ups, Tank => :tanks, Bullet => :bullets}
   @object_values Map.values(@object_struct_map)
 
-  @loop_interval 100
+  @loop_interval 1000
   @timeout_interval 1000 * 60 * 60 * 24
 
   @typep width :: Position.width()
@@ -149,10 +149,8 @@ defmodule BattleCity.Context do
     key = Map.fetch!(@object_struct_map, struct)
     data = ctx |> Map.fetch!(key)
 
-    _res =
-      if struct == Tank and !Map.has_key?(data, id) do
-        GameSupervisor.start_tank(ctx.slug, {o.enemy?, id})
-      end
+    action = if Map.has_key?(data, id), do: :update, else: :create
+    ctx = Callback.handle(action, o, ctx)
 
     map = data |> Map.put(id, o)
 
@@ -176,27 +174,17 @@ defmodule BattleCity.Context do
           (object_struct -> {object_struct, object_struct})
         ) :: __MODULE__.t()
   def update_object_raw(ctx, key, id, f) do
-    data = ctx |> Map.fetch!(key)
-
-    {_, data} = data |> Map.get_and_update!(id, f)
+    {_, data} = ctx |> Map.fetch!(key) |> Map.get_and_update!(id, f)
     Map.put(ctx, key, data)
   end
 
   @spec delete_object(__MODULE__.t(), BattleCity.object_keys(), BattleCity.id()) :: __MODULE__.t()
   def delete_object(%{objects: objects} = ctx, key, id) when key in @object_values do
     data = ctx |> Map.fetch!(key)
-
-    data
-    |> Map.get(id)
-    |> case do
-      nil ->
-        ctx
-
-      o ->
-        _ = if key == :tanks, do: GameSupervisor.stop_tank(ctx.slug, id)
-        xy = {o.position.x, o.position.y}
-        o = objects |> Map.fetch!(xy) |> MapSet.delete(Object.fingerprint(o))
-        ctx |> Map.merge(%{key => Map.delete(data, id), :objects => Map.put(objects, xy, o)})
-    end
+    {o, data} = Map.pop!(data, id)
+    ctx = Callback.handle(:delete, o, ctx)
+    xy = {o.position.x, o.position.y}
+    o = objects |> Map.fetch!(xy) |> MapSet.delete(Object.fingerprint(o))
+    ctx |> Map.merge(%{key => data, :objects => Map.put(objects, xy, o)})
   end
 end

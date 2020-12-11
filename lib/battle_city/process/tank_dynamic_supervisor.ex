@@ -26,6 +26,10 @@ defmodule BattleCity.Process.TankDynamicSupervisor do
 
     if pid do
       DynamicSupervisor.terminate_child(srv, pid)
+      |> case do
+        :ok -> {:ok, pid}
+        err -> err
+      end
     else
       {:error, "Not found #{inspect(key)}"}
     end

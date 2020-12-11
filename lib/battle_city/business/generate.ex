@@ -17,8 +17,18 @@ defmodule BattleCity.Business.Generate do
     PowerUp.Timer
   ]
 
-  @spec add_power_up(Context.t(), map()) :: BattleCity.invoke_result()
-  def add_power_up(%Context{} = ctx, opts \\ %{}) do
+  @spec add_power_up(Context.t()) :: Context.t()
+  def add_power_up(%Context{rest_enemies: rest_enemies} = ctx)
+      when rest_enemies in [4, 8, 12, 16] do
+    ctx |> do_add_power_up()
+  end
+
+  def add_power_up(%Context{} = ctx) do
+    ctx
+  end
+
+  @spec do_add_power_up(Context.t(), map()) :: BattleCity.invoke_result()
+  def do_add_power_up(%Context{} = ctx, opts \\ %{}) do
     opts = Map.merge(opts, %{x: :x_random, y: :y_random, direction: :down})
     powerup = generate_power_up(opts)
     ctx |> Context.put_object(powerup)
@@ -30,7 +40,10 @@ defmodule BattleCity.Business.Generate do
   end
 
   @spec add_bot(Context.t(), map()) :: BattleCity.invoke_result()
-  def add_bot(%Context{stage: %{bots: bots} = stage} = ctx, opts \\ %{}) do
+  def add_bot(
+        %Context{stage: %{bots: bots} = stage, rest_enemies: rest_enemies} = ctx,
+        opts \\ %{}
+      ) do
     opts =
       Map.merge(opts, %{
         enemy?: true,
@@ -45,8 +58,12 @@ defmodule BattleCity.Business.Generate do
     tanks
     |> Enum.reject(&match?(nil, &1))
     |> case do
-      [] -> {:error, :empty}
-      tanks -> %{ctx | stage: %{stage | bots: bots}} |> Context.put_object(tanks)
+      [] ->
+        {:error, :empty}
+
+      tanks ->
+        %{ctx | rest_enemies: rest_enemies - 1, stage: %{stage | bots: bots}}
+        |> Context.put_object(tanks)
     end
   end
 
