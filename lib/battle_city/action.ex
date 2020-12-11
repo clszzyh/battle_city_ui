@@ -18,6 +18,7 @@ defmodule BattleCity.Action do
           args: map
         }
 
+  @enforce_keys [:target_id, :source_id, :target_type, :source_type, :kind, :value, :args]
   defstruct [
     :target_id,
     :target_type,

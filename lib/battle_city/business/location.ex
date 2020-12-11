@@ -23,11 +23,7 @@ defmodule BattleCity.Business.Location do
   def move(%Bullet{position: position} = bullet, _) when is_on_border(position),
     do: %{bullet | dead?: true}
 
-  def move(%Tank{position: position} = tank, _) when is_on_border(position) do
-    Logger.debug("on border: #{tank.id}")
-    tank
-  end
-
+  def move(%Tank{position: position} = tank, _) when is_on_border(position), do: tank
   def move(%Tank{dead?: true} = tank, _), do: tank
   def move(%Tank{moving?: false} = tank, _), do: tank
   def move(%Tank{freezed?: true} = tank, _), do: %{tank | moving?: false}
