@@ -25,7 +25,7 @@ env:
 jobs:
   build:
     name: Build and test (OTP ${{matrix.otp}} / Elixir ${{matrix.elixir}})
-    if: "!contains(github.event.head_commit.message, 'ci skip')"
+    if: "!contains(github.event.head_commit.message, 'ci-skip')"
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -111,7 +111,7 @@ jobs:
           VERSION=$(cat VERSION | tr -s '\n' ' ')
           echo ::set-output name=VERSION::$VERSION
       - name: Deploy to gigalixir
-        if: contains(github.ref, 'refs/heads')
+        if: contains(github.ref, 'refs/heads') && !contains(github.event.head_commit.message, 'deploy-skip')
         uses: mhanberg/gigalixir-action@v0.4.0
         with:
           GIGALIXIR_USERNAME: ${{ secrets.GIGALIXIR_USERNAME }}
