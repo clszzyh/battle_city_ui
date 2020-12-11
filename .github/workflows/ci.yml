@@ -25,6 +25,7 @@ env:
 jobs:
   build:
     name: Build and test (OTP ${{matrix.otp}} / Elixir ${{matrix.elixir}})
+    if: "!contains(github.event.head_commit.message, 'ci skip')"
     runs-on: ubuntu-latest
     services:
       postgres:
