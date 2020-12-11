@@ -4,6 +4,7 @@ defmodule BattleCity.Process.GameDynamicSupervisor do
   alias BattleCity.Process.GameSupervisor
 
   use DynamicSupervisor
+  require Logger
 
   def start_link(init_arg) do
     DynamicSupervisor.start_link(__MODULE__, init_arg, name: __MODULE__)
@@ -26,8 +27,17 @@ defmodule BattleCity.Process.GameDynamicSupervisor do
     DynamicSupervisor.start_child(__MODULE__, {GameSupervisor, {slug, opts}})
   end
 
+  @spec terminate_child(BattleCity.slug()) :: :ok | {:error, BattleCity.reason()}
   def terminate_child(slug) do
-    DynamicSupervisor.terminate_child(__MODULE__, GameSupervisor.pid(slug))
+    GameSupervisor.pid(slug)
+    |> case do
+      nil ->
+        {:error, :not_found_srv}
+
+      pid ->
+        Logger.info("terminate server: #{slug} -> #{pid}")
+        DynamicSupervisor.terminate_child(__MODULE__, pid)
+    end
   end
 
   def children do

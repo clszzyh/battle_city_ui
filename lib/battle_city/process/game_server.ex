@@ -4,6 +4,7 @@ defmodule BattleCity.Process.GameServer do
   use BattleCity.Process.ProcessRegistry
 
   alias BattleCity.Game
+  alias BattleCity.Process.GameDynamicSupervisor
 
   def start_link({slug, opts}) do
     GenServer.start_link(__MODULE__, {slug, opts}, name: via_tuple(slug))
@@ -57,7 +58,7 @@ defmodule BattleCity.Process.GameServer do
   def handle_info(:loop, ctx), do: {:noreply, ctx, ctx.timeout_interval}
 
   def handle_info(:timeout, ctx) do
-    IO.puts("timeout: #{ctx.slug}")
+    :ok = GameDynamicSupervisor.terminate_child(ctx.slug)
     {:noreply, ctx}
   end
 
