@@ -26,7 +26,7 @@ defmodule BattleCityWeb.LiveDashboard.StagesPage do
   @impl true
   def handle_event("click_module", %{"info" => "MODULE_" <> module}, socket) do
     module = String.to_atom(module)
-    IO.puts("click module: #{module.__raw__}")
+    IO.puts("click module: #{inspect(module)}")
     {:noreply, socket}
   end
 
@@ -49,7 +49,7 @@ defmodule BattleCityWeb.LiveDashboard.StagesPage do
   defp row_attrs(row) do
     [
       {"phx-click", "click_module"},
-      {"phx-value-info", "MODULE_#{row[:module]}"},
+      {"phx-value-info", "MODULE_#{row[:__module__]}"},
       {"phx-page-loading", true}
     ]
   end
