@@ -16,9 +16,6 @@ defmodule BattleCity.Context do
   @object_struct_map %{PowerUp => :power_ups, Tank => :tanks, Bullet => :bullets}
   @object_values Map.values(@object_struct_map)
 
-  @loop_interval 1000
-  @timeout_interval 1000 * 60 * 60 * 24
-
   @typep width :: Position.width()
   @typep height :: Position.height()
   @typep color :: Position.color()
@@ -29,6 +26,7 @@ defmodule BattleCity.Context do
   @type t :: %__MODULE__{
           rest_enemies: integer,
           shovel?: boolean,
+          counter: integer(),
           loop_interval: integer(),
           timeout_interval: integer(),
           __counters__: map(),
@@ -41,14 +39,15 @@ defmodule BattleCity.Context do
           bullets: %{BattleCity.id() => Bullet.t()}
         }
 
-  @enforce_keys [:stage, :slug]
+  @enforce_keys [:stage, :slug, :timeout_interval, :loop_interval]
   @derive {SimpleDisplay,
            only: [:rest_enemies, :shovel?, :state, :loop_interval, :timeout_interval]}
   defstruct [
     :stage,
     :slug,
-    loop_interval: @loop_interval,
-    timeout_interval: @timeout_interval,
+    :loop_interval,
+    :timeout_interval,
+    counter: 0,
     grids: %{},
     tanks: %{},
     bullets: %{},

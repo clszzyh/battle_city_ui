@@ -32,6 +32,10 @@ defmodule BattleCity.Process.GameServer do
     do_resume(ctx, :reply)
   end
 
+  def handle_call({:event, _}, _, %{state: :paused} = ctx) do
+    {:reply, ctx, ctx, ctx.timeout_interval}
+  end
+
   def handle_call({:event, event}, _, ctx) do
     ctx = Game.event(ctx, event)
     {:reply, ctx, ctx, ctx.timeout_interval}

@@ -23,11 +23,16 @@ defmodule BattleCity.Game do
     for i <- @mock_range, do: start_server("mock-#{i}", %{player_name: "player-#{i}"})
   end
 
+  @spec ctx(BattleCity.slug()) :: {pid, Context.t()}
+  def ctx(slug) do
+    srv = GameServer.pid(slug)
+    {srv, GameServer.ctx(srv)}
+  end
+
   @spec start_server(BattleCity.slug(), map()) :: {pid, Context.t()}
   def start_server(slug, opts) do
     _pid = GameDynamicSupervisor.server_process(slug, opts)
-    srv = GameServer.pid(slug)
-    {srv, GameServer.ctx(srv)}
+    ctx(slug)
   end
 
   @spec start_event(BattleCity.slug(), Event.t()) :: Context.t()
@@ -49,11 +54,16 @@ defmodule BattleCity.Game do
     )
   end
 
+  @loop_interval 1000
+  @timeout_interval 1000 * 60 * 60 * 24
+
   @spec do_init(BattleCity.slug(), map()) :: Context.t()
   defp do_init(slug, opts) do
     module = opts |> Map.get(:stage, @default_stage) |> StageCache.fetch_stage()
     stage = module.init(opts)
     tank = opts |> Map.get(:player_tank, Tank.Level1)
+    loop_interval = Map.get(opts, :loop_interval, @loop_interval)
+    timeout_interval = Map.get(opts, :timeout_interval, @timeout_interval)
 
     player =
       opts
@@ -66,7 +76,12 @@ defmodule BattleCity.Game do
       })
       |> tank.new()
 
-    %Context{slug: slug, stage: stage}
+    %Context{
+      slug: slug,
+      stage: stage,
+      loop_interval: loop_interval,
+      timeout_interval: timeout_interval
+    }
     |> Context.initial_objects()
     |> Context.put_object(player)
     |> Generate.add_bot(opts)
@@ -77,8 +92,8 @@ defmodule BattleCity.Game do
     Telemetry.span(
       :game_loop,
       fn ->
-        ctx = do_loop(ctx)
-        {ctx, %{slug: ctx.slug}}
+        %{counter: counter} = ctx = do_loop(ctx)
+        {%{ctx | counter: counter + 1}, %{slug: ctx.slug}}
       end,
       %{slug: ctx.slug}
     )

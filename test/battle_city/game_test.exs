@@ -1,31 +1,51 @@
-defmodule BattleCity.ProcessTest do
+defmodule BattleCity.GameTest do
   use ExUnit.Case, async: true
-  doctest BattleCity.Process.ProcessRegistry
 
-  alias BattleCity.Process.GameDynamicSupervisor
-  alias BattleCity.Process.GameServer
-  alias BattleCity.Process.ProcessRegistry
-  alias BattleCity.Process.TankDynamicSupervisor
+  # alias BattleCity.Process.GameDynamicSupervisor
+  alias BattleCity.Context
+  alias BattleCity.Event
+  alias BattleCity.Game
+  # alias BattleCity.Process.GameServer
+  # alias BattleCity.Process.ProcessRegistry
+  # alias BattleCity.Process.TankDynamicSupervisor
+
+  @moduletag :game
 
   setup_all do
     _ = BattleCity.Process.StageCache.start_link([])
     []
   end
 
-  test "server process", %{} do
-    bob_pid = GameDynamicSupervisor.server_process("bob")
-    alice_pid = GameDynamicSupervisor.server_process("alice")
-    assert bob_pid != alice_pid
-    bob_srv = GameServer.pid("bob")
-    ctx = GameServer.ctx(bob_srv)
-    assert bob_srv != bob_pid
-    assert ProcessRegistry.pid({GameServer, "bob"}) == bob_srv
-    assert ctx.slug == "bob"
-    assert bob_pid == GameDynamicSupervisor.server_process("bob")
+  test "pause", %{} do
+    slug = "foo"
+    name = "bar"
+    {_pid, ctx} = Game.start_server(slug, %{player_name: name, loop_interval: 100})
+    assert ctx.slug == slug
+    assert ctx.state == :started
+    assert Context.fetch_object!(ctx, :t, name).id == name
 
-    tank_srv = ProcessRegistry.pid({TankDynamicSupervisor, "bob"})
-    tank_children = TankDynamicSupervisor.children(tank_srv)
-    assert Enum.count(tank_children) == 4
+    position1 = Context.fetch_object!(ctx, :t, name).position
+
+    ctx0 = Game.start_event(slug, %Event{name: :move, value: :up, id: name})
+    Process.sleep(ctx.loop_interval)
+    {_pid, ctx1} = Game.ctx(slug)
+    position2 = Context.fetch_object!(ctx1, :t, name).position
+    assert ctx1.counter == ctx0.counter + 1
+    assert position2 != position1
+
+    _ = Game.start_event(slug, %Event{name: :toggle_pause, value: nil, id: name})
+    ctx2 = Game.start_event(slug, %Event{name: :move, value: :up, id: name})
+    Process.sleep(ctx2.loop_interval)
+    assert ctx1.counter == ctx2.counter
+    assert ctx2.state == :paused
+    assert position2 == Context.fetch_object!(ctx2, :t, name).position
+
+    ctx3 = Game.start_event(slug, %Event{name: :toggle_pause, value: nil, id: name})
+    Process.sleep(ctx3.loop_interval)
+    {_pid, ctx3} = Game.ctx(slug)
+    assert ctx3.state == :started
+    assert ctx3.counter == ctx2.counter + 1
+    # ctx = Game.start_event(slug, %Event{name: :toggle_pause, value: nil, id: name})
   end
 
   # test "kill server", %{} do
