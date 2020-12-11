@@ -10,6 +10,8 @@ defmodule BattleCity.Context do
   alias BattleCity.Stage
   alias BattleCity.Tank
 
+  require Logger
+
   @typep state :: :started | :paused | :game_over | :complete
   @type object_struct :: PowerUp.t() | Tank.t() | Bullet.t() | nil
 
@@ -24,9 +26,10 @@ defmodule BattleCity.Context do
   @typep grid :: {rx(), ry(), width(), height(), color()}
 
   @type t :: %__MODULE__{
-          rest_enemies: integer,
-          shovel?: boolean,
+          rest_enemies: integer(),
+          shovel?: boolean(),
           counter: integer(),
+          mock: boolean(),
           loop_interval: integer(),
           timeout_interval: integer(),
           __counters__: map(),
@@ -39,7 +42,7 @@ defmodule BattleCity.Context do
           bullets: %{BattleCity.id() => Bullet.t()}
         }
 
-  @enforce_keys [:stage, :slug, :timeout_interval, :loop_interval]
+  @enforce_keys [:stage, :slug, :timeout_interval, :loop_interval, :mock]
   @derive {SimpleDisplay,
            only: [:rest_enemies, :shovel?, :state, :loop_interval, :timeout_interval]}
   defstruct [
@@ -47,6 +50,7 @@ defmodule BattleCity.Context do
     :slug,
     :loop_interval,
     :timeout_interval,
+    mock: false,
     counter: 0,
     grids: %{},
     tanks: %{},
@@ -146,16 +150,26 @@ defmodule BattleCity.Context do
         } = o
       ) do
     key = Map.fetch!(@object_struct_map, struct)
+    Logger.info("[change] #{ctx.slug} #{key} #{id}")
     data = ctx |> Map.fetch!(key)
 
     action = if Map.has_key?(data, id), do: :update, else: :create
     ctx = Callback.handle(action, o, ctx)
 
     map = data |> Map.put(id, o)
+    %{x: x, y: y, old_x: old_x, old_y: old_y} = Position.normalize(position)
+    fingerprint = Object.fingerprint(o)
+    new_o = objects |> Map.fetch!({x, y}) |> MapSet.put(fingerprint)
 
-    %{x: x, y: y} = Position.normalize(position)
-    o = objects |> Map.fetch!({x, y}) |> MapSet.put(Object.fingerprint(o))
-    Map.merge(ctx, %{key => map, :objects => Map.put(objects, {x, y}, o)})
+    diff =
+      if {old_x, old_y} in [{nil, nil}, {x, y}] do
+        %{{x, y} => new_o}
+      else
+        old_o = objects |> Map.fetch!({old_x, old_y}) |> MapSet.delete(fingerprint)
+        %{{x, y} => new_o, {old_x, old_y} => old_o}
+      end
+
+    Map.merge(ctx, %{key => map, :objects => Map.merge(objects, diff)})
   end
 
   def fetch_object!(ctx, :t, id), do: fetch_object!(ctx, :tanks, id)
@@ -173,6 +187,7 @@ defmodule BattleCity.Context do
           (object_struct -> {object_struct, object_struct})
         ) :: __MODULE__.t()
   def update_object_raw(ctx, key, id, f) do
+    Logger.info("[update] #{ctx.slug} #{key} #{id}")
     {_, data} = ctx |> Map.fetch!(key) |> Map.get_and_update!(id, f)
     Map.put(ctx, key, data)
   end
@@ -183,7 +198,9 @@ defmodule BattleCity.Context do
     {o, data} = Map.pop!(data, id)
     ctx = Callback.handle(:delete, o, ctx)
     xy = {o.position.x, o.position.y}
-    o = objects |> Map.fetch!(xy) |> MapSet.delete(Object.fingerprint(o))
+    Logger.info("[delete] #{ctx.slug} #{key} #{id} #{inspect(xy)}")
+    o = MapSet.delete(objects |> Map.fetch!(xy), Object.fingerprint(o))
+
     ctx |> Map.merge(%{key => data, :objects => Map.put(objects, xy, o)})
   end
 end

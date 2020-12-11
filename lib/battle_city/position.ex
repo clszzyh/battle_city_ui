@@ -45,7 +45,9 @@ defmodule BattleCity.Position do
           __module__: module(),
           direction: direction(),
           x: x(),
+          old_x: x() | nil,
           y: y(),
+          old_y: y() | nil,
           rx: rx(),
           ry: ry(),
           rt: rx_or_ry(),
@@ -56,7 +58,7 @@ defmodule BattleCity.Position do
 
   @keys [:direction, :x, :y, :rx, :ry, :__module__, :__parent__, :color, :width, :height]
   @enforce_keys [:direction, :__module__, :__parent__, :x, :y, :rx, :ry, :color, :width, :height]
-  defstruct @keys ++ [:rt, :t, path: []]
+  defstruct @keys ++ [:rt, :t, :old_x, :old_y, path: []]
 
   @objects for x <- @x_range,
                rem(x, 2) == 0,

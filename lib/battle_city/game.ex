@@ -17,8 +17,10 @@ defmodule BattleCity.Game do
   require Logger
 
   @default_stage 1
-
   @mock_range 0..2
+  @loop_interval 100
+  @timeout_interval 1000 * 60 * 60 * 24
+
   def mock do
     _ = BattleCity.Process.StageCache.start_link([])
 
@@ -29,6 +31,11 @@ defmodule BattleCity.Game do
   def ctx(slug) do
     srv = GameServer.pid(slug)
     {srv, GameServer.ctx(srv)}
+  end
+
+  def loop(slug, times \\ 1) do
+    srv = GameServer.pid(slug)
+    GameServer.loop(srv, times)
   end
 
   @spec start_server(BattleCity.slug(), map()) :: {pid, Context.t()}
@@ -56,9 +63,6 @@ defmodule BattleCity.Game do
     )
   end
 
-  @loop_interval 1000
-  @timeout_interval 1000 * 60 * 60 * 24
-
   @spec do_init(BattleCity.slug(), map()) :: Context.t()
   defp do_init(slug, opts) do
     module = opts |> Map.get(:stage, @default_stage) |> StageCache.fetch_stage()
@@ -66,6 +70,7 @@ defmodule BattleCity.Game do
     tank = opts |> Map.get(:player_tank, Tank.Level1)
     loop_interval = Map.get(opts, :loop_interval, @loop_interval)
     timeout_interval = Map.get(opts, :timeout_interval, @timeout_interval)
+    mock = Map.get(opts, :mock, false)
 
     player =
       opts
@@ -81,6 +86,7 @@ defmodule BattleCity.Game do
     %Context{
       slug: slug,
       stage: stage,
+      mock: mock,
       loop_interval: loop_interval,
       timeout_interval: timeout_interval
     }
@@ -89,8 +95,8 @@ defmodule BattleCity.Game do
     |> Generate.add_bot(opts)
   end
 
-  @spec loop(Context.t()) :: Context.t()
-  def loop(%Context{} = ctx) do
+  @spec loop_ctx(Context.t()) :: Context.t()
+  def loop_ctx(%Context{} = ctx) do
     Telemetry.span(
       :game_loop,
       fn ->

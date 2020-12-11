@@ -14,11 +14,12 @@ defmodule BattleCity.Process.GameServer do
   def pause(srv), do: GenServer.cast(srv, :pause)
   def resume(srv), do: GenServer.cast(srv, :resume)
   def event(srv, event), do: GenServer.call(srv, {:event, event})
+  def loop(srv, times \\ 1), do: GenServer.call(srv, {:loop, times})
 
   @impl true
   def init({slug, opts}) do
     ctx = Game.init(slug, opts)
-    Process.send_after(self(), :loop, ctx.loop_interval)
+    _ = do_loop(ctx)
     {:ok, ctx, ctx.timeout_interval}
   end
 
@@ -42,6 +43,15 @@ defmodule BattleCity.Process.GameServer do
     {:reply, ctx, ctx, ctx.timeout_interval}
   end
 
+  def handle_call({:loop, times}, _, ctx) do
+    ctx =
+      for _ <- 1..times, reduce: ctx do
+        ctx -> Game.loop_ctx(ctx)
+      end
+
+    {:reply, ctx, ctx}
+  end
+
   @impl true
   def handle_cast(:pause, %{state: :started} = ctx), do: do_pause(ctx, :noreply)
   def handle_cast(:pause, ctx), do: {:noreply, ctx, ctx.timeout_interval}
@@ -50,8 +60,8 @@ defmodule BattleCity.Process.GameServer do
 
   @impl true
   def handle_info(:loop, %{state: :started} = ctx) do
-    ctx = Game.loop(ctx)
-    _ = loop(ctx)
+    ctx = Game.loop_ctx(ctx)
+    _ = do_loop(ctx)
     {:noreply, ctx}
   end
 
@@ -77,17 +87,16 @@ defmodule BattleCity.Process.GameServer do
   end
 
   defp do_resume(ctx, :noreply) do
-    _ = loop(ctx)
+    _ = do_loop(ctx)
     {:noreply, %{ctx | state: :started}, ctx.timeout_interval}
   end
 
   defp do_resume(ctx, :reply) do
     ctx = %{ctx | state: :started}
-    _ = loop(ctx)
+    _ = do_loop(ctx)
     {:reply, ctx, ctx, ctx.timeout_interval}
   end
 
-  defp loop(ctx) do
-    Process.send_after(self(), :loop, ctx.loop_interval)
-  end
+  defp do_loop(%{mock: true}), do: :ok
+  defp do_loop(ctx), do: Process.send_after(self(), :loop, ctx.loop_interval)
 end

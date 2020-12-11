@@ -58,13 +58,18 @@ defmodule BattleCity.Environment do
   end
 
   @spec copy_xy(__MODULE__.t(), object) :: object
-  def copy_xy(%{position: %{x: x, y: y}}, %{position: %{path: [_ | rest]} = position} = o) do
-    %{o | position: %{position | x: x, y: y, path: rest}}
+  def copy_xy(
+        %{position: %{x: x, y: y}},
+        %{position: %{path: [_ | rest], x: old_x, y: old_y} = position} = o
+      ) do
+    %{o | position: %{position | x: x, y: y, old_x: old_x, old_y: old_y, path: rest}}
   end
 
   @spec enter(__MODULE__.t(), object) :: enter_result
   def enter(%__MODULE__{enter?: false}, %Tank{}), do: {:error, :forbidden}
-  def enter(%__MODULE__{enter?: false, health: :infinite}, %Bullet{}), do: {:error, :forbidden}
+
+  def enter(%__MODULE__{enter?: false, health: :infinite}, %Bullet{} = bullet),
+    do: {:ok, %{bullet | dead?: true}}
 
   def enter(
         %__MODULE__{enter?: false, health: health, position: %{x: x, y: y}, id: env_id},
