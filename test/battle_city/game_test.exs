@@ -5,7 +5,7 @@ defmodule BattleCity.GameTest do
   alias BattleCity.Context
   alias BattleCity.Event
   alias BattleCity.Game
-  alias BattleCity.Position
+  # alias BattleCity.Position
   # alias BattleCity.Process.GameServer
   # alias BattleCity.Process.ProcessRegistry
   # alias BattleCity.Process.TankDynamicSupervisor
@@ -85,7 +85,7 @@ defmodule BattleCity.GameTest do
     new_bullet = Map.fetch!(ctx1.bullets, "b0")
     new_position = new_bullet.position
     assert new_position.ry == position.ry - new_bullet.speed
-    assert new_position.width == 0.1 * Position.atom() * Position.width()
+    # assert new_position.width == 0.1 * Position.atom() * Position.width()
   end
 
   # test "kill server", %{} do
