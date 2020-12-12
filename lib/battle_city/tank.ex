@@ -42,7 +42,7 @@ defmodule BattleCity.Tank do
 
     @callback name :: atom()
 
-    def __color__, do: "#111111"
+    # def __color__, do: "#111111"
 
     defmacro __using__(opt \\ []) do
       obj = struct(__MODULE__, opt)

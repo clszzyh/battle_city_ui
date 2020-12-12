@@ -80,19 +80,21 @@ defmodule BattleCity.Position do
 
   @width_map %{
     BattleCity.Tank.Base => 0.80,
-    BattleCity.Environment => 0.95,
-    BattleCity.PowerUp => 0.80,
-    BattleCity.Bullet => 0.1
+    BattleCity.Environment => 0.97,
+    BattleCity.PowerUp => 0.70,
+    BattleCity.Bullet => 0.05
   }
 
-  @tank_diff round(
+  @tank_diff Float.round(
                (@width_map[BattleCity.Environment] - @width_map[BattleCity.Tank.Base]) * 0.5 *
                  @width *
-                 @atom
+                 @atom,
+               2
              )
-  @bullet_diff round(
+  @bullet_diff Float.round(
                  (@width_map[BattleCity.Tank.Base] - @width_map[BattleCity.Bullet]) * 0.5 * @width *
-                   @atom
+                   @atom,
+                 2
                )
 
   def objects, do: @objects

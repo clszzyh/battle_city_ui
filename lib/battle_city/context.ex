@@ -69,8 +69,12 @@ defmodule BattleCity.Context do
   end
 
   def map_grids(%__MODULE__{grids: grids}) do
-    for {_, {rx, ry, width, height, color}} <- grids,
-        do: {"rect", rx, ry, width * Position.real_width(), height * Position.real_width(), color}
+    for {_, {rx, ry, width, height, color}} <- grids do
+      """
+      <rect x="#{rx}" y="#{ry}" width="#{width * Position.real_width()}"
+      height="#{height * Position.real_width()}" fill="#{color}" />
+      """
+    end
   end
 
   def object_grids(%__MODULE__{objects: objects} = ctx) do
@@ -82,13 +86,21 @@ defmodule BattleCity.Context do
   end
 
   defp fetch_grid(%Tank{position: p}) do
-    {"rect", p.rx + Position.tank_diff(), p.ry + Position.tank_diff(),
-     p.width * Position.real_width(), p.height * Position.real_width(), p.color}
+    """
+    <rect x="#{p.rx + Position.tank_diff()}" y="#{p.ry + Position.tank_diff()}"
+    width="#{p.width * Position.real_width()}" height="#{p.height * Position.real_width()}"
+    fill="#{p.color}" />
+    """
   end
 
   defp fetch_grid(%Bullet{position: p}) do
-    {"rect", p.rx + Position.bullet_diff(), p.ry + Position.bullet_diff(),
-     p.width * Position.real_width(), p.height * Position.real_width(), p.color}
+    """
+    <rect x="#{p.rx + Position.tank_diff() + Position.bullet_diff()}" y="#{
+      p.ry + Position.tank_diff() + Position.bullet_diff()
+    }"
+    width="#{p.width * Position.real_width()}" height="#{p.height * Position.real_width()}"
+    fill="#{p.color}" />
+    """
   end
 
   def initial_objects(%__MODULE__{stage: %{map: map}} = ctx) do
