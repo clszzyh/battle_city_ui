@@ -52,6 +52,7 @@ defmodule BattleCity.Environment do
 
   @spec copy_rxy(__MODULE__.t(), object) :: object
   def copy_rxy(%{position: %{rx: rx, ry: ry}}, %{position: position} = o) do
+    # {rx, ry} = Position.copy_rxy({rx, ry}, __MODULE__, Tank)
     %{o | position: %{position | rx: rx, ry: ry, path: []}}
   end
 

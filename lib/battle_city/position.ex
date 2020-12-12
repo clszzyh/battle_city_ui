@@ -78,6 +78,23 @@ defmodule BattleCity.Position do
   #          when (d1 == :up and d2 == :down) or (d1 == :down and d2 == :up) or
   #                 (d1 == :left and d2 == :right) or (d1 == :right and d2 == :left)
 
+  @width_map %{
+    BattleCity.Tank.Base => 0.80,
+    BattleCity.Environment => 0.95,
+    BattleCity.PowerUp => 0.80,
+    BattleCity.Bullet => 0.1
+  }
+
+  @tank_diff round(
+               (@width_map[BattleCity.Environment] - @width_map[BattleCity.Tank.Base]) * 0.5 *
+                 @width *
+                 @atom
+             )
+  @bullet_diff round(
+                 (@width_map[BattleCity.Tank.Base] - @width_map[BattleCity.Bullet]) * 0.5 * @width *
+                   @atom
+               )
+
   def objects, do: @objects
   def size, do: @size
   def atom, do: @atom
@@ -85,6 +102,9 @@ defmodule BattleCity.Position do
   def width, do: @width
   def quadrant, do: @size + 1
   def real_quadrant, do: quadrant() * @atom * @width
+  def real_width, do: @width * @atom
+  def tank_diff, do: @tank_diff
+  def bullet_diff, do: @bullet_diff
 
   @spec init(map) :: __MODULE__.t()
   def init(map \\ %{})
@@ -95,19 +115,19 @@ defmodule BattleCity.Position do
   def init(%{x: x} = map) when is_atom(x), do: init(%{map | x: fetch_x(x)})
   def init(%{y: y} = map) when is_atom(y), do: init(%{map | y: fetch_y(y)})
 
-  @width_map %{
-    BattleCity.Tank.Base => 0.90 * @atom * @width,
-    BattleCity.Environment => 0.99 * @atom * @width,
-    BattleCity.PowerUp => 0.90 * @atom * @width,
-    BattleCity.Bullet => 0.1 * @atom * @width
-  }
+  # def copy_rxy({rx, ry}, source, target) do
+  #   source_width = Map.fetch!(@width_map, source)
+  #   target_width = Map.fetch!(@width_map, target)
+  #   diff = (target_width - source_width) * real_width
+  #   {rx + diff, ry + diff}
+  # end
 
-  @height_map %{
-    BattleCity.Tank.Base => 0.90 * @atom * @width,
-    BattleCity.Environment => 0.99 * @atom * @width,
-    BattleCity.PowerUp => 0.90 * @atom * @width,
-    BattleCity.Bullet => 0.1 * @atom * @width
-  }
+  # @height_map %{
+  #   BattleCity.Tank.Base => 0.90,
+  #   BattleCity.Environment => 0.99,
+  #   BattleCity.PowerUp => 0.90,
+  #   BattleCity.Bullet => 0.1
+  # }
 
   def init(%{__module__: module, x: x, y: y, __parent__: parent} = map) do
     map =
@@ -116,7 +136,7 @@ defmodule BattleCity.Position do
         rx: x * @width,
         ry: y * @width,
         width: Map.fetch!(@width_map, parent),
-        height: Map.fetch!(@height_map, parent),
+        height: Map.fetch!(@width_map, parent),
         color: module.__color__()
       })
       |> Map.take(@keys)
@@ -126,7 +146,7 @@ defmodule BattleCity.Position do
 
   def bullet(%__MODULE__{} = position) do
     module = BattleCity.Bullet
-    %{position | width: Map.fetch!(@width_map, module), height: Map.fetch!(@height_map, module)}
+    %{position | width: Map.fetch!(@width_map, module), height: Map.fetch!(@width_map, module)}
   end
 
   defp fetch_diretion(:random), do: Enum.random(@diretions)

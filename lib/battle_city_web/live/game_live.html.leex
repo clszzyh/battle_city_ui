@@ -3,8 +3,8 @@
     <div class="column">
       <svg viewbox="0 0 <%= @quadrant_size %>  <%= @quadrant_size %>">
         <rect x="0" y="0" width="100%" height="100%" fill="#F1F5F8"/>
-        <%= for {x, y, w, h, fill} <- grids(@ctx) do %>
-          <rect x="<%= x %>" y="<%= y %>" width="<%= w %>" height="<%= h %>" fill="<%= fill %>" />
+        <%= for {t, x, y, w, h, fill} <- grids(@ctx) do %>
+          <<%= t %> x="<%= x %>" y="<%= y %>" width="<%= w %>" height="<%= h %>" fill="<%= fill %>" />
         <% end %>
       </svg>
     </div>

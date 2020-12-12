@@ -69,20 +69,26 @@ defmodule BattleCity.Context do
   end
 
   def map_grids(%__MODULE__{grids: grids}) do
-    for {_, {rx, ry, width, height, color}} <- grids, do: {rx, ry, width, height, color}
+    for {_, {rx, ry, width, height, color}} <- grids,
+        do: {"rect", rx, ry, width * Position.real_width(), height * Position.real_width(), color}
   end
 
   def object_grids(%__MODULE__{objects: objects} = ctx) do
     for {_, mapset} <- objects, MapSet.size(mapset) > 0, reduce: [] do
       ary ->
-        o =
-          for {t, id, _} <- mapset do
-            %{position: p} = fetch_object!(ctx, t, id)
-            {p.rx, p.ry, p.width, p.height, p.color}
-          end
-
+        o = for {t, id, _} <- mapset, do: fetch_object!(ctx, t, id) |> fetch_grid()
         ary ++ o
     end
+  end
+
+  defp fetch_grid(%Tank{position: p}) do
+    {"rect", p.rx + Position.tank_diff(), p.ry + Position.tank_diff(),
+     p.width * Position.real_width(), p.height * Position.real_width(), p.color}
+  end
+
+  defp fetch_grid(%Bullet{position: p}) do
+    {"rect", p.rx + Position.bullet_diff(), p.ry + Position.bullet_diff(),
+     p.width * Position.real_width(), p.height * Position.real_width(), p.color}
   end
 
   def initial_objects(%__MODULE__{stage: %{map: map}} = ctx) do
