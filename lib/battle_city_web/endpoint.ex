@@ -11,11 +11,14 @@ defmodule BattleCityWeb.Endpoint do
   ]
 
   socket "/socket", BattleCityWeb.UserSocket,
-    websocket: true,
+    websocket: [compress: true],
     longpoll: false
 
   socket "/live", Phoenix.LiveView.Socket,
-    websocket: [connect_info: [:user_agent, :peer_data, session: @session_options]]
+    websocket: [
+      compress: true,
+      connect_info: [:user_agent, :peer_data, session: @session_options]
+    ]
 
   # Serve at "/" the static files from "priv/static" directory.
   #

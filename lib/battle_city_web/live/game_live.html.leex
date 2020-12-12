@@ -1,12 +1,27 @@
 <div class="container" phx-window-keydown="keydown">
-  <div class="row">
-    <div class="column">
+  <h1 class="text-red-500 text-5xl font-bold text-center">Tailwind CSS</h1>
+
+  <div class="row w-100">
+    <div class="column w-100">
       <svg viewbox="0 0 <%= @quadrant_size %>  <%= @quadrant_size %>">
         <rect x="0" y="0" width="100%" height="100%" fill="#F1F5F8"/>
         <%= for x <- grids(@ctx) do %>
           <%= raw(x) %>
         <% end %>
       </svg>
+    </div>
+    <div class="column">
+      <div>
+        <div>
+          Generation: <span class="number_value"><%= 1 %></span>
+        </div>
+        <div>
+          Alive Cells: <span class="number_value"><%= 2 %></span>
+        </div>
+        <div>
+          Largest Population Seen: <span class="number_value"><%= 3 %></span>
+        </div>
+      </div>
     </div>
   </div>
 </div>

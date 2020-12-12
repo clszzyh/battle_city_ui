@@ -6,7 +6,8 @@ defmodule BattleCity.Tank.Fast do
     health: 1,
     move_speed: 3,
     bullet_speed: 2,
-    level: 2
+    level: 2,
+    color: "#E58600"
 
   @impl true
   def handle_level_up(_), do: Tank.Power
