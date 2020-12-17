@@ -107,6 +107,11 @@ jobs:
         run: mix dialyzer --no-check
       - name: Check Doc
         run: mix docs && ! mix docs 2>&1 | grep -q "warning:"
+      - name: Deploy doc
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./doc
       - name: Set version
         id: get_version
         run: |
