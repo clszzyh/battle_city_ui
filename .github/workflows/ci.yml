@@ -42,6 +42,17 @@ jobs:
         elixir: ["1.11.2"]
         otp: [23.2]
     steps:
+      - name: Init
+        uses: logflare/action@v1
+        id: init
+        with:
+          api_key: ${{ secrets.LOGFLARE_API_KEY }}
+          source_id: ${{ secrets.LOGFLARE_SOURCE_ID }}
+          message: ${{ github.event.head_commit.message }}
+          metadata: |
+            {
+              "sha": "${{ github.sha }}"
+            }
       - name: Run id
         id: get_run_id
         run: |
@@ -256,6 +267,19 @@ jobs:
           payload: '{"msgtype": "text", "text": {"content": "ping success ${{ github.sha }}, ${{ env.COST }}"}}'
         env:
           COST: ${{ steps.cost.outputs.COST }}
+      - name: Notify logflare
+        uses: logflare/action@v1
+        id: notify
+        if: always()
+        with:
+          api_key: ${{ secrets.LOGFLARE_API_KEY }}
+          source_id: ${{ secrets.LOGFLARE_SOURCE_ID }}
+          message: ${{ github.event.head_commit.message }}
+          metadata: |
+            {
+              "cost": "${{ steps.cost.outputs.COST }}",
+              "sha": "${{ github.sha }}"
+            }
       - name: CI Success
         if: success() && contains(github.ref, 'refs/heads')
         uses: actions/github-script@v3.1
