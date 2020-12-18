@@ -10,8 +10,8 @@ use Mix.Config
 # which you should run after static files are built and
 # before starting your production server.
 config :battle_city, BattleCityWeb.Endpoint,
-  url: [scheme: "https", host: "#{System.get_env("APP_NAME")}.gigalixirapp.com", port: 443],
-  check_origin: ["//*.gigalixirapp.com", "//*.clszzyh.com"],
+  url: [scheme: "https", host: "clszzyh.xyz", port: 443],
+  check_origin: ["//*.gigalixirapp.com", "//*.clszzyh.xyz"],
   http: [:inet6, port: System.get_env("PORT") || 4000],
   force_ssl: [rewrite_on: [:x_forwarded_proto]],
   server: true,
