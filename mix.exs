@@ -24,6 +24,12 @@ defmodule BattleCity.MixProject do
           "Changelog" => @github_url <> "/blob/master/CHANGELOG.md"
         }
       ],
+      docs: [
+        source_ref: "v" <> @version,
+        source_url: @github_url,
+        main: "readme",
+        extras: ["README.md", "CHANGELOG.md"]
+      ],
       elixir: "~> 1.7",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
@@ -115,6 +121,7 @@ defmodule BattleCity.MixProject do
         "compile --warnings-as-errors --force --verbose",
         "format --check-formatted",
         "credo --strict",
+        "docs",
         "dialyzer",
         "test"
       ]
