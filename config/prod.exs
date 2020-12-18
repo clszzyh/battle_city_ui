@@ -11,7 +11,8 @@ use Mix.Config
 # before starting your production server.
 config :battle_city, BattleCityWeb.Endpoint,
   url: [scheme: "https", host: "#{System.get_env("APP_NAME")}.gigalixirapp.com", port: 443],
-  check_origin: ["//*.gigalixirapp.com"],
+  check_origin: ["//*.gigalixirapp.com", "//*.clszzyh.com"],
+  force_ssl: [rewrite_on: [:x_forwarded_proto]],
   server: true,
   cache_static_manifest: "priv/static/cache_manifest.json"
 
