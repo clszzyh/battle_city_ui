@@ -7,7 +7,7 @@ defmodule BattleCityWeb.PlayLive do
     ~L"""
     <div>
       <div phx-hook="game" id="game">
-        <canvas phx-update="ignore"> Canvas is not supported! </canvas>
+        <canvas phx-update="ignore" id="canvas"> Canvas is not supported! </canvas>
       </div>
       <div class="buttons">
         <button phx-click="updates_per_second" value="32">30 updates per second</button>
