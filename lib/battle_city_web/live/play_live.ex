@@ -1,5 +1,6 @@
 defmodule BattleCityWeb.PlayLive do
   use BattleCityWeb, :live_view
+  alias BattleCityWeb.Presence
   require Logger
 
   @impl true
@@ -18,7 +19,14 @@ defmodule BattleCityWeb.PlayLive do
   end
 
   @impl true
-  def mount(_, %{"username" => _username, "slug" => _slug}, socket) do
+  def mount(_, %{"username" => username, "slug" => slug}, socket) do
+    Presence.track_slug(socket, slug, %{pid: self(), name: username})
+
+    Presence.track_liveview(
+      socket,
+      %{slug: slug, pid: self(), name: username, id: socket.id}
+    )
+
     {:ok, assign(socket, debug: false, latency: false)}
   end
 
@@ -47,7 +55,7 @@ defmodule BattleCityWeb.PlayLive do
 
   @impl true
   def handle_info(%Phoenix.Socket.Broadcast{event: "presence_diff", payload: _diff}, socket) do
-    Logger.debug("presence_diff #{inspect(self())} #{socket.assigns.slug}")
+    Logger.debug("presence_diff #{inspect(self())}")
     {:noreply, socket}
   end
 
