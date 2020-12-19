@@ -35,6 +35,63 @@ const cubehelix = (s, r, h) => (d) => {
   ];
 };
 
+const update_particles = (data, that) => {
+  let { canvas, colorizer, context, ratio } = that;
+  let particles = JSON.parse(data);
+
+  let halfHeight = canvas.height / 2;
+  let halfWidth = canvas.width / 2;
+  let smallerHalf = Math.min(halfHeight, halfWidth);
+
+  that.j++;
+  if (that.j % 5 === 0) {
+    that.j = 0;
+    let now = performance.now();
+    that.ups = 1 / ((now - (that.upsNow || now)) / 5000);
+    that.upsNow = now;
+  }
+
+  if (that.animationFrameRequest) {
+    cancelAnimationFrame(that.animationFrameRequest);
+  }
+
+  that.animationFrameRequest = requestAnimationFrame(() => {
+    that.animationFrameRequest = undefined;
+
+    fade(canvas, context, 0.5);
+    particles.forEach(([a, x, y]) => {
+      let [r, g, b] = colorizer(a);
+      context.fillStyle = `rgb(${r * 255}, ${g * 255}, ${b * 255})`;
+      context.beginPath();
+      context.arc(
+        halfWidth + x * smallerHalf,
+        halfHeight + y * smallerHalf,
+        a * (smallerHalf / 16),
+        0,
+        2 * Math.PI
+      );
+      context.fill();
+    });
+
+    that.i++;
+    if (that.i % 5 === 0) {
+      that.i = 0;
+      let now = performance.now();
+      that.fps = 1 / ((now - (that.fpsNow || now)) / 5000);
+      that.fpsNow = now;
+    }
+    context.textBaseline = "top";
+    context.font = "20pt monospace";
+    context.fillStyle = "#f0f0f0";
+    context.beginPath();
+    context.rect(0, 0, 260, 80);
+    context.fill();
+    context.fillStyle = "black";
+    context.fillText(`Client FPS: ${Math.round(that.fps)}`, 10, 10);
+    context.fillText(`Server FPS: ${Math.round(that.ups)}`, 10, 40);
+  });
+};
+
 const CanvasHook = {
   mounted() {
     let canvas = this.el.firstElementChild;
@@ -54,62 +111,7 @@ const CanvasHook = {
       fps: 0,
       ups: 0,
     });
-  },
-  updated() {
-    let { canvas, colorizer, context, ratio } = this;
-    let particles = JSON.parse(this.el.dataset.particles);
-
-    let halfHeight = canvas.height / 2;
-    let halfWidth = canvas.width / 2;
-    let smallerHalf = Math.min(halfHeight, halfWidth);
-
-    this.j++;
-    if (this.j % 5 === 0) {
-      this.j = 0;
-      let now = performance.now();
-      this.ups = 1 / ((now - (this.upsNow || now)) / 5000);
-      this.upsNow = now;
-    }
-
-    if (this.animationFrameRequest) {
-      cancelAnimationFrame(this.animationFrameRequest);
-    }
-
-    this.animationFrameRequest = requestAnimationFrame(() => {
-      this.animationFrameRequest = undefined;
-
-      fade(canvas, context, 0.5);
-      particles.forEach(([a, x, y]) => {
-        let [r, g, b] = colorizer(a);
-        context.fillStyle = `rgb(${r * 255}, ${g * 255}, ${b * 255})`;
-        context.beginPath();
-        context.arc(
-          halfWidth + x * smallerHalf,
-          halfHeight + y * smallerHalf,
-          a * (smallerHalf / 16),
-          0,
-          2 * Math.PI
-        );
-        context.fill();
-      });
-
-      this.i++;
-      if (this.i % 5 === 0) {
-        this.i = 0;
-        let now = performance.now();
-        this.fps = 1 / ((now - (this.fpsNow || now)) / 5000);
-        this.fpsNow = now;
-      }
-      context.textBaseline = "top";
-      context.font = "20pt monospace";
-      context.fillStyle = "#f0f0f0";
-      context.beginPath();
-      context.rect(0, 0, 260, 80);
-      context.fill();
-      context.fillStyle = "black";
-      context.fillText(`Client FPS: ${Math.round(this.fps)}`, 10, 10);
-      context.fillText(`Server FPS: ${Math.round(this.ups)}`, 10, 40);
-    });
+    this.handleEvent("particles", ({ data }) => update_particles(data, this));
   },
 };
 

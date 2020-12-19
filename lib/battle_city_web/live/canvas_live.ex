@@ -9,7 +9,7 @@ defmodule BattleCityWeb.CanvasLive do
   def render(assigns) do
     ~L"""
     <div>
-      <div phx-hook="canvas" id="canvas" data-particles="<%= Jason.encode!(@particles) %>">
+      <div phx-hook="canvas" id="canvas">
         <canvas phx-update="ignore"> Canvas is not supported! </canvas>
       </div>
       <div class="buttons">
@@ -25,7 +25,10 @@ defmodule BattleCityWeb.CanvasLive do
     particles = for _ <- 1..@particles, do: create_particle()
     Process.send_after(self(), :update, 16)
 
-    {:ok, socket |> assign(particles: particles, tick: 16)}
+    {:ok,
+     socket
+     |> assign(tick: 16, particles: particles)
+     |> push_event(:particles, %{data: Jason.encode!(particles)})}
   end
 
   def handle_event("updates_per_second", %{"value" => value}, socket) do
@@ -35,7 +38,12 @@ defmodule BattleCityWeb.CanvasLive do
 
   def handle_info(:update, %{assigns: %{particles: particles, tick: tick}} = socket) do
     Process.send_after(self(), :update, tick)
-    {:noreply, assign(socket, :particles, Enum.map(particles, &update_particle/1))}
+    particles = Enum.map(particles, &update_particle/1)
+
+    {:noreply,
+     socket
+     |> assign(particles: particles)
+     |> push_event(:particles, %{data: Jason.encode!(particles)})}
   end
 
   defp create_particle do
