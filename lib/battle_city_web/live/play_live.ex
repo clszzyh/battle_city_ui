@@ -10,8 +10,8 @@ defmodule BattleCityWeb.PlayLive do
         <canvas phx-update="ignore" id="canvas"> Canvas is not supported! </canvas>
       </div>
       <div class="buttons">
-        <button phx-click="invoke", phx-value-k="toggle_debug" phx-value-v="<%= @debug %>">Debug: <%= @debug %></button>
-        <button phx-click="invoke", phx-value-k="toggle_simulate_latency" phx-value-v="<%= @latency %>">Latency: <%= @latency %></button>
+        <button phx-click="toggle_debug", value="<%= @debug %>">Debug: <%= @debug %></button>
+        <button phx-click="toggle_simulate_latency", value="<%= @latency %>">Latency: <%= @latency %></button>
       </div>
     </div>
     """
@@ -23,24 +23,24 @@ defmodule BattleCityWeb.PlayLive do
   end
 
   @impl true
-  def handle_event("invoke", %{"k" => "toggle_debug", "v" => "true"}, socket) do
+  def handle_event("toggle_debug", %{"value" => "true"}, socket) do
     {:noreply, socket |> assign(:debug, false) |> push_event(:toggle_debug, %{value: false})}
   end
 
-  def handle_event("invoke", %{"k" => "toggle_debug", "v" => "false"}, socket) do
+  def handle_event("toggle_debug", %{"value" => "false"}, socket) do
     {:noreply, socket |> assign(:debug, true) |> push_event(:toggle_debug, %{value: true})}
   end
 
   @latency 1000
 
-  def handle_event("invoke", %{"k" => "toggle_simulate_latency", "v" => "false"}, socket) do
+  def handle_event("toggle_simulate_latency", %{"value" => "false"}, socket) do
     {:noreply,
      socket
      |> assign(:latency, @latency)
      |> push_event(:toggle_simulate_latency, %{value: @latency})}
   end
 
-  def handle_event("invoke", %{"k" => "toggle_simulate_latency"}, socket) do
+  def handle_event("toggle_simulate_latency", %{}, socket) do
     {:noreply,
      socket |> assign(:latency, false) |> push_event(:toggle_simulate_latency, %{value: false})}
   end
