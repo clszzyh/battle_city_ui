@@ -12,7 +12,11 @@ use Mix.Config
 config :battle_city, BattleCityWeb.Endpoint,
   url: [scheme: "https", host: "clszzyh.xyz", port: 443],
   check_origin: ["//*.gigalixirapp.com", "//*.clszzyh.xyz"],
-  http: [:inet6, port: System.get_env("PORT") || 4000],
+  http: [
+    :inet6,
+    port: String.to_integer(System.get_env("PORT") || "4000"),
+    transport_options: [socket_opts: [:inet6]]
+  ],
   force_ssl: [rewrite_on: [:x_forwarded_proto]],
   server: true,
   cache_static_manifest: "priv/static/cache_manifest.json"

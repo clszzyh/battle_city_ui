@@ -30,7 +30,8 @@ defmodule BattleCity.MixProject do
         main: "readme",
         extras: ["README.md", "CHANGELOG.md"]
       ],
-      elixir: "~> 1.7",
+      elixir: "~> 1.10",
+      releases: releases(),
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
@@ -46,6 +47,21 @@ defmodule BattleCity.MixProject do
       aliases: aliases(),
       deps: deps()
     ]
+  end
+
+  defp releases do
+    [
+      battle_city: [
+        include_executables_for: [:unix],
+        steps: [:assemble, &copy_extra_files/1],
+        applications: [runtime_tools: :permanent]
+      ]
+    ]
+  end
+
+  defp copy_extra_files(release) do
+    File.cp!(".iex.exs", Path.join(release.path, ".iex.exs"))
+    release
   end
 
   defp dialyzer_flags do
@@ -117,6 +133,7 @@ defmodule BattleCity.MixProject do
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       d: "dialyzer",
+      logs: "cmd gigalixir logs",
       ci: [
         "compile --warnings-as-errors --force --verbose",
         "format --check-formatted",
