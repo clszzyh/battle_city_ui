@@ -165,7 +165,7 @@ defmodule BattleCity.Game do
 
   @spec broadcast(Context.t()) :: Context.t()
   defp broadcast(%Context{} = ctx) do
-    _ = Presence.broadcast_ctx(ctx)
+    _ = Presence.broadcast_ctx(ctx.slug, Context.grids(ctx))
     ctx
   end
 

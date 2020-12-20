@@ -13,8 +13,8 @@ defmodule BattleCityWeb.Presence do
 
   @ctx_event "ctx"
 
-  def broadcast_ctx(ctx) do
-    broadcast_slug(ctx.slug, @ctx_event, ctx)
+  def broadcast_ctx(slug, ctx) do
+    broadcast_slug(slug, @ctx_event, ctx)
   end
 
   def broadcast_endpoint(message, payload) do

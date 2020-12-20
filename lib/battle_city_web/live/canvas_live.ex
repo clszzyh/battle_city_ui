@@ -9,7 +9,7 @@ defmodule BattleCityWeb.CanvasLive do
   def render(assigns) do
     ~L"""
     <div>
-      <div phx-hook="canvas" id="canvas">
+      <div phx-hook="canvas" id="canvas" phx-window-keydown="keydown">
         <canvas phx-update="ignore"> Canvas is not supported! </canvas>
       </div>
       <div class="buttons">
@@ -34,6 +34,10 @@ defmodule BattleCityWeb.CanvasLive do
   def handle_event("updates_per_second", %{"value" => value}, socket) do
     {tick, ""} = Integer.parse(value)
     {:noreply, assign(socket, :tick, tick)}
+  end
+
+  def handle_event(key_type, v, socket) do
+    {:noreply, put_flash(socket, :info, inspect({key_type, v}))}
   end
 
   def handle_info(:update, %{assigns: %{particles: particles, tick: tick}} = socket) do
