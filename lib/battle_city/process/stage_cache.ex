@@ -8,14 +8,16 @@ defmodule BattleCity.Process.StageCache do
   alias BattleCity.Display
 
   def start_link(_) do
-    GenServer.start_link(__MODULE__, nil, name: __MODULE__)
+    modules = BattleCity.Compile.compile_stage!()
+    GenServer.start_link(__MODULE__, modules, name: __MODULE__)
   end
 
   @impl true
-  def init(_) do
-    modules = BattleCity.Compile.compile_stage!()
+  def init(modules) do
     names = for m <- modules, into: MapSet.new(), do: m.name()
     stages = for m <- modules, into: %{}, do: {m.name(), m}
+
+    IO.puts("stages: #{inspect(modules)}")
 
     {:ok, %__MODULE__{names: names, stages: stages}}
   end

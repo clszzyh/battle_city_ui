@@ -31,8 +31,6 @@ defmodule BattleCity.Game do
   @ai BattleCity.Ai.Basic
 
   def mock do
-    _ = BattleCity.Process.StageCache.start_link([])
-
     for i <- @mock_range, do: start_server("mock-#{i}", %{player_name: "player-#{i}"})
   end
 
