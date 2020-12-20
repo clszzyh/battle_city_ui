@@ -13,7 +13,6 @@ defmodule BattleCity.GameTest do
   @moduletag :game
 
   setup_all do
-    _ = BattleCity.Process.StageCache.start_link([])
     []
   end
 

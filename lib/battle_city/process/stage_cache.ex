@@ -22,14 +22,16 @@ defmodule BattleCity.Process.StageCache do
     {:ok, %__MODULE__{names: names, stages: stages}}
   end
 
-  def stages, do: GenServer.call(__MODULE__, :stages)
+  # def stages, do: GenServer.call(__MODULE__, :stages)
+  def stages, do: []
+  def fetch_stage(name), do: Module.concat(BattleCity.Stage, "S#{name}")
 
   def stages_show do
     for {_, s} <- stages(), do: Display.columns(s.init)
   end
 
   def names, do: GenServer.call(__MODULE__, :names)
-  def fetch_stage(name), do: GenServer.call(__MODULE__, {:fetch_stage, name})
+  # def fetch_stage(name), do: GenServer.call(__MODULE__, {:fetch_stage, name})
   def put_stage(module), do: GenServer.cast(__MODULE__, {:put_stage, module})
 
   # @impl true

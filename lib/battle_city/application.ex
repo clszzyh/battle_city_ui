@@ -7,7 +7,7 @@ defmodule BattleCity.Application do
 
   def start(_type, _args) do
     children = [
-      BattleCity.Process.StageCache,
+      # BattleCity.Process.StageCache,
       BattleCity.Process.ProcessRegistry,
       BattleCity.Process.GameDynamicSupervisor,
       # Start the Ecto repository
@@ -25,6 +25,7 @@ defmodule BattleCity.Application do
     ]
 
     _ = if Mix.env() == :prod, do: :ok = BattleCity.Telemetry.attach_default_logger(:debug)
+    _ = BattleCity.Compile.compile_stage!()
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options

@@ -11,7 +11,6 @@ defmodule BattleCity.ProcessTest do
   @moduletag :process
 
   setup_all do
-    _ = BattleCity.Process.StageCache.start_link([])
     []
   end
 
