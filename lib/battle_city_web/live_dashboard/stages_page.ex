@@ -2,8 +2,6 @@ defmodule BattleCityWeb.LiveDashboard.StagesPage do
   @moduledoc false
   use Phoenix.LiveDashboard.PageBuilder
 
-  alias BattleCity.Process.StageCache
-
   @title "Stages"
 
   @impl true
@@ -31,7 +29,7 @@ defmodule BattleCityWeb.LiveDashboard.StagesPage do
   end
 
   defp fetch_processes(params, _node) do
-    stages = StageCache.stages_show()
+    stages = []
 
     {Enum.take(stages, params[:limit]), length(stages)}
   end

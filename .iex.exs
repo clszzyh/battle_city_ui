@@ -15,7 +15,6 @@ alias BattleCity.Process.GameSupervisor
 alias BattleCity.Process.GameDynamicSupervisor
 alias BattleCity.Process.TankDynamicSupervisor
 alias BattleCity.Process.ProcessRegistry
-alias BattleCity.Process.StageCache
 alias BattleCity.Process.TankServer
 alias BattleCity.Process.RandomWord
 alias BattleCityWeb.Presence

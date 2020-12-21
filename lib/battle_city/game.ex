@@ -10,7 +10,6 @@ defmodule BattleCity.Game do
   alias BattleCity.Process.GameDynamicSupervisor
   alias BattleCity.Process.GameServer
   alias BattleCity.Process.ProcessRegistry
-  alias BattleCity.Process.StageCache
   alias BattleCity.Process.TankDynamicSupervisor
   alias BattleCity.Process.TankServer
   alias BattleCity.Tank
@@ -109,7 +108,7 @@ defmodule BattleCity.Game do
   @spec do_init(BattleCity.slug(), map()) :: Context.t()
   defp do_init(slug, opts) do
     level = Map.get(opts, :stage, @default_stage)
-    module = level |> StageCache.fetch_stage()
+    module = Module.concat(BattleCity.Stage, "S#{level}")
     stage = module.init(opts)
     tank = opts |> Map.get(:player_tank, Tank.Level1)
 
