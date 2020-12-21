@@ -11,6 +11,14 @@ defmodule BattleCity do
   alias BattleCity.Context
   alias BattleCity.Tank
 
+  @rev System.get_env("SOURCE_VERSION", "master")
+  @source_url Mix.Project.config()[:docs][:source_url] <> "/commit/" <> @rev
+
+  @version Mix.Project.config()[:version] <> "_" <> @rev
+
+  def source_url, do: @source_url
+  def version, do: @version
+
   @type slug :: binary()
   @type id :: binary() | nil
   @type reason :: atom()
