@@ -24,9 +24,9 @@ defmodule BattleCityWeb.Router do
     live "/canvas", CanvasLive, :index
 
     live "/page", PageLive, :index
-    live "/", PlayLive, :index
-    live "/game", GameLive, :index
-    live "/game/:slug", GameLive, :index
+    live "/", GameLive, :index
+    live "/play", PlayLive, :index
+    live "/play/:slug", PlayLive, :index
   end
 
   # Other scopes may use custom stacks.

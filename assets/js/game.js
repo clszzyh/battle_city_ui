@@ -1,22 +1,5 @@
 import * as CONSTANT from "./constant";
-
-const toggle_debug = (value) => {
-  console.log(`toggle_debug ${value}`);
-  if (value) {
-    liveSocket.enableDebug();
-  } else {
-    liveSocket.disableDebug();
-  }
-};
-
-const toggle_simulate_latency = (value) => {
-  console.log(`toggle_simulate_latency ${value}`);
-  if (value) {
-    liveSocket.enableLatencySim(value);
-  } else {
-    liveSocket.disableLatencySim();
-  }
-};
+import { toggle_simulate_latency, toggle_debug } from "./live_socket";
 
 const draw_entity = (o, that) => {
   // console.error(o);

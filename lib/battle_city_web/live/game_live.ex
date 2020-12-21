@@ -1,91 +1,81 @@
 defmodule BattleCityWeb.GameLive do
   use BattleCityWeb, :live_view
+
   alias BattleCity.Context
-  alias BattleCity.Event
   alias BattleCity.Game
-  alias BattleCity.Position
   alias BattleCityWeb.Presence
   require Logger
 
   @impl true
-  def mount(_params, %{"username" => username, "slug" => slug}, socket) do
-    _ =
-      if connected?(socket) do
-        peer_data =
-          if info = get_connect_info(socket) do
-            info.peer_data |> Map.merge(%{user_agent: info.user_agent})
-          else
-            %{address: nil, port: nil, ssl_cert: nil, user_agent: nil}
-          end
+  def render(assigns) do
+    ~L"""
+    <div>
+      <div phx-hook="game" id="game">
+        <canvas phx-update="ignore" id="canvas"> Canvas is not supported! </canvas>
+      </div>
+      <div style="display: none">
+        <img id="sprites" src="<%= Routes.static_url(BattleCityWeb.Endpoint, "/images/sprites.png") %>" alt="sprites">
+      </div>
+    </div>
+    """
+  end
 
-        connect_params = get_connect_params(socket)
+  #     <div class="buttons">
+  # <button phx-click="toggle_debug", value="<%= @debug %>">Debug: <%= @debug %></button>
+  # <button phx-click="toggle_simulate_latency", value="<%= @latency %>">Latency: <%= @latency %></button>
+  #          </div>
 
-        Logger.debug(
-          "Mount and connected. #{slug} #{inspect(peer_data)}, #{inspect(connect_params)}"
-        )
+  @impl true
+  def mount(_, %{"username" => username, "slug" => slug}, socket) do
+    Presence.track_slug(socket, slug, %{pid: self(), name: username})
 
-        Presence.track_slug(socket, slug, %{pid: self(), name: username})
-
-        Presence.track_liveview(
-          socket,
-          %{slug: slug, pid: self(), name: username, id: socket.id}
-          |> Map.merge(peer_data)
-          |> Map.merge(connect_params)
-        )
-      else
-        Logger.debug("Mount without connected. #{slug}")
-      end
+    Presence.track_liveview(
+      socket,
+      %{slug: slug, pid: self(), name: username, id: socket.id}
+    )
 
     {_pid, ctx} = Game.start_server(slug, %{player_name: username})
 
     {:ok,
-     socket
-     |> assign(
-       page_title: "BattleCity",
-       ctx: ctx,
-       slug: slug,
-       name: username,
-       quadrant_size: Position.real_quadrant()
-     )}
+     assign(socket, slug: slug, username: username, debug: false, latency: false)
+     |> tick(Context.grids(ctx))}
   end
-
-  @handle_down_map %{
-    {"keydown", "ArrowUp"} => {:move, :up},
-    {"keydown", "ArrowDown"} => {:move, :down},
-    {"keydown", "ArrowLeft"} => {:move, :left},
-    {"keydown", "ArrowRight"} => {:move, :right},
-    {"keydown", "Enter"} => {:toggle_pause, nil},
-    {"keydown", " "} => {:shoot, nil}
-  }
-  @handle_down_keys Map.keys(@handle_down_map)
 
   @impl true
-  def handle_event(key_type, %{"key" => key}, %{assigns: %{name: name, ctx: ctx}} = socket)
-      when {key_type, key} in @handle_down_keys do
-    {event_name, value} = Map.fetch!(@handle_down_map, {key_type, key})
-    {_, ctx} = Game.start_event(ctx, %Event{name: event_name, value: value, id: name})
-    {:noreply, assign(socket, :ctx, ctx)}
+  def handle_event("toggle_debug", %{"value" => "true"}, socket) do
+    {:noreply, socket |> assign(:debug, false) |> push_event(:toggle_debug, %{value: false})}
   end
 
-  def handle_event("invoke_call", %{"k" => name, "v" => value}, socket) do
-    {_, ctx} = Game.invoke_call(socket.assigns.slug, {name, value})
-    {:noreply, assign(socket, :ctx, ctx)}
+  def handle_event("toggle_debug", %{"value" => "false"}, socket) do
+    {:noreply, socket |> assign(:debug, true) |> push_event(:toggle_debug, %{value: true})}
   end
 
-  def handle_event(event, name, socket) do
-    Logger.debug("event #{inspect(self())} #{event} #{inspect(name)} #{socket.assigns.slug}")
-    {:noreply, socket}
+  @latency 1000
+
+  def handle_event("toggle_simulate_latency", %{"value" => "false"}, socket) do
+    {:noreply,
+     socket
+     |> assign(:latency, @latency)
+     |> push_event(:toggle_simulate_latency, %{value: @latency})}
   end
+
+  def handle_event("toggle_simulate_latency", %{}, socket) do
+    {:noreply,
+     socket |> assign(:latency, false) |> push_event(:toggle_simulate_latency, %{value: false})}
+  end
+
+  # def handle_event(key_type, v, socket) do
+  #   {:noreply, put_flash(socket, :info, inspect({key_type, v}))}
+  # end
 
   @impl true
   def handle_info(%Phoenix.Socket.Broadcast{event: "presence_diff", payload: _diff}, socket) do
-    Logger.debug("presence_diff #{inspect(self())} #{socket.assigns.slug}")
+    Logger.debug("presence_diff #{inspect(self())}")
     {:noreply, socket}
   end
 
-  def handle_info(%Phoenix.Socket.Broadcast{event: "ctx", payload: ctx}, socket) do
-    # Logger.debug("ping")
-    {:noreply, assign(socket, :ctx, ctx)}
+  def handle_info(%Phoenix.Socket.Broadcast{event: "ctx", payload: grids}, socket) do
+    {:noreply, tick(socket, grids)}
   end
 
   def handle_info(name, socket) do
@@ -98,5 +88,7 @@ defmodule BattleCityWeb.GameLive do
     Logger.debug("terminate: #{inspect(self())} #{inspect(reason)}")
   end
 
-  defp grids(ctx), do: Context.grids(ctx)
+  defp tick(socket, grids) do
+    push_event(socket, :tick, %{value: grids})
+  end
 end
