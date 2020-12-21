@@ -21,9 +21,9 @@ defmodule BattleCityWeb.PlayLive do
   end
 
   # <div class="buttons">
-  #         <button phx-click="toggle_debug", value="<%= @debug %>">Debug: <%= @debug %></button>
-  #         <button phx-click="toggle_simulate_latency", value="<%= @latency %>">Latency: <%= @latency %></button>
-  #                  </div>
+  #   <button phx-click="toggle_debug", value="<%= @debug %>">Debug: <%= @debug %></button>
+  #   <button phx-click="toggle_simulate_latency", value="<%= @latency %>">Latency: <%= @latency %></button>
+  #            </div>
 
   @impl true
   def mount(_, %{"username" => username, "slug" => slug}, socket) do
@@ -89,6 +89,6 @@ defmodule BattleCityWeb.PlayLive do
   end
 
   defp tick(socket, grids) do
-    push_event(socket, :tick, %{data: grids})
+    push_event(socket, :tick, %{value: grids})
   end
 end

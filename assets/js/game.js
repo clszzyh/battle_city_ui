@@ -1,3 +1,5 @@
+import * as CONSTANT from "./constant";
+
 const toggle_debug = (value) => {
   console.log(`toggle_debug ${value}`);
   if (value) {
@@ -17,7 +19,7 @@ const toggle_simulate_latency = (value) => {
 };
 
 const draw_entity = (o, that) => {
-  // console.log(o);
+  // console.error(o);
 };
 
 const draw = (data, that) => {
@@ -94,7 +96,7 @@ const GameHook = {
     this.handleEvent("toggle_simulate_latency", ({ value }) =>
       toggle_simulate_latency(value)
     );
-    this.handleEvent("tick", ({ data }) => tick(data, this));
+    this.handleEvent("tick", ({ value }) => tick(value, this));
   },
 };
 export default GameHook;
