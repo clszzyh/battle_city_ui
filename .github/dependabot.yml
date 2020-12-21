@@ -4,6 +4,12 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "daily"
+  - package-ecosystem: "npm"
+    directory: "/assets"
+    schedule:
+      interval: "daily"
+    commit-message:
+      prefix: dependabot
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
@@ -11,4 +17,4 @@ updates:
     labels:
       - "CI/CD"
     commit-message:
-      prefix: ci
+      prefix: dependabot
