@@ -9,14 +9,12 @@ defmodule BattleCityWeb.GameLive do
   @impl true
   def render(assigns) do
     ~L"""
-    <div>
       <div phx-hook="game" id="game">
         <canvas phx-update="ignore" id="canvas"> Canvas is not supported! </canvas>
+        <div style="display: none">
+          <img id="sprites" src="<%= Routes.static_url(BattleCityWeb.Endpoint, "/images/sprites.png") %>">
+        </div>
       </div>
-      <div style="display: none">
-        <img id="sprites" src="<%= Routes.static_url(BattleCityWeb.Endpoint, "/images/sprites.png") %>" alt="sprites">
-      </div>
-    </div>
     """
   end
 

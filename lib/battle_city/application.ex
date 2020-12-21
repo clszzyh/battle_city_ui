@@ -30,7 +30,7 @@ defmodule BattleCity.Application do
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: BattleCity.Supervisor]
     result = Supervisor.start_link(children, opts)
-    _ = if Mix.env() == :dev, do: BattleCity.Game.mock()
+    # _ = if Mix.env() == :dev, do: BattleCity.Game.mock()
     result
   end
 

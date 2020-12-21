@@ -50,6 +50,9 @@ defmodule BattleCity.StructCollect do
         end
       end
 
+      @name BattleCity.Utils.module_name(unquote(current_module))
+      def __name__, do: @name
+
       defoverridable unquote(behaviour_module)
     end
   end

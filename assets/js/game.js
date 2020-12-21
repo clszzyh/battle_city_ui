@@ -2,7 +2,42 @@ import * as CONSTANT from "./constant";
 import { toggle_simulate_latency, toggle_debug } from "./live_socket";
 
 const draw_entity = (o, that) => {
-  // console.error(o);
+  let width;
+  let height;
+  let rect;
+  switch (o.type) {
+    case "t":
+      rect = CONSTANT.TANK_IMAGE[o.kind][o.d];
+      width = 2 * CONSTANT.TANK_RADIUS;
+      height = 2 * CONSTANT.TANK_RADIUS;
+      break;
+    case "b":
+      rect = CONSTANT.BULLET_IMAGE[o.d];
+      width = 2 * CONSTANT.BULLET_RADIUS;
+      height = 2 * CONSTANT.BULLET_RADIUS;
+      break;
+    case "e":
+      rect = CONSTANT.BUILDING_IMAGE[o.kind];
+      width = 2 * CONSTANT.BUILDING_RADIUS;
+      height = 2 * CONSTANT.BUILDING_RADIUS;
+      break;
+    default:
+      console.log(o);
+  }
+
+  if (rect) {
+    that.context.drawImage(
+      that.sprites,
+      rect[0],
+      rect[1],
+      rect[2],
+      rect[3],
+      o.x - width / 2,
+      o.y - height / 2,
+      width,
+      height
+    );
+  }
 };
 
 const draw = (data, that) => {
@@ -46,22 +81,24 @@ const tick = (data, that) => {
       that.fps = 1 / ((now - (that.fpsNow || now)) / 5000);
       that.fpsNow = now;
     }
-    context.textBaseline = "top";
-    context.font = "20pt monospace";
-    context.fillStyle = "#f0f0f0";
-    context.beginPath();
-    context.rect(0, 0, 260, 80);
-    context.fill();
-    context.fillStyle = "black";
-    context.fillText(`Client FPS: ${Math.round(that.fps)}`, 10, 10);
-    context.fillText(`Server FPS: ${Math.round(that.ups)}`, 10, 40);
+
+    // context.textBaseline = "top";
+    // context.font = "20pt monospace";
+    // context.fillStyle = "#f0f0f0";
+    // context.beginPath();
+    // context.rect(0, 0, 260, 80);
+    // context.fill();
+    // context.fillStyle = "black";
+
+    // context.fillText(`Client FPS: ${Math.round(that.fps)}`, 10, 10);
+    // context.fillText(`Server FPS: ${Math.round(that.ups)}`, 10, 40);
   });
 };
 
 const GameHook = {
   mounted() {
-    let canvas = this.el.querySelector("canvas");
-    let sprites = this.el.querySelector("sprites");
+    let canvas = this.el.querySelector("#canvas");
+    let sprites = this.el.querySelector("#sprites");
     let context = canvas.getContext("2d");
     context.canvas.width = window.innerWidth;
     context.canvas.height = window.innerHeight;

@@ -9,7 +9,6 @@ defmodule BattleCity.Tank do
   alias BattleCity.Config
   alias BattleCity.Position
   alias BattleCity.Process.GameSupervisor
-  alias BattleCity.Utils
   alias __MODULE__
 
   @type health :: 1..10
@@ -47,8 +46,6 @@ defmodule BattleCity.Tank do
     @callback new() :: Tank.t()
     @callback new(map) :: Tank.t()
 
-    @callback name :: atom()
-
     defmacro __using__(opt \\ []) do
       obj = struct(__MODULE__, opt)
       keys = Map.keys(Tank.__struct__())
@@ -58,9 +55,6 @@ defmodule BattleCity.Tank do
 
         @impl true
         def handle_level_up(_), do: nil
-
-        @impl true
-        def name, do: Utils.module_name(__MODULE__)
 
         @impl true
         def new(map \\ %{}) do
