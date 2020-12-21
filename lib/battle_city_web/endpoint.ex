@@ -24,11 +24,20 @@ defmodule BattleCityWeb.Endpoint do
   #
   # You should set gzip to true if you are running phx.digest
   # when deploying your static files in production.
-  plug Plug.Static,
-    at: "/",
-    from: :battle_city,
-    gzip: true,
-    only: ~w(css fonts images js favicon.ico robots.txt)
+
+  if Mix.env() == :prod do
+    plug Plug.Static,
+      at: "/",
+      from: :battle_city,
+      gzip: true,
+      only: ~w(css fonts images js favicon.ico robots.txt)
+  else
+    plug Plug.Static,
+      at: "/",
+      from: :battle_city,
+      gzip: false,
+      only: ~w(css fonts images js favicon.ico robots.txt)
+  end
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
