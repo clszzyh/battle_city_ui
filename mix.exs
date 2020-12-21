@@ -9,6 +9,12 @@ defmodule BattleCity.MixProject do
                |> Enum.fetch!(1)
                |> String.trim()
 
+  @licenses "LICENSE"
+            |> File.read!()
+            |> String.split("\n", trim: true)
+            |> List.first()
+            |> List.wrap()
+
   def project do
     [
       app: :battle_city,
@@ -16,7 +22,7 @@ defmodule BattleCity.MixProject do
       description: @description,
       elixirc_options: [warnings_as_errors: System.get_env("CI") == "true"],
       package: [
-        licenses: ["MIT"],
+        licenses: @licenses,
         files: ["lib", ".formatter.exs", "mix.exs", "README*", "CHANGELOG*", "VERSION"],
         exclude_patterns: ["priv/plts", ".DS_Store"],
         links: %{
