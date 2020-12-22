@@ -38,11 +38,18 @@ defmodule BattleCity.Ai do
   def move(_, nil, _), do: nil
   def move(_, %Tank{dead?: true}, _), do: nil
   def move(_, %Tank{freezed?: true}, _), do: nil
-  def move(ctx, tank, event), do: ctx.ai.handle_move(ctx, tank, event)
+
+  def move(ctx, tank, event),
+    do: ctx.ai.handle_move(ctx, tank, event) |> handle_result(ctx, event)
 
   @spec shoot(Context.t(), Tank.t() | nil, maybe_event) :: maybe_event
   def shoot(_, nil, _), do: nil
   def shoot(_, %Tank{dead?: true}, _), do: nil
   def shoot(_, %Tank{shootable?: false}, _), do: nil
-  def shoot(ctx, tank, event), do: ctx.ai.handle_shoot(ctx, tank, event)
+
+  def shoot(ctx, tank, event),
+    do: ctx.ai.handle_shoot(ctx, tank, event) |> handle_result(ctx, event)
+
+  defp handle_result(nil, _, _), do: nil
+  defp handle_result(%Event{} = event, _, _), do: event
 end
