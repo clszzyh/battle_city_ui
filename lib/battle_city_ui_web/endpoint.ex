@@ -11,20 +11,35 @@ defmodule BattleCityUiWeb.Endpoint do
   ]
 
   socket "/socket", BattleCityUiWeb.UserSocket,
-    websocket: true,
+    websocket: [compress: true],
     longpoll: false
 
-  socket "/live", Phoenix.LiveView.Socket, websocket: [connect_info: [session: @session_options]]
+  socket "/live", Phoenix.LiveView.Socket,
+    websocket: [
+      compress: true,
+      connect_info: [:user_agent, :peer_data, session: @session_options]
+    ]
 
   # Serve at "/" the static files from "priv/static" directory.
   #
   # You should set gzip to true if you are running phx.digest
   # when deploying your static files in production.
-  plug Plug.Static,
-    at: "/",
-    from: :battle_city_ui,
-    gzip: false,
-    only: ~w(css fonts images js favicon.ico robots.txt)
+
+  if Mix.env() == :prod do
+    plug Plug.Static,
+      at: "/",
+      from: :battle_city_ui,
+      cache_control_for_etags: "public, max-age=2592000",
+      gzip: true,
+      brotli: true,
+      only: ~w(css fonts images audio js favicon.ico robots.txt)
+  else
+    plug Plug.Static,
+      at: "/",
+      from: :battle_city_ui,
+      gzip: false,
+      only: ~w(css fonts images audio js favicon.ico robots.txt)
+  end
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.

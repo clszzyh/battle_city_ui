@@ -4,7 +4,7 @@ use Mix.Config
 config :battle_city_ui, BattleCityUi.Repo,
   username: "postgres",
   password: "postgres",
-  database: "battle_city_ui_dev",
+  database: "battle_city_dev",
   hostname: "localhost",
   show_sensitive_data_on_connection_error: true,
   pool_size: 10

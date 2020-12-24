@@ -2,11 +2,28 @@
 @import "./phoenix.css";
 @import "../node_modules/nprogress/nprogress.css";
 
+@tailwind base;
+
+@tailwind components;
+
+@tailwind utilities;
+
+
 /* LiveView specific classes for your customizations */
 .phx-no-feedback.invalid-feedback,
 .phx-no-feedback .invalid-feedback {
   display: none;
 }
+
+.disable-scrollbars {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* IE 10+ */
+  &::-webkit-scrollbar {
+    width: 0px;
+    background: transparent; /* Chrome/Safari/Webkit */
+  }
+}
+
 
 .phx-click-loading {
   opacity: 0.5;

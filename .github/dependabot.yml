@@ -1,0 +1,20 @@
+version: 2
+updates:
+  - package-ecosystem: "mix"
+    directory: "/" # Location of package manifests
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "npm"
+    directory: "/assets"
+    schedule:
+      interval: "daily"
+    commit-message:
+      prefix: dependabot
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    labels:
+      - "CI/CD"
+    commit-message:
+      prefix: dependabot

@@ -48,6 +48,10 @@ defmodule BattleCityUiWeb do
         layout: {BattleCityUiWeb.LayoutView, "live.html"}
 
       unquote(view_helpers())
+
+      alias BattleCityUiWeb.Presence
+      alias Phoenix.Socket.Broadcast
+      require Logger
     end
   end
 

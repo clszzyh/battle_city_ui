@@ -7,22 +7,20 @@ defmodule BattleCityUi.Application do
 
   def start(_type, _args) do
     children = [
-      # Start the Ecto repository
       BattleCityUi.Repo,
-      # Start the Telemetry supervisor
       BattleCityUiWeb.Telemetry,
-      # Start the PubSub system
       {Phoenix.PubSub, name: BattleCityUi.PubSub},
-      # Start the Endpoint (http/https)
-      BattleCityUiWeb.Endpoint
-      # Start a worker by calling: BattleCityUi.Worker.start_link(arg)
-      # {BattleCityUi.Worker, arg}
+      BattleCityUiWeb.Presence,
+      BattleCityUiWeb.Endpoint,
+      {BattleCityUi.TelemetryStorage, BattleCityUiWeb.Telemetry.metrics()}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: BattleCityUi.Supervisor]
-    Supervisor.start_link(children, opts)
+    result = Supervisor.start_link(children, opts)
+    # _ = if Mix.env() == :dev, do: BattleCity.Game.mock()
+    result
   end
 
   # Tell Phoenix to update the endpoint configuration
