@@ -32,8 +32,8 @@ const draw_entity = (o, that) => {
       rect[1],
       rect[2],
       rect[3],
-      o.x - width / 2,
-      o.y - height / 2,
+      o.x * 32 - width / 2,
+      o.y * 32 - height / 2,
       width,
       height
     );

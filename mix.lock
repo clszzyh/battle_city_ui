@@ -1,5 +1,5 @@
 %{
-  "battle_city": {:hex, :battle_city, "0.1.4", "e101b8362a8a8ee4fed87ff67870061bdb38b6775b7c23ab9cef61fca27673b0", [:mix], [{:jason, "~> 1.0", [hex: :jason, repo: "hexpm", optional: false]}, {:telemetry, "~> 0.4.0", [hex: :telemetry, repo: "hexpm", optional: false]}], "hexpm", "e08a001a0afbbef7958ef254330fb2e7cb1c6caea3fbbbe88d2f86c1e427088f"},
+  "battle_city": {:git, "https://github.com/clszzyh/battle_city.git", "dc0a51ef52d87d812c77c6b397bbe38e8fb5b3a5", []},
   "bunt": {:hex, :bunt, "0.2.0", "951c6e801e8b1d2cbe58ebbd3e616a869061ddadcc4863d0a2182541acae9a38", [:mix], [], "hexpm", "7af5c7e09fe1d40f76c8e4f9dd2be7cebd83909f31fee7cd0e9eadc567da8353"},
   "circular_buffer": {:hex, :circular_buffer, "0.3.0", "3eaa7e349ab07cff53dd1c25eb179ac14913fe1e407762260402a291dac4af96", [:mix], [], "hexpm", "f582b2ce394f8965cadf43c5b140f399b83dc8404aef701cb41c928c4bac1943"},
   "connection": {:hex, :connection, "1.1.0", "ff2a49c4b75b6fb3e674bfc5536451607270aac754ffd1bdfe175abe4a6d7a68", [:mix], [], "hexpm", "722c1eb0a418fbe91ba7bd59a47e28008a189d47e37e0e7bb85585a016b2869c"},

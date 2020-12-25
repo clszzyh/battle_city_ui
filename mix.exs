@@ -109,7 +109,7 @@ defmodule BattleCityUi.MixProject do
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
-      {:battle_city, "~> 0.1.0"},
+      {:battle_city, github: "clszzyh/battle_city"},
       {:ecto_psql_extras, "~> 0.2"},
       {:circular_buffer, "~> 0.3.0"},
       {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
