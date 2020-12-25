@@ -31,8 +31,8 @@ const draw_entity = (o, that) => {
       rect[1],
       rect[2] || 64,
       rect[3] || 64,
-      o.x * grid_size + (grid_size - size / 2),
-      o.y * grid_size + (grid_size - size / 2),
+      o.x * grid_size / 8 + (grid_size - size / 2),
+      o.y * grid_size / 8 + (grid_size - size / 2),
       size,
       size
     );
@@ -40,12 +40,17 @@ const draw_entity = (o, that) => {
 };
 
 const draw = (data, that) => {
-  that.context.clearRect(
-    0,
-    0,
-    that.context.canvas.width,
-    that.context.canvas.height
-  );
+  let { context } = that;
+  // let width = that.game_width();
+  let width = context.canvas.width;
+  let height = context.canvas.height;
+  context.clearRect(0, 0, width, height);
+  context.font = "20px monospace";
+  context.fillStyle = "white";
+  context.fillText("123", 20, 30);
+  context.fillStyle = "black";
+  context.fillRect(0, 0, width, height);
+
   data.forEach((o) => draw_entity(o, that));
 };
 
@@ -105,13 +110,16 @@ export const GameHook = {
   size() {
     return this.el.dataset.size;
   },
+  game_width() {
+    return this.size() * CONSTANT.GRID_COUNT;
+  },
   mounted() {
     let canvas = this.el.querySelector("#canvas");
     let sprites = this.el.querySelector("#sprites");
     let context = canvas.getContext("2d");
     let grid_size = this.size();
-    context.canvas.width = CONSTANT.GRID_COUNT * grid_size;
-    context.canvas.height = CONSTANT.GRID_COUNT * grid_size;
+    context.canvas.width = window.innerWidth;
+    context.canvas.height = window.innerHeight;
 
     Object.assign(this, {
       canvas,

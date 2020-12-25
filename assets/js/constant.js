@@ -2,10 +2,10 @@ export const GRID_COUNT = 26;
 
 export const TANK_IMAGE = {
   level1: {
-    up: [4, 8],
-    down: [264, 4],
-    left: [136, 4],
-    right: [392, 4],
+    up: [0, 0],
+    down: [264, 0],
+    left: [136, 0],
+    right: [392, 0],
   },
   basic: {
     up: [524, 264],

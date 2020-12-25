@@ -16,7 +16,7 @@ defmodule BattleCityUiWeb.GameLive do
       data-bullet_grids="<%= Jason.encode!(@bullet_grids) %>"
       data-map_grids="<%= Jason.encode!(@map_grids) %>"
     >
-      <canvas style="margin: 0 auto;background-color: black" phx-update="ignore" id="canvas"> Canvas is not supported! </canvas>
+      <canvas style="margin: 0 auto;" phx-update="ignore" id="canvas"> Canvas is not supported! </canvas>
       <div style="display: none">
         <%= for "assets/static/audio/" <> name <- Path.wildcard("assets/static/audio/*.{mp3,ogg}") do %>
           <audio
@@ -38,7 +38,7 @@ defmodule BattleCityUiWeb.GameLive do
       Logger.debug("Mount without connected. #{slug}")
     end
 
-    {_pid, ctx} = Game.start_server(slug, %{player_name: username, stage: 1})
+    {_pid, ctx} = Game.start_server(slug, %{player_name: username, stage: 1, loop_interval: 100})
 
     Game.invoke_call(slug, :pause)
 
