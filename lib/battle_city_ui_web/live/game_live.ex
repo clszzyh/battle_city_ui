@@ -97,6 +97,16 @@ defmodule BattleCityUiWeb.GameLive do
      |> push_event(:toggle_simulate_latency, %{value: latency})}
   end
 
+  def handle_event("keydown", %{"key" => "-"}, %{assigns: assigns} = socket) do
+    {_, ctx} = Game.invoke_call(assigns.slug, {"reset", %{stage: assigns.level - 1}})
+    {:noreply, tick(socket, ctx)}
+  end
+
+  def handle_event("keydown", %{"key" => "+"}, %{assigns: assigns} = socket) do
+    {_, ctx} = Game.invoke_call(assigns.slug, {"reset", %{stage: assigns.level + 1}})
+    {:noreply, tick(socket, ctx)}
+  end
+
   def handle_event("keydown", %{"key" => key}, socket) do
     Logger.debug("#{socket.assigns.slug} keydown #{key}")
     {:noreply, socket}
@@ -145,6 +155,7 @@ defmodule BattleCityUiWeb.GameLive do
       socket
       |> assign(
         ctx: ctx,
+        level: ctx.level,
         map_grids: map_grids,
         bullet_grids: bullet_grids,
         tank_grids: tank_grids

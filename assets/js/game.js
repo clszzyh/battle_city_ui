@@ -7,15 +7,15 @@ const draw_entity = (o, that) => {
   let size;
   switch (o.type) {
     case "t":
-      rect = CONSTANT.TANK_IMAGE[o.kind][o.d];
+      rect = CONSTANT.TANK_IMAGE[o.kind][o.d] || console.error(o);
       size = grid_size * 2;
       break;
     case "b":
-      rect = CONSTANT.BULLET_IMAGE[o.d];
+      rect = CONSTANT.BULLET_IMAGE[o.d] || console.error(o);
       size = grid_size / 3;
       break;
     case "e":
-      rect = CONSTANT.BUILDING_IMAGE[o.kind];
+      rect = CONSTANT.BUILDING_IMAGE[o.kind][o.d] || console.error(o);
       size = grid_size * 2;
       break;
     default:
@@ -31,8 +31,8 @@ const draw_entity = (o, that) => {
       rect[1],
       rect[2] || 64,
       rect[3] || 64,
-      o.x * grid_size / 8 + (grid_size - size / 2),
-      o.y * grid_size / 8 + (grid_size - size / 2),
+      (o.x * grid_size) / 8 + (grid_size - size / 2),
+      (o.y * grid_size) / 8 + (grid_size - size / 2),
       size,
       size
     );
