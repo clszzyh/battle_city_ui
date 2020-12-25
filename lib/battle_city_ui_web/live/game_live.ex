@@ -20,9 +20,9 @@ defmodule BattleCityUiWeb.GameLive do
         <%= for "assets/static/audio/" <> name <- Path.wildcard("assets/static/audio/*.{mp3,ogg}") do %>
           <audio
             id="<%= name |> String.split(".") |> List.first %>"
-            src="<%= Routes.static_url(BattleCityWeb.Endpoint, "/audio/#{name}") %>"></audio>
+            src="<%= Routes.static_url(BattleCityUiWeb.Endpoint, "/audio/#{name}") %>"></audio>
         <% end %>
-        <img id="sprites" src="<%= Routes.static_url(BattleCityWeb.Endpoint, "/images/sprites.png") %>"/>
+        <img id="sprites" src="<%= Routes.static_url(BattleCityUiWeb.Endpoint, "/images/sprites.png") %>"/>
       </div>
     </div>
     """

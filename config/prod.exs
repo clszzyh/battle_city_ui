@@ -10,7 +10,7 @@ use Mix.Config
 # which you should run after static files are built and
 # before starting your production server.
 
-config :battle_city_ui, BattleCityWeb.Endpoint,
+config :battle_city_ui, BattleCityUiWeb.Endpoint,
   url: [scheme: "https", host: "clszzyh.xyz", port: 443],
   check_origin: ["//*.gigalixirapp.com", "//*.clszzyh.xyz", "//localhost:4000"],
   http: [
