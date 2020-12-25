@@ -14,10 +14,19 @@ defmodule BattleCityUiWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", BattleCityUiWeb do
-    pipe_through :browser
+  pipeline :set_name do
+    plug BattleCityUiWeb.SetName
+  end
 
-    live "/", PageLive, :index
+  scope "/", BattleCityUiWeb do
+    pipe_through [:browser, :set_name]
+
+    live "/canvas", CanvasLive, :index
+
+    live "/page", PageLive, :index
+    live "/", GameLive, :index
+    live "/play", PlayLive, :index
+    live "/play/:slug", PlayLive, :index
   end
 
   # Other scopes may use custom stacks.
@@ -32,12 +41,23 @@ defmodule BattleCityUiWeb.Router do
   # If your application does not have an admins-only section yet,
   # you can use Plug.BasicAuth to set up some basic authentication
   # as long as you are also using SSL (which you should anyway).
-  if Mix.env() in [:dev, :test] do
+  if Mix.env() in [:dev, :test, :prod] do
     import Phoenix.LiveDashboard.Router
 
     scope "/" do
       pipe_through :browser
-      live_dashboard "/dashboard", metrics: BattleCityUiWeb.Telemetry
+
+      live_dashboard "/dashboard",
+        metrics: BattleCityUiWeb.Telemetry,
+        ecto_repos: [BattleCityUi.Repo],
+        metrics_history: {BattleCityUi.TelemetryStorage, :metrics_history, []},
+        allow_destructive_actions: true,
+        additional_pages: [
+          process_registry: BattleCityUiWeb.LiveDashboard.ProcessRegistryPage,
+          game_servers: BattleCityUiWeb.LiveDashboard.GameServersPage,
+          stages: BattleCityUiWeb.LiveDashboard.StagesPage,
+          presence: BattleCityUiWeb.LiveDashboard.PresencePage
+        ]
     end
   end
 end
