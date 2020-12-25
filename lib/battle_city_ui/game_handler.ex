@@ -12,8 +12,13 @@ defmodule BattleCityUi.GameHandler do
   end
 
   @impl true
-  def handle_event(ctx, id) do
-    :ok = Presence.broadcast_slug(ctx.slug, "play_audio", id)
+  def handle_event(ctx, :start) do
+    :ok = Presence.broadcast_slug(ctx.slug, "play_audio", "start")
+    ctx
+  end
+
+  def handle_event(ctx, :pause) do
+    :ok = Presence.broadcast_slug(ctx.slug, "play_audio", "pause")
     ctx
   end
 end
