@@ -97,13 +97,15 @@ defmodule BattleCityUiWeb.GameLive do
      |> push_event(:toggle_simulate_latency, %{value: latency})}
   end
 
-  def handle_event("keydown", %{"key" => "-"}, %{assigns: assigns} = socket) do
-    {_, ctx} = Game.invoke_call(assigns.slug, {"reset", %{stage: assigns.level - 1}})
+  def handle_event("keydown", %{"key" => "-"}, %{assigns: %{level: level, slug: slug}} = socket)
+      when level > 0 do
+    {_, ctx} = Game.invoke_call(slug, {"reset", %{stage: level - 1}})
     {:noreply, tick(socket, ctx)}
   end
 
-  def handle_event("keydown", %{"key" => "+"}, %{assigns: assigns} = socket) do
-    {_, ctx} = Game.invoke_call(assigns.slug, {"reset", %{stage: assigns.level + 1}})
+  def handle_event("keydown", %{"key" => "+"}, %{assigns: %{level: level, slug: slug}} = socket)
+      when level < 34 do
+    {_, ctx} = Game.invoke_call(slug, {"reset", %{stage: level + 1}})
     {:noreply, tick(socket, ctx)}
   end
 
