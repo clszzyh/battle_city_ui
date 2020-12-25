@@ -10,7 +10,9 @@ use Mix.Config
 config :battle_city_ui,
   ecto_repos: [BattleCityUi.Repo]
 
-config :battle_city, callback_module: BattleCityUi.GameHandler
+config :battle_city,
+  callback_module: BattleCityUi.GameHandler,
+  telemetry_logger: false
 
 # Configures the endpoint
 config :battle_city_ui, BattleCityUiWeb.Endpoint,
