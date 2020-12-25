@@ -2,40 +2,35 @@ import * as CONSTANT from "./constant";
 import { toggle_simulate_latency, toggle_debug } from "./live_socket";
 
 const draw_entity = (o, that) => {
-  let width;
-  let height;
+  let { grid_size, context, sprites } = that;
   let rect;
   switch (o.type) {
     case "t":
       rect = CONSTANT.TANK_IMAGE[o.kind][o.d];
-      width = 2 * CONSTANT.TANK_RADIUS;
-      height = 2 * CONSTANT.TANK_RADIUS;
       break;
     case "b":
       rect = CONSTANT.BULLET_IMAGE[o.d];
-      width = 2 * CONSTANT.BULLET_RADIUS;
-      height = 2 * CONSTANT.BULLET_RADIUS;
       break;
     case "e":
       rect = CONSTANT.BUILDING_IMAGE[o.kind];
-      width = 2 * CONSTANT.BUILDING_RADIUS;
-      height = 2 * CONSTANT.BUILDING_RADIUS;
       break;
     default:
       console.log(o);
   }
 
+  // https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage
+
   if (rect) {
-    that.context.drawImage(
-      that.sprites,
+    context.drawImage(
+      sprites,
       rect[0],
       rect[1],
       rect[2],
       rect[3],
-      o.x * 32 - width / 2,
-      o.y * 32 - height / 2,
-      width,
-      height
+      o.x * grid_size - grid_size / 2,
+      o.y * grid_size - grid_size / 2,
+      grid_size,
+      grid_size
     );
   }
 };
@@ -103,17 +98,22 @@ export const GameHook = {
       .concat(JSON.parse(this.el.dataset.tank_grids))
       .concat(JSON.parse(this.el.dataset.bullet_grids));
   },
+  size() {
+    return this.el.dataset.size;
+  },
   mounted() {
     let canvas = this.el.querySelector("#canvas");
     let sprites = this.el.querySelector("#sprites");
     let context = canvas.getContext("2d");
-    context.canvas.width = window.innerWidth;
-    context.canvas.height = window.innerHeight;
+    let grid_size = this.size();
+    context.canvas.width = CONSTANT.GRID_COUNT * grid_size;
+    context.canvas.height = CONSTANT.GRID_COUNT * grid_size;
 
     Object.assign(this, {
       canvas,
       context,
       sprites,
+      grid_size,
       i: 0,
       j: 0,
       fps: 0,

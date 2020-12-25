@@ -10,6 +10,7 @@ defmodule BattleCityUiWeb.GameLive do
     ~L"""
     <div phx-hook="game" id="game"
       phx-window-keydown="keydown"
+      data-size=20
       data-slug="<%= @slug %>"
       data-tank_grids="<%= Jason.encode!(@tank_grids) %>"
       data-bullet_grids="<%= Jason.encode!(@bullet_grids) %>"

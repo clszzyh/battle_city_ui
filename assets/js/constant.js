@@ -48,7 +48,9 @@ export const BUILDING_IMAGE = {
   blank: [1116, 800, 64, 64],
 };
 
-export const TANK_RADIUS = 32;
-export const BULLET_RADIUS = 32;
-export const BUILDING_RADIUS = 32;
-export const EXPLOSION_RADIUS = 16;
+// export const TANK_RADIUS = 32;
+// export const BULLET_RADIUS = 32;
+// export const BUILDING_RADIUS = 32;
+// export const EXPLOSION_RADIUS = 16;
+
+export const GRID_COUNT = 26;
