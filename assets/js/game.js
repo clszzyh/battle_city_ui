@@ -4,15 +4,19 @@ import { toggle_simulate_latency, toggle_debug } from "./live_socket";
 const draw_entity = (o, that) => {
   let { grid_size, context, sprites } = that;
   let rect;
+  let size;
   switch (o.type) {
     case "t":
       rect = CONSTANT.TANK_IMAGE[o.kind][o.d];
+      size = grid_size * 2;
       break;
     case "b":
       rect = CONSTANT.BULLET_IMAGE[o.d];
+      size = grid_size / 3;
       break;
     case "e":
       rect = CONSTANT.BUILDING_IMAGE[o.kind];
+      size = grid_size * 2;
       break;
     default:
       console.log(o);
@@ -25,12 +29,12 @@ const draw_entity = (o, that) => {
       sprites,
       rect[0],
       rect[1],
-      64,
-      64,
-      o.x * grid_size - grid_size / 2,
-      o.y * grid_size - grid_size / 2,
-      grid_size,
-      grid_size
+      rect[2] || 64,
+      rect[3] || 64,
+      o.x * grid_size + (grid_size - size / 2),
+      o.y * grid_size + (grid_size - size / 2),
+      size,
+      size
     );
   }
 };

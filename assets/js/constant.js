@@ -34,10 +34,10 @@ export const TANK_IMAGE = {
 };
 
 export const BULLET_IMAGE = {
-  up: [1320, 408],
-  down: [1384, 408],
-  left: [1348, 408],
-  right: [1412, 408],
+  up: [1320, 408, 12, 16],
+  down: [1384, 408, 12, 16],
+  left: [1348, 408, 16, 12],
+  right: [1412, 408, 16, 12],
 };
 
 export const BUILDING_IMAGE = {
