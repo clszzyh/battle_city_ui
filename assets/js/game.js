@@ -31,10 +31,12 @@ const draw_entity = (o, that) => {
       rect[1],
       rect[2] || 64,
       rect[3] || 64,
-      (o.x * grid_size) / 8 + (grid_size - size / 2),
-      (o.y * grid_size) / 8 + (grid_size - size / 2),
-      size,
-      size
+      ((rect[6] ? rect[6] + o.x : o.x) * grid_size) / 8 +
+        (grid_size - size / 2),
+      ((rect[7] ? rect[7] + o.y : o.y) * grid_size) / 8 +
+        (grid_size - size / 2),
+      rect[4] ? size * rect[4] : size,
+      rect[5] ? size * rect[5] : size
     );
   }
 };
