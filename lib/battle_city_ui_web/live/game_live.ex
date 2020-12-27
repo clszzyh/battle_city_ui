@@ -38,9 +38,13 @@ defmodule BattleCityUiWeb.GameLive do
       Logger.debug("Mount without connected. #{slug}")
     end
 
-    {_pid, ctx} = Game.start_server(slug, %{player_name: username, stage: 1, loop_interval: 100})
-
-    Game.invoke_call(slug, :pause)
+    {_pid, ctx} =
+      Game.start_server(slug, %{
+        player_name: username,
+        stage: 1,
+        loop_interval: 100,
+        enable_bot: false
+      })
 
     {:ok,
      assign(socket,
