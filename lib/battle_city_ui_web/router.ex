@@ -56,7 +56,8 @@ defmodule BattleCityUiWeb.Router do
           process_registry: BattleCityUiWeb.LiveDashboard.ProcessRegistryPage,
           game_servers: BattleCityUiWeb.LiveDashboard.GameServersPage,
           stages: BattleCityUiWeb.LiveDashboard.StagesPage,
-          presence: BattleCityUiWeb.LiveDashboard.PresencePage
+          presence: BattleCityUiWeb.LiveDashboard.PresencePage,
+          os_processes: BattleCityUiWeb.LiveDashboard.OsProcessesPage
         ]
     end
   end
