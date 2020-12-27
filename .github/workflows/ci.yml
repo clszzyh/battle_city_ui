@@ -131,7 +131,7 @@ jobs:
           VERSION=$(cat VERSION | tr -s '\n' ' ')
           echo ::set-output name=VERSION::$VERSION
       - name: Deploy to gigalixir
-        if: contains(github.ref, 'refs/heads') && !contains(github.event.head_commit.message, 'skip-deploy') && !contains(github.event.head_commit.message, 'dependabot') && !contains(github.event.head_commit.message, 'test')
+        if: contains(github.ref, 'refs/heads') && !contains(github.event.head_commit.message, 'skip-deploy') && !contains(github.event.head_commit.message, 'dependabot') && !contains(github.event.head_commit.message, 'test') && !contains(github.event.head_commit.message, 'ci') && !contains(github.event.head_commit.message, 'dump')
         uses: mhanberg/gigalixir-action@v0.4.0
         with:
           GIGALIXIR_USERNAME: ${{ secrets.GIGALIXIR_USERNAME }}
