@@ -5,6 +5,9 @@ const draw_entity = (o, that) => {
   let { grid_size, context, sprites } = that;
   let rect;
   let size;
+  if (o.h) {
+    return;
+  }
   switch (o.type) {
     case "t":
       rect = CONSTANT.TANK_IMAGE[o.kind][o.d] || console.error(o);

@@ -59,10 +59,6 @@ defmodule BattleCityUiWeb.GameLive do
   end
 
   @handle_down_map %{
-    {"keydown", "ArrowUp"} => {:move, :up},
-    {"keydown", "ArrowDown"} => {:move, :down},
-    {"keydown", "ArrowLeft"} => {:move, :left},
-    {"keydown", "ArrowRight"} => {:move, :right},
     {"keydown", "w"} => {:move, :up},
     {"keydown", "s"} => {:move, :down},
     {"keydown", "a"} => {:move, :left},

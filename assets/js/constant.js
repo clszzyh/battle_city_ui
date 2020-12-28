@@ -68,10 +68,10 @@ export const BUILDING_IMAGE = {
 };
 
 export const POWERUP_IMAGE = {
-  helmet: [1052, 512],
-  timer: [1116, 512],
-  shovel: [1180, 512],
-  star: [1244, 512],
-  grenade: [1308, 512],
-  life: [1372, 512],
+  helmet: [1052, 448],
+  timer: [1116, 448],
+  shovel: [1180, 448],
+  star: [1244, 448],
+  grenade: [1308, 448],
+  life: [1372, 448],
 };
