@@ -1,6 +1,8 @@
 defmodule BattleCityUiWeb.Router do
   use BattleCityUiWeb, :router
 
+  import Plug.BasicAuth
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -18,15 +20,14 @@ defmodule BattleCityUiWeb.Router do
     plug BattleCityUiWeb.SetName
   end
 
+  pipeline :admin_only do
+    plug :basic_auth, Application.compile_env(:battle_city_ui, :basic_auth)
+  end
+
   scope "/", BattleCityUiWeb do
     pipe_through [:browser, :set_name]
 
-    live "/canvas", CanvasLive, :index
-
-    live "/page", PageLive, :index
     live "/", GameLive, :index
-    live "/play", PlayLive, :index
-    live "/play/:slug", PlayLive, :index
   end
 
   # Other scopes may use custom stacks.
@@ -45,7 +46,7 @@ defmodule BattleCityUiWeb.Router do
     import Phoenix.LiveDashboard.Router
 
     scope "/" do
-      pipe_through :browser
+      pipe_through [:browser, :admin_only]
 
       live_dashboard "/dashboard",
         metrics: BattleCityUiWeb.Telemetry,

@@ -4,7 +4,6 @@ import "phoenix_html";
 import { Socket } from "phoenix";
 import NProgress from "nprogress";
 import { LiveSocket } from "phoenix_live_view";
-import { CanvasHook } from "./canvas";
 import { GameHook } from "./game";
 
 let csrfToken = document
@@ -23,7 +22,6 @@ if (
 let liveSocket = new LiveSocket("/live", Socket, {
   params: { _csrf_token: csrfToken },
   hooks: {
-    canvas: CanvasHook,
     game: GameHook,
   },
   metadata: {

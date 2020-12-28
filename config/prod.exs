@@ -19,7 +19,7 @@ config :battle_city_ui, BattleCityUiWeb.Endpoint,
     port: String.to_integer(System.get_env("PORT") || "4000"),
     transport_options: [socket_opts: [:inet6]]
   ],
-  force_ssl: [rewrite_on: [:x_forwarded_proto]],
+  force_ssl: [rewrite_on: [:x_forwarded_proto], hsts: true],
   server: true,
   cache_static_manifest: "priv/static/cache_manifest.json"
 
