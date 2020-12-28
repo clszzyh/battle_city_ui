@@ -66,3 +66,12 @@ export const BUILDING_IMAGE = {
   ice: { full: [1180, 128] },
   blank: { full: [1116, 800] },
 };
+
+export const POWERUP_IMAGE = {
+  helmet: [1052, 512],
+  timer: [1116, 512],
+  shovel: [1180, 512],
+  star: [1244, 512],
+  grenade: [1308, 512],
+  life: [1372, 512],
+};

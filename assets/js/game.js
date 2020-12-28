@@ -18,6 +18,10 @@ const draw_entity = (o, that) => {
       rect = CONSTANT.BUILDING_IMAGE[o.kind][o.d] || console.error(o);
       size = grid_size * 2;
       break;
+    case "p":
+      rect = CONSTANT.POWERUP_IMAGE[o.kind] || console.error(o);
+      size = grid_size * 2;
+      break;
     default:
       console.log(o);
   }
@@ -107,6 +111,7 @@ export const GameHook = {
     return []
       .concat(JSON.parse(this.el.dataset.map_grids))
       .concat(JSON.parse(this.el.dataset.tank_grids))
+      .concat(JSON.parse(this.el.dataset.power_up_grids))
       .concat(JSON.parse(this.el.dataset.bullet_grids));
   },
   size() {

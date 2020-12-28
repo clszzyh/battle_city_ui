@@ -14,6 +14,7 @@ defmodule BattleCityUiWeb.GameLive do
       data-slug="<%= @slug %>"
       data-tank_grids="<%= Jason.encode!(@tank_grids) %>"
       data-bullet_grids="<%= Jason.encode!(@bullet_grids) %>"
+      data-power_up_grids="<%= Jason.encode!(@power_up_grids) %>"
       data-map_grids="<%= Jason.encode!(@map_grids) %>"
     >
       <canvas style="margin: 0 auto;" phx-update="ignore" id="canvas"> Canvas is not supported! </canvas>
@@ -156,10 +157,12 @@ defmodule BattleCityUiWeb.GameLive do
   defp tick(socket, ctx) do
     tank_grids = Context.tank_grids(ctx)
     bullet_grids = Context.bullet_grids(ctx)
+    power_up_grids = Context.power_up_grids(ctx)
     map_grids = Context.map_grids(ctx)
     # Logger.debug(inspect(grids, limit: :infinity, pretty: true))
     if tank_grids == socket.assigns[:tank_grids] and
          bullet_grids == socket.assigns[:bullet_grids] and
+         power_up_grids == socket.assigns[:power_up_grids] and
          map_grids == socket.assigns[:map_grids] do
       socket |> assign(ctx: ctx)
     else
@@ -169,6 +172,7 @@ defmodule BattleCityUiWeb.GameLive do
         level: ctx.level,
         map_grids: map_grids,
         bullet_grids: bullet_grids,
+        power_up_grids: power_up_grids,
         tank_grids: tank_grids
       )
       |> push_event(:tick, %{value: ctx.__counters__})
