@@ -127,7 +127,7 @@ defmodule BattleCityUi.MixProject do
         "compile --warnings-as-errors --force --verbose",
         "format --check-formatted",
         "credo --strict",
-        "docs",
+        "docs -f html",
         "dialyzer",
         "test"
       ]
