@@ -11,6 +11,9 @@ const draw_entity = (o, that) => {
   switch (o.type) {
     case "t":
       rect = CONSTANT.TANK_IMAGE[o.kind][o.d] || console.error(o);
+      if (o.p) {
+        rect[1] += 512;
+      }
       size = grid_size * 2;
       break;
     case "b":

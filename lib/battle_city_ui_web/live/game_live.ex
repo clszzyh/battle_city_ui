@@ -39,23 +39,20 @@ defmodule BattleCityUiWeb.GameLive do
       Logger.debug("Mount without connected. #{slug}")
     end
 
-    {_pid, ctx} =
-      Game.start_server(slug, %{
-        player_name: username,
-        stage: 1,
-        loop_interval: 100,
-        enable_bot: false
-      })
+    opts = %{player_name: username, stage: 1, loop_interval: 100, enable_bot: false}
+    {pid, ctx} = Game.start_server(slug, opts)
 
-    {:ok,
-     assign(socket,
-       page_title: "BattleCity",
-       slug: slug,
-       username: username,
-       debug: false,
-       latency: false
-     )
-     |> tick(ctx)}
+    assigns = [
+      page_title: "BattleCity",
+      slug: slug,
+      pid: pid,
+      opts: opts,
+      username: username,
+      debug: false,
+      latency: false
+    ]
+
+    {:ok, assign(socket, assigns) |> tick(ctx)}
   end
 
   @handle_down_map %{
@@ -87,6 +84,7 @@ defmodule BattleCityUiWeb.GameLive do
   end
 
   @latency 1000
+  @max_level 35
 
   def handle_event("keydown", %{"key" => "S"}, %{assigns: %{latency: latency}} = socket) do
     latency = if latency, do: false, else: @latency
@@ -110,7 +108,7 @@ defmodule BattleCityUiWeb.GameLive do
   end
 
   def handle_event("keydown", %{"key" => "+"}, %{assigns: %{level: level, slug: slug}} = socket)
-      when level < 34 do
+      when level <= @max_level do
     {_, ctx} = Game.invoke_call(slug, {"reset", %{stage: level + 1}})
     {:noreply, tick(socket, ctx)}
   end
