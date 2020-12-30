@@ -7,3 +7,21 @@
 Battle City in LiveView.
 
 <!-- MDOC -->
+
+
+
+## TODO
+
+### Deployment
+
+- [ ] Docker package support (Multi layer, Github Action, ...)
+- [ ] Heroku deploy
+
+### Backend
+
+- [ ] Smarter AI
+- [ ] Multi player support
+
+### Frontend
+
+- [ ] Multi player support
