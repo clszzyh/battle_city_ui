@@ -39,6 +39,7 @@ defmodule BattleCityUi.MixProject do
         plt_file: {:no_warn, "priv/plts/dialyzer.plt"},
         flags: dialyzer_flags()
       ],
+      xref: [exclude: :crypto],
       releases: releases(),
       aliases: aliases(),
       deps: deps()
@@ -78,7 +79,7 @@ defmodule BattleCityUi.MixProject do
   def application do
     [
       mod: {BattleCityUi.Application, []},
-      extra_applications: [:logger, :runtime_tools, :os_mon, :mix, :crypto]
+      extra_applications: [:logger, :runtime_tools, :os_mon, :mix]
     ]
   end
 
@@ -111,7 +112,7 @@ defmodule BattleCityUi.MixProject do
       {:circular_buffer, "~> 0.3.0"},
       {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
       {:credo, "~> 1.4", only: [:dev, :test], runtime: false},
-      {:ex_doc, "~> 0.22", only: [:dev, :test], runtime: false}
+      {:ex_doc, "~> 0.22", runtime: false}
     ]
   end
 
