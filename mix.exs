@@ -110,6 +110,7 @@ defmodule BattleCityUi.MixProject do
       # {:battle_city, path: "../battle_city"},
       {:ecto_psql_extras, "~> 0.2"},
       {:circular_buffer, "~> 0.3.0"},
+      {:nimble_parsec, "~> 1.0"},
       {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
       {:credo, "~> 1.4", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.22", runtime: false}
